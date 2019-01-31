@@ -1,6 +1,6 @@
 {
   "name": "rentmonitor-server",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Monitor the payments of your tenants. Did every renter pay on time?",
   "keywords": [
     "loopback-application",
@@ -45,21 +45,21 @@
     "src"
   ],
   "dependencies": {
-    "@loopback/boot": "^1.0.10",
-    "@loopback/context": "^1.4.1",
-    "@loopback/core": "^1.1.4",
-    "@loopback/openapi-v3": "^1.1.7",
-    "@loopback/repository": "^1.1.3",
-    "@loopback/rest": "^1.5.3",
-    "@loopback/rest-explorer": "^1.1.6",
-    "@loopback/service-proxy": "^1.0.6",
-    "loopback-connector-postgresql": "^3.5.0"
+    "@loopback/boot": "^1.0.11",
+    "@loopback/context": "^1.5.0",
+    "@loopback/core": "^1.1.5",
+    "@loopback/openapi-v3": "^1.2.0",
+    "@loopback/repository": "^1.1.4",
+    "@loopback/rest": "^1.5.4",
+    "@loopback/rest-explorer": "^1.1.7",
+    "@loopback/service-proxy": "^1.0.7",
+    "loopback-connector-postgresql": "^3.5.1"
   },
   "devDependencies": {
-    "@loopback/build": "^1.2.0",
-    "@loopback/testlab": "^1.0.4",
+    "@loopback/build": "^1.2.1",
+    "@loopback/testlab": "^1.0.5",
     "@loopback/tslint-config": "^2.0.0",
-    "@types/node": "^10.11.2",
+    "@types/node": "^10.12.20",
     "tslint": "^5.12.0",
     "typescript": "^3.2.2"
   }
