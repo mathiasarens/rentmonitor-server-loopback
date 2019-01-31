@@ -12,5 +12,5 @@ jobs:
       - save_cache:
           key: server-loopback-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
-            - "node_modules"
+            - 'node_modules'
       - run: npm run test
