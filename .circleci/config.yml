@@ -1,16 +1,18 @@
-version: 2.1
+version: 2
 jobs:
   build:
-    working_directory: ~/server-loopback
     docker: # use the docker executor type; machine and macos executors are also supported
       - image: circleci/node:latest # the primary container, where your job's commands are run
     steps:
       - checkout # check out the code in the project directory
       - restore_cache:
-          key: server-loopback-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          keys:
+            - npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - npm-cache-{{ .Branch }}-
+            - npm-cache-
       - run: npm install
       - save_cache:
-          key: server-loopback-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - 'node_modules'
       - run: npm run test
