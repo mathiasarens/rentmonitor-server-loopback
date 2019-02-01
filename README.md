@@ -1,3 +1,5 @@
-# rentmonitor-server
+# Rentmonitor Server
 
-[![LoopBack](https://github.com/strongloop/loopback-next/raw/master/docs/site/imgs/branding/Powered-by-LoopBack-Badge-(blue)-@2x.png)](http://loopback.io/)
+The renter monitor server API.
+
+[![CircleCI](https://circleci.com/gh/mathiasarens/rentmonitor-server-loopback.svg?style=svg)](https://circleci.com/gh/mathiasarens/rentmonitor-server-loopback)
