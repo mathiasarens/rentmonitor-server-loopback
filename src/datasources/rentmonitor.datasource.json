@@ -3,7 +3,7 @@
   "connector": "postgresql",
   "url": "",
   "host": "localhost",
-  "port": 0,
+  "port": 5432,
   "user": "rentmonitor",
   "password": "rentmonitor",
   "database": "rentmonitor"

@@ -3,15 +3,16 @@ import {Entity, model, property} from '@loopback/repository';
 @model()
 export class Client extends Entity {
   @property({
-    type: 'number',
     id: true,
-    required: true,
+    type: 'number',
+    required: false,
   })
-  id: number;
+  id?: number;
 
   @property({
     type: 'string',
     required: true,
+    unique: true,
   })
   name: string;
 

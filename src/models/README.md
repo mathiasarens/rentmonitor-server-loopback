@@ -1,3 +1,5 @@
-# Models
+# Domain Model Overview
 
-This directory contains code for models provided by this app.
+## Client
+
+A client is the top most aggregation unit.
