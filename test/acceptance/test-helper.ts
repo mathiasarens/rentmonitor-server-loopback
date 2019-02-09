@@ -4,7 +4,7 @@ import {
   givenHttpServerConfig,
   Client,
 } from '@loopback/testlab';
-import {testdb} from '../fixtures/datasources/testdb.datasource';
+import {RentmonitorDataSource} from '../fixtures/datasources/rentmonitor.datasource';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
@@ -14,7 +14,7 @@ export async function setupApplication(): Promise<AppWithClient> {
     rest: config,
   });
 
-  app.dataSource(testdb);
+  app.dataSource(RentmonitorDataSource);
   await app.boot();
   await app.start();
 

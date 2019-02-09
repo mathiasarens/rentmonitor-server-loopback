@@ -1,13 +1,13 @@
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {setupApplication} from './test-helper';
-import {testdb} from '../fixtures/datasources/testdb.datasource';
+import {RentmonitorDataSource} from '../fixtures/datasources/rentmonitor.datasource';
 import {ClientRepository} from '../../src/repositories/client.repository';
 
 describe('ClientController', () => {
   let app: RentmonitorServerApplication;
   let client: Client;
-  const clientRepo = new ClientRepository(testdb);
+  const clientRepo = new ClientRepository(new RentmonitorDataSource());
 
   before('setupApplication', async () => {
     ({app, client} = await setupApplication());

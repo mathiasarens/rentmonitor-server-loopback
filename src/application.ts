@@ -37,6 +37,11 @@ export class RentmonitorServerApplication extends BootMixin(
         extensions: ['.controller.js'],
         nested: true,
       },
+      datasources: {
+        dirs: [],
+        extensions: [],
+        nested: false,
+      },
     };
   }
 }
