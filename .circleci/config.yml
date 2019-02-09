@@ -22,6 +22,11 @@ jobs:
           paths:
             - node_modules
           key: npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run:
+          name: Wait for db
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: npm run build
-      - run: NODE_ENV=test npm run migrate -- --rebuild
+      - run:
+          name: Resetup test database
+          command: npm run migrate -- --rebuild
       - run: npm run test
