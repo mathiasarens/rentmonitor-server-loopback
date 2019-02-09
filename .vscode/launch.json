@@ -8,28 +8,31 @@
       "type": "node",
       "request": "launch",
       "name": "Mocha Tests",
-      "program": "${workspaceFolder}/node_modules/@loopback/build/bin/run-mocha.js",
-      "cwd": "${workspaceRoot}",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
-        "--recursive",
-        "--require",
-        "source-map-support/register",
-        "--allow-console-logs",
-        "dist/test/**/*.js"
-      ]
+        "-u",
+        "tdd",
+        "--timeout",
+        "999999",
+        "--colors",
+        "${workspaceFolder}/dist/test"
+      ],
+      "internalConsoleOptions": "openOnSessionStart"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Mocha Current Test",
-      "program": "${workspaceFolder}/node_modules/@loopback/build/bin/run-mocha.js",
-      "cwd": "${workspaceRoot}",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
-        "--require",
-        "source-map-support/register",
-        "--allow-console-logs",
+        "-u",
+        "tdd",
+        "--timeout",
+        "999999",
+        "--colors",
         "${workspaceFolder}/dist/${relativeFile}"
-      ]
+      ],
+      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }

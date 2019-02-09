@@ -19,14 +19,16 @@ describe('ClientController', () => {
     await app.stop();
   });
 
-  // it('add client on post', async () => {
-  //   const res = await client
-  //     .post('/clients')
-  //     .send({name: 'TestClient1'})
-  //     .set('Content-Type', 'application/json')
-  //     .expect(201);
-  //   expect(res.body).to.containEql({greeting: 'Hello from LoopBack'});
-  // });
+  it('add client on post', async () => {
+    const res = await client
+      .post('/clients')
+      .send({name: 'TestClient1'})
+      .set('Content-Type', 'application/json')
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+    expect(res.body.id).to.be.a.Number();
+    expect(res.body.name).to.eql('TestClient1');
+  });
 
   async function clearDatabase() {
     await clientRepo.deleteAll();

@@ -5,9 +5,9 @@ export class Client extends Entity {
   @property({
     id: true,
     type: 'number',
-    required: false,
+    generated: true,
   })
-  id?: number;
+  id: number;
 
   @property({
     type: 'string',
