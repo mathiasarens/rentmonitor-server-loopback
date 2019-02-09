@@ -1,0 +1,10 @@
+{
+  "name": "rentmonitor_test",
+  "connector": "postgresql",
+  "url": "",
+  "host": "localhost",
+  "port": 5432,
+  "user": "rentmonitor_test",
+  "password": "rentmonitor",
+  "database": "rentmonitor_test"
+}

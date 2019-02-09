@@ -12,7 +12,9 @@ export class Client extends Entity {
   @property({
     type: 'string',
     required: true,
-    unique: true,
+    index: {
+      unique: true,
+    },
   })
   name: string;
 

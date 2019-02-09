@@ -1,10 +1,17 @@
 version: 2
 jobs:
   build:
-    docker: # use the docker executor type; machine and macos executors are also supported
-      - image: circleci/node:11.8 # the primary container, where your job's commands are run
+    docker:
+      - image: circleci/node:11.8
+        environment:
+          NODE_ENV: test
+      - image: circleci/postgres:11.1-alpine
+        environment:
+          POSTGRES_DB: rentmonitor_test
+          POSTGRES_PASSWORD: rentmonitor
+          POSTGRES_USER: rentmonitor_test
     steps:
-      - checkout # check out the code in the project directory
+      - checkout
       - restore_cache:
           keys:
             - npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
@@ -15,4 +22,6 @@ jobs:
           paths:
             - node_modules
           key: npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+      - run: npm run build
+      - run: NODE_ENV=test npm run migrate -- --rebuild
       - run: npm run test
