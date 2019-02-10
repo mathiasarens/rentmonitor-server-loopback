@@ -15,6 +15,7 @@ import {
   put,
   del,
   requestBody,
+  HttpErrors,
 } from '@loopback/rest';
 import {Client} from '../models';
 import {ClientRepository} from '../repositories';
@@ -34,7 +35,17 @@ export class ClientController {
     },
   })
   async create(@requestBody() client: Client): Promise<Client> {
-    return await this.clientRepository.create(client);
+    try {
+      return await this.clientRepository.create(client);
+    } catch (error) {
+      if (error.constraint && error.constraint === 'client_name_idx') {
+        throw new HttpErrors.BadRequest(
+          `Client name: '${client.name}' already exists`,
+        );
+      } else {
+        throw error;
+      }
+    }
   }
 
   @get('/clients/count', {
