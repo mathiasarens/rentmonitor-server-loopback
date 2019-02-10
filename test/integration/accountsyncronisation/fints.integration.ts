@@ -11,7 +11,7 @@ describe('FinTs Integration', () => {
 
   /* tslint:disable:no-invalid-this */
   it('should get account transactions', async function() {
-    this.timeout(6000);
+    this.timeout(8000);
     await fints.load();
   });
   /* tslint:enable:no-invalid-this */
