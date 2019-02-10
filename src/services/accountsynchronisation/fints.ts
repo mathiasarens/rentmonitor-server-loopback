@@ -5,8 +5,8 @@ export class FintsAccountTransactionSynchronization {
 
   constructor() {
     this.client = new FinTSClient(
-      '41660124',
-      'https://hbci-pintan.gad.de/cgi-bin/hbciservlet',
+      <string>process.env.FINTS_BLZ,
+      <string>process.env.FINTS_URL,
       <string>process.env.FINTS_USER,
       <string>process.env.FINTS_PASSWORD,
     );
