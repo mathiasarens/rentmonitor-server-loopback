@@ -21,7 +21,7 @@ export class FintsAccountTransactionSynchronization {
         null,
       );
       transactions.forEach(transaction => {
-        console.log(transaction);
+        //console.log(transaction);
       });
       await this.client.close();
     } catch (err) {
