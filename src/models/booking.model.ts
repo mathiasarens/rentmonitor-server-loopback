@@ -1,5 +1,6 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
 import {Client} from './client.model';
+import {Debitor} from './debitor.model';
 @model({
   indexes: {
     clientId_name_index: {
@@ -8,7 +9,7 @@ import {Client} from './client.model';
     },
   },
 })
-export class Debitor extends Entity {
+export class Booking extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -19,43 +20,26 @@ export class Debitor extends Entity {
   @belongsTo(() => Client)
   clientId: number;
 
+  @belongsTo(() => Debitor)
+  debitorId: number;
+
   @property({
-    type: 'string',
+    type: 'date',
     required: true,
   })
-  name: string;
+  date: string;
 
   @property({
     type: 'string',
   })
-  email: string;
-
-  @property({
-    type: 'string',
-  })
-  phone: string;
-
-  @property({
-    type: 'string',
-  })
-  cron?: string;
+  comment?: string;
 
   @property({
     type: 'number',
   })
   amount?: number;
 
-  @property({
-    type: 'date',
-  })
-  start?: string;
-
-  @property({
-    type: 'date',
-  })
-  end?: string;
-
-  constructor(data?: Partial<Debitor>) {
+  constructor(data?: Partial<Booking>) {
     super(data);
   }
 }
