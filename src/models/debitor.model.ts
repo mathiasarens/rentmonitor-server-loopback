@@ -36,24 +36,29 @@ export class Debitor extends Entity {
   phone: string;
 
   @property({
-    type: 'string',
+    type: 'date',
   })
-  cron?: string;
+  start?: Date;
+
+  @property({
+    type: 'date',
+  })
+  end?: Date;
+
+  @property({
+    type: 'number',
+  })
+  rentDueEveryMonth?: number;
+
+  @property({
+    type: 'number',
+  })
+  rentDueDayOfMonth?: number;
 
   @property({
     type: 'number',
   })
   amount?: number;
-
-  @property({
-    type: 'date',
-  })
-  start?: string;
-
-  @property({
-    type: 'date',
-  })
-  end?: string;
 
   constructor(data?: Partial<Debitor>) {
     super(data);
