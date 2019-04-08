@@ -24,11 +24,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/${relativeFile}"
-      ],
-      "preLaunchTask": "${workspaceFolder}/node_modules/.bin/build",
-      "outFiles": [
-        "${workspaceFolder}/dist/**/*.js"
+        "${workspaceFolder}/${$relativeFile}"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
