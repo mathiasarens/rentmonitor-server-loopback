@@ -1,7 +1,7 @@
 import {Getter} from '@loopback/context';
-import {DebitorRepository} from '../../../../src/repositories';
-import {Client} from '../../../../src/models';
-import {ClientRepository} from '../../../../src/repositories/client.repository';
+import {DebitorRepository} from '../../../repositories';
+import {Client} from '../../../models';
+import {ClientRepository} from '../../../repositories/client.repository';
 import {testdb} from '../../fixtures/datasources/rentmontior.datasource';
 import {givenEmptyDatabase, givenClient} from '../../helpers/database.helpers';
 import {expect} from '@loopback/testlab';

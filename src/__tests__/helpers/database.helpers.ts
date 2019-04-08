@@ -1,5 +1,5 @@
 import {Getter} from '@loopback/context';
-import {ClientRepository, DebitorRepository} from '../../../src/repositories';
+import {ClientRepository, DebitorRepository} from '../../repositories';
 import {Client} from '../../../src/models';
 import {testdb} from '../fixtures/datasources/rentmontior.datasource';
 

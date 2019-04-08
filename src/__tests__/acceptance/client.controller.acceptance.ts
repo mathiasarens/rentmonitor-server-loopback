@@ -1,8 +1,8 @@
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {setupApplication} from './test-helper';
-import {RentmonitorDataSource} from '../../../src/datasources/rentmonitor.datasource';
-import {ClientRepository} from '../../../src/repositories/client.repository';
+import {RentmonitorDataSource} from '../../datasources/rentmonitor.datasource';
+import {ClientRepository} from '../../repositories/client.repository';
 
 describe('ClientController', () => {
   let app: RentmonitorServerApplication;

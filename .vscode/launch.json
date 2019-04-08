@@ -10,14 +10,12 @@
       "name": "Mocha Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
-        "-u",
-        "tdd",
-        "--timeout",
-        "999999",
-        "--colors",
-        "${workspaceFolder}/dist/test"
+          "--colors",
+          "'${workspaceFolder}/dist/__tests__/**/*.js'",
       ],
-      "internalConsoleOptions": "openOnSessionStart"
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
     },
     {
       "type": "node",
@@ -25,14 +23,16 @@
       "name": "Mocha Current Test",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
-        "-u",
-        "tdd",
-        "--timeout",
-        "999999",
         "--colors",
-        "${workspaceFolder}/dist/${relativeFile}"
+        "${workspaceFolder}/${relativeFile}"
       ],
-      "internalConsoleOptions": "openOnSessionStart"
+      "preLaunchTask": "${workspaceFolder}/node_modules/.bin/build",
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
     }
   ]
 }
