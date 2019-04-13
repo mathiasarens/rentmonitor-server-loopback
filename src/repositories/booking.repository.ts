@@ -1,13 +1,7 @@
-import {Getter, inject} from '@loopback/context';
-import {
-  DefaultCrudRepository,
-  BelongsToAccessor,
-  repository,
-} from '@loopback/repository';
-import {Booking, Debitor, Client} from '../models';
+import {inject} from '@loopback/context';
+import {DefaultCrudRepository} from '@loopback/repository';
 import {RentmonitorDataSource} from '../datasources';
-import {ClientRepository} from '.';
-import {DebitorRepository} from './debitor.repository';
+import {Booking} from '../models';
 
 export class BookingRepository extends DefaultCrudRepository<
   Booking,

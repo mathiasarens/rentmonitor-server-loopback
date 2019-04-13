@@ -1,32 +1,32 @@
-import {Getter, inject} from '@loopback/context';
+import {inject} from '@loopback/context';
 import {
   DefaultCrudRepository,
   BelongsToAccessor,
-  repository,
+  // repository,
 } from '@loopback/repository';
 import {Debitor, Client} from '../models';
 import {RentmonitorDataSource} from '../datasources';
-import {ClientRepository} from '../repositories';
+// import {ClientRepository} from '../repositories';
 
 export class DebitorRepository extends DefaultCrudRepository<
   Debitor,
   typeof Debitor.prototype.id
 > {
-  // public readonly client: BelongsToAccessor<
-  //   Client,
-  //   typeof Debitor.prototype.id
-  // >;
+  public readonly client: BelongsToAccessor<
+    Client,
+    typeof Debitor.prototype.id
+  >;
 
   constructor(
     @inject('datasources.rentmonitor') dataSource: RentmonitorDataSource,
     // @repository.getter('ClientRepository')
-    // getClientRepository: Getter<ClientRepository>,
+    // clientRepositoryGetter: Getter<ClientRepository>,
   ) {
     super(Debitor, dataSource);
 
     // this.client = this.createBelongsToAccessorFor(
     //   'client',
-    //   getClientRepository,
+    //   clientRepositoryGetter,
     // );
   }
 }

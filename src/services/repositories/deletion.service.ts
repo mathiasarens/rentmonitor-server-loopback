@@ -1,9 +1,9 @@
+import {repository} from '@loopback/repository';
 import {
+  BookingRepository,
   ClientRepository,
   DebitorRepository,
-  BookingRepository,
 } from '../../repositories';
-import {repository, WhereBuilder, Where} from '@loopback/repository';
 
 export class DeletionService {
   constructor(

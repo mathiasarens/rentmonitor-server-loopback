@@ -1,26 +1,16 @@
-import {Getter} from '@loopback/context';
-import {DebitorRepository, BookingRepository} from '../../../repositories';
-import {Client} from '../../../models';
-import {ClientRepository} from '../../../repositories/client.repository';
-import {testdb} from '../../fixtures/datasources/rentmontior.datasource';
-import {givenEmptyDatabase, givenClient} from '../../helpers/database.helpers';
 import {expect} from '@loopback/testlab';
+import {Client} from '../../../models';
+import {DebitorRepository} from '../../../repositories';
+import {testdb} from '../../fixtures/datasources/rentmontior.datasource';
+import {givenClient, givenEmptyDatabase} from '../../helpers/database.helpers';
 
 describe('Debitor Integration', () => {
   let debitorRepository: DebitorRepository;
-  let clientRepository: ClientRepository;
-  let bookingRepository: BookingRepository;
 
   before('setupApplication', async () => {
     await givenEmptyDatabase();
 
     debitorRepository = new DebitorRepository(testdb);
-    bookingRepository = new BookingRepository(testdb);
-    clientRepository = new ClientRepository(
-      testdb,
-      Getter.fromValue(debitorRepository),
-      Getter.fromValue(bookingRepository),
-    );
   });
 
   after(async () => {});

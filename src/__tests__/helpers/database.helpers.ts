@@ -4,7 +4,7 @@ import {
   DebitorRepository,
   BookingRepository,
 } from '../../repositories';
-import {Client, Debitor, Booking} from '../../../src/models';
+import {Client, Debitor} from '../../../src/models';
 import {testdb} from '../fixtures/datasources/rentmontior.datasource';
 
 export async function givenEmptyDatabase() {

@@ -6,17 +6,17 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
-import {Debitor, Client} from '../models';
+import {Debitor} from '../models';
 import {DebitorRepository} from '../repositories';
 
 export class DebitorControllerController {
