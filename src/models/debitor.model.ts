@@ -1,4 +1,4 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Client} from './client.model';
 @model({
   indexes: {
@@ -14,7 +14,7 @@ export class Debitor extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
 
   @belongsTo(() => Client)
   clientId: number;

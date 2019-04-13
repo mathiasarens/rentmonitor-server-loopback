@@ -1,4 +1,4 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Client} from './client.model';
 import {Debitor} from './debitor.model';
 @model({
@@ -15,7 +15,7 @@ export class Booking extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
 
   @belongsTo(() => Client)
   clientId: number;
@@ -39,7 +39,16 @@ export class Booking extends Entity {
   })
   amount?: number;
 
+  @property({
+    type: 'string',
+  })
+  type?: string;
+
   constructor(data?: Partial<Booking>) {
     super(data);
   }
+}
+
+export enum BookingType {
+  RENT_DUE = 'RENT_DUE',
 }
