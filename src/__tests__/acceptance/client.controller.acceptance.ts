@@ -1,13 +1,10 @@
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
-import {setupApplication} from './test-helper';
-import {RentmonitorDataSource} from '../../datasources/rentmonitor.datasource';
-import {ClientRepository} from '../../repositories/client.repository';
+import {setupApplication, givenEmptyDatabase} from './test-helper';
 
 describe('ClientController', () => {
   let app: RentmonitorServerApplication;
   let client: Client;
-  const clientRepo = new ClientRepository(new RentmonitorDataSource());
 
   before('setupApplication', async () => {
     ({app, client} = await setupApplication());
@@ -42,7 +39,7 @@ describe('ClientController', () => {
   });
 
   async function clearDatabase() {
-    await clientRepo.deleteAll();
+    await givenEmptyDatabase(app);
   }
 
   function createClient(name: string) {

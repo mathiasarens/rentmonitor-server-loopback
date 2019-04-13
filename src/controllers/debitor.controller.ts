@@ -134,11 +134,4 @@ export class DebitorControllerController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.debitorRepository.deleteById(id);
   }
-
-  @get('/orders/{id}/customer')
-  async getCustomer(
-    @param.path.number('id') debitorId: typeof Client.prototype.id,
-  ): Promise<Client> {
-    return await this.debitorRepository.client(debitorId);
-  }
 }

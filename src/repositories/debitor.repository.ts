@@ -12,16 +12,21 @@ export class DebitorRepository extends DefaultCrudRepository<
   Debitor,
   typeof Debitor.prototype.id
 > {
-  public readonly client: BelongsToAccessor<
-    Client,
-    typeof Debitor.prototype.id
-  >;
+  // public readonly client: BelongsToAccessor<
+  //   Client,
+  //   typeof Debitor.prototype.id
+  // >;
 
   constructor(
     @inject('datasources.rentmonitor') dataSource: RentmonitorDataSource,
-    @repository.getter('ClientRepository')
-    clientRepositoryGetter: Getter<ClientRepository>,
+    // @repository.getter('ClientRepository')
+    // getClientRepository: Getter<ClientRepository>,
   ) {
     super(Debitor, dataSource);
+
+    // this.client = this.createBelongsToAccessorFor(
+    //   'client',
+    //   getClientRepository,
+    // );
   }
 }

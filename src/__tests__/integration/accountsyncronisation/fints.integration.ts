@@ -1,4 +1,4 @@
-import {FintsAccountTransactionSynchronization} from '../../../services/accountsynchronisation/fints';
+import {FintsAccountTransactionSynchronization} from '../../../services/accountsynchronisation/fints.service';
 
 describe.skip('FinTs Integration', () => {
   let fints: FintsAccountTransactionSynchronization;

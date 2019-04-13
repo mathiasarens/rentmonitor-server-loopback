@@ -27,7 +27,7 @@ export class Booking extends Entity {
     type: 'date',
     required: true,
   })
-  date: string;
+  date: Date;
 
   @property({
     type: 'string',

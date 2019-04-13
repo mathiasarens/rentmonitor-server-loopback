@@ -1,5 +1,5 @@
 import {Getter} from '@loopback/context';
-import {DebitorRepository} from '../../../repositories';
+import {DebitorRepository, BookingRepository} from '../../../repositories';
 import {Client} from '../../../models';
 import {ClientRepository} from '../../../repositories/client.repository';
 import {testdb} from '../../fixtures/datasources/rentmontior.datasource';
@@ -9,14 +9,17 @@ import {expect} from '@loopback/testlab';
 describe('Debitor Integration', () => {
   let debitorRepository: DebitorRepository;
   let clientRepository: ClientRepository;
+  let bookingRepository: BookingRepository;
 
   before('setupApplication', async () => {
     await givenEmptyDatabase();
 
-    clientRepository = new ClientRepository(testdb);
-    debitorRepository = new DebitorRepository(
+    debitorRepository = new DebitorRepository(testdb);
+    bookingRepository = new BookingRepository(testdb);
+    clientRepository = new ClientRepository(
       testdb,
-      Getter.fromValue(clientRepository),
+      Getter.fromValue(debitorRepository),
+      Getter.fromValue(bookingRepository),
     );
   });
 

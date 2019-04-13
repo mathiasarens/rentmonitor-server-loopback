@@ -1,16 +1,32 @@
 import {Getter} from '@loopback/context';
-import {ClientRepository, DebitorRepository} from '../../repositories';
-import {Client} from '../../../src/models';
+import {
+  ClientRepository,
+  DebitorRepository,
+  BookingRepository,
+} from '../../repositories';
+import {Client, Debitor, Booking} from '../../../src/models';
 import {testdb} from '../fixtures/datasources/rentmontior.datasource';
 
 export async function givenEmptyDatabase() {
-  const clientRepository = new ClientRepository(testdb);
-  const debitorRepository = new DebitorRepository(
+  const debitorRepository = new DebitorRepository(testdb);
+  const bookingRepository = new BookingRepository(testdb);
+  const clientRepository = new ClientRepository(
     testdb,
-    Getter.fromValue(clientRepository),
+    Getter.fromValue(debitorRepository),
+    Getter.fromValue(bookingRepository),
   );
-  await clientRepository.deleteAll();
+  // const debitorRepository = new DebitorRepository(
+  //   testdb,
+  //   Getter.fromValue(clientRepository),
+  // );
+  // const bookingRepository = new BookingRepository(
+  //   testdb,
+  //   Getter.fromValue(clientRepository),
+  //   Getter.fromValue(debitorRepository),
+  // );
   await debitorRepository.deleteAll();
+  await clientRepository.deleteAll();
+  await bookingRepository.deleteAll();
 }
 
 export function givenClientData(data?: Partial<Client>) {
@@ -22,6 +38,25 @@ export function givenClientData(data?: Partial<Client>) {
   );
 }
 
+export function givenDebitorData(data?: Partial<Debitor>) {
+  return Object.assign(
+    {
+      name: 'Test-Debitor',
+    },
+    data,
+  );
+}
+
 export async function givenClient(data?: Partial<Client>) {
-  return await new ClientRepository(testdb).create(givenClientData(data));
+  const debitorRepository = new DebitorRepository(testdb);
+  const bookingRepository = new BookingRepository(testdb);
+  return await new ClientRepository(
+    testdb,
+    Getter.fromValue(debitorRepository),
+    Getter.fromValue(bookingRepository),
+  ).create(givenClientData(data));
+}
+
+export async function givenDebitor(data?: Partial<Debitor>) {
+  return await new DebitorRepository(testdb).create(givenDebitorData(data));
 }
