@@ -1,13 +1,21 @@
 import {Getter} from '@loopback/context';
+import {Client, Debitor} from '../../../src/models';
 import {
+  AccountSettingsRepository,
+  AccountTransactionLogRepository,
+  AccountTransactionRepository,
+  BookingRepository,
   ClientRepository,
   DebitorRepository,
-  BookingRepository,
 } from '../../repositories';
-import {Client, Debitor} from '../../../src/models';
 import {testdb} from '../fixtures/datasources/rentmontior.datasource';
 
 export async function givenEmptyDatabase() {
+  const accountTransactionRepository = new AccountTransactionRepository(testdb);
+  const accountSettingsRepository = new AccountSettingsRepository(testdb);
+  const accountTransactionLogRepository = new AccountTransactionLogRepository(
+    testdb,
+  );
   const debitorRepository = new DebitorRepository(testdb);
   const bookingRepository = new BookingRepository(testdb);
   const clientRepository = new ClientRepository(
@@ -24,6 +32,9 @@ export async function givenEmptyDatabase() {
   //   Getter.fromValue(clientRepository),
   //   Getter.fromValue(debitorRepository),
   // );
+  await accountTransactionRepository.deleteAll();
+  await accountTransactionLogRepository.deleteAll();
+  await accountSettingsRepository.deleteAll();
   await debitorRepository.deleteAll();
   await clientRepository.deleteAll();
   await bookingRepository.deleteAll();

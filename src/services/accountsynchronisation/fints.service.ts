@@ -1,24 +1,30 @@
+import {bind, BindingScope} from '@loopback/core';
 import {FinTSClient, TransactionRecord} from 'openfin-ts';
-import {FinTsAccountTransaction as FinTsAccountTransactionRecord} from './fints.account.transaction';
 
+@bind({
+  scope: BindingScope.SINGLETON,
+  tags: ['service'],
+})
 export class FintsAccountTransactionSynchronization {
-  client: FinTSClient;
+  constructor() {}
 
-  constructor() {
-    this.client = new FinTSClient(
-      process.env.FINTS_BLZ as string,
-      process.env.FINTS_URL as string,
-      process.env.FINTS_USER as string,
-      process.env.FINTS_PASSWORD as string,
-    );
-  }
-
-  async load(): Promise<FinTsAccountTransactionRecord[]> {
-    let accountTransactions: FinTsAccountTransactionRecord[] = [];
+  public async load(
+    fintsBlz: string,
+    fintsUrl: string,
+    fintsUser: string,
+    fintsPassword: string,
+  ): Promise<FinTsAccountTransactionDTO[]> {
+    let accountTransactions: FinTsAccountTransactionDTO[] = [];
     try {
-      await this.client.connect();
-      const transactions = await this.client.getTransactions(
-        this.client.konten[0].sepaData,
+      const fintsClient: FinTSClient = new FinTSClient(
+        fintsBlz,
+        fintsUrl,
+        fintsUser!,
+        fintsPassword!,
+      );
+      await fintsClient.connect();
+      const transactions = await fintsClient.getTransactions(
+        fintsClient.konten[0].sepaData,
         null,
         null,
       );
@@ -30,7 +36,7 @@ export class FintsAccountTransactionSynchronization {
           );
         });
       });
-      await this.client.close();
+      await fintsClient.close();
       return Promise.resolve(accountTransactions);
     } catch (err) {
       console.log(err);
@@ -40,12 +46,12 @@ export class FintsAccountTransactionSynchronization {
 
   private parseFinTsTransactionRecord(
     transactionRecord: TransactionRecord,
-  ): FinTsAccountTransactionRecord {
+  ): FinTsAccountTransactionDTO {
     try {
-      return new FinTsAccountTransactionRecord(
+      return new FinTsAccountTransactionDTO(
         JSON.stringify(transactionRecord),
         transactionRecord.date,
-        transactionRecord.description.nameKontrahent,
+        transactionRecord.description.nameKontrahent.replace('undefined', ''),
         transactionRecord.description.ibanKontrahent,
         transactionRecord.description.bicKontrahent,
         transactionRecord.description.text,
@@ -53,9 +59,7 @@ export class FintsAccountTransactionSynchronization {
       );
     } catch (err) {
       console.log(err);
-      return new FinTsAccountTransactionRecord(
-        JSON.stringify(transactionRecord),
-      );
+      return new FinTsAccountTransactionDTO(JSON.stringify(transactionRecord));
     }
   }
 
@@ -73,4 +77,16 @@ export class FintsAccountTransactionSynchronization {
     }
     return value;
   }
+}
+
+export class FinTsAccountTransactionDTO {
+  constructor(
+    public rawstring: string,
+    public date?: Date,
+    public name?: string,
+    public iban?: string,
+    public bic?: string,
+    public text?: string,
+    public value?: number,
+  ) {}
 }

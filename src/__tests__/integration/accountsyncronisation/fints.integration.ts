@@ -15,7 +15,12 @@ describe.skip('FinTs Integration', () => {
     this.timeout(8000);
 
     // when
-    const finTsAccountTransactions = await fints.load();
+    const finTsAccountTransactions = await fints.load(
+      process.env.FINTS_BLZ as string,
+      process.env.FINTS_URL as string,
+      process.env.FINTS_USER as string,
+      process.env.FINTS_PASSWORD as string,
+    );
 
     // then
     expect(finTsAccountTransactions.length).to.be.above(0);
