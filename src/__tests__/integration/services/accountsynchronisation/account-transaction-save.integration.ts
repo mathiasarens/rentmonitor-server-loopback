@@ -80,7 +80,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
       }),
     ];
 
-    accountTransactionRepository.create({
+    await accountTransactionRepository.create({
       clientId: 2,
       accountSettingsId: 1,
       date: new Date(2018, 0, 1),
