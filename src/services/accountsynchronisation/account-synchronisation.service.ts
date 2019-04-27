@@ -7,13 +7,13 @@ import {
 } from '../../models';
 import {AccountSettingsRepository} from '../../repositories';
 import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
-import {AccountTransactionSaveService} from './account-transaction-save.service';
+import {AccountSynchronisationSaveService} from './account-synchronisation-save.service';
 import {
   FinTsAccountTransactionDTO,
   FintsAccountTransactionSynchronizationService,
 } from './fints.service';
 
-export class AccountTransactionSynchronisationService {
+export class AccountSynchronisationService {
   constructor(
     @repository(AccountSettingsRepository)
     private accountSettingsRepository: AccountSettingsRepository,
@@ -24,7 +24,7 @@ export class AccountTransactionSynchronisationService {
     )
     private fintsAccountTransactionSynchronization: FintsAccountTransactionSynchronizationService,
     @inject('services.accountsynchronisation.AccountTransactionSaveService')
-    private accountTransactionSaveService: AccountTransactionSaveService,
+    private accountTransactionSaveService: AccountSynchronisationSaveService,
   ) {}
 
   public async retrieveAndSaveNewAccountTransactionsAndCreateNewBookings(

@@ -1,20 +1,20 @@
 import {expect} from '@loopback/testlab';
 import {AccountSettings, AccountTransaction} from '../../../../models';
 import {AccountTransactionRepository} from '../../../../repositories';
-import {AccountTransactionSaveService} from '../../../../services/accountsynchronisation/account-transaction-save.service';
+import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-save.service';
 import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
 import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
 describe('Account Transaction Save Service Integration Tests', () => {
   let accountTransactionRepository: AccountTransactionRepository;
-  let accountTransactionSaveService: AccountTransactionSaveService;
+  let accountTransactionSaveService: AccountSynchronisationSaveService;
 
   beforeEach('setup service and database', async () => {
     await givenEmptyDatabase();
 
     accountTransactionRepository = new AccountTransactionRepository(testdb);
 
-    accountTransactionSaveService = new AccountTransactionSaveService(
+    accountTransactionSaveService = new AccountSynchronisationSaveService(
       accountTransactionRepository,
     );
   });
