@@ -7,6 +7,7 @@ import {
 } from '../../models';
 import {AccountSettingsRepository} from '../../repositories';
 import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
+import {AccountSynchronisationBookingService} from './account-synchronisation-booking.service';
 import {AccountSynchronisationSaveService} from './account-synchronisation-save.service';
 import {
   FinTsAccountTransactionDTO,
@@ -23,8 +24,12 @@ export class AccountSynchronisationService {
       'services.accountsynchronisation.FintsAccountTransactionSynchronization',
     )
     private fintsAccountTransactionSynchronization: FintsAccountTransactionSynchronizationService,
-    @inject('services.accountsynchronisation.AccountTransactionSaveService')
-    private accountTransactionSaveService: AccountSynchronisationSaveService,
+    @inject('services.accountsynchronisation.AccountSynchronisationSaveService')
+    private accountSynchronisationSaveService: AccountSynchronisationSaveService,
+    @inject(
+      'services.accountsynchronisation.AccountSynchronisationBookingService',
+    )
+    private accountSynchronisationBookingService: AccountSynchronisationBookingService,
   ) {}
 
   public async retrieveAndSaveNewAccountTransactionsAndCreateNewBookings(
@@ -64,9 +69,13 @@ export class AccountSynchronisationService {
     const accountTransactions: AccountTransaction[] = rawAccountTransactions.map(
       at => this.convertToAccountTransaction(accountSettings, at),
     );
-    const newAccountTransactions = await this.accountTransactionSaveService.saveNewAccountTransactions(
+    const newAccountTransactions = await this.accountSynchronisationSaveService.saveNewAccountTransactions(
       accountSettings,
       accountTransactions,
+    );
+
+    await this.accountSynchronisationBookingService.createAndSaveBookings(
+      newAccountTransactions,
     );
   }
 

@@ -13,6 +13,7 @@ import {
   AccountSettingsRepository,
   AccountTransactionLogRepository,
 } from '../../../../repositories';
+import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
 import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-save.service';
 import {AccountSynchronisationService} from '../../../../services/accountsynchronisation/account-synchronisation.service';
 import {
@@ -31,8 +32,11 @@ describe('AccountSynchronisationService Unit Tests', () => {
   let accountTransactionLogRepositoryStub: StubbedInstanceWithSinonAccessor<
     AccountTransactionLogRepository
   >;
-  let accountTransactionSaveServiceStub: SinonStubbedInstance<
+  let accountSynchronisationSaveServiceStub: SinonStubbedInstance<
     AccountSynchronisationSaveService
+  >;
+  let accountSynchronisationBookingServiceStub: SinonStubbedInstance<
+    AccountSynchronisationBookingService
   >;
 
   beforeEach('setup service and database', async () => {
@@ -45,14 +49,19 @@ describe('AccountSynchronisationService Unit Tests', () => {
     fintsAccountSynchronisationStub = sinon.createStubInstance(
       FintsAccountTransactionSynchronizationService,
     );
-    accountTransactionSaveServiceStub = sinon.createStubInstance(
+    accountSynchronisationSaveServiceStub = sinon.createStubInstance(
       AccountSynchronisationSaveService,
     );
+    accountSynchronisationBookingServiceStub = sinon.createStubInstance(
+      AccountSynchronisationBookingService,
+    );
+
     accountTransactionService = new AccountSynchronisationService(
       accountSettingsRepositoryStub,
       accountTransactionLogRepositoryStub,
-      fintsAccountSynchronisationStub as any,
-      accountTransactionSaveServiceStub as any,
+      (fintsAccountSynchronisationStub as unknown) as FintsAccountTransactionSynchronizationService,
+      (accountSynchronisationSaveServiceStub as unknown) as AccountSynchronisationSaveService,
+      (accountSynchronisationBookingServiceStub as unknown) as AccountSynchronisationBookingService,
     );
   });
 
@@ -83,6 +92,23 @@ describe('AccountSynchronisationService Unit Tests', () => {
       ),
     ]);
 
+    const accountTransactions = [
+      new AccountTransaction({
+        clientId: clientId,
+        accountSettingsId: accountSettingsId,
+        amount: 1100,
+        bic: 'BIC1',
+        date: new Date(2019, 3, 27),
+        iban: 'IBAN1',
+        name: 'Tenant1',
+        text: 'Text1',
+      }),
+    ];
+
+    accountSynchronisationSaveServiceStub.saveNewAccountTransactions.resolves(
+      accountTransactions,
+    );
+
     const now = new Date(2019, 3, 11);
     // when
     await accountTransactionService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookings(
@@ -112,20 +138,14 @@ describe('AccountSynchronisationService Unit Tests', () => {
     );
 
     sinon.assert.calledWithExactly(
-      accountTransactionSaveServiceStub.saveNewAccountTransactions,
+      accountSynchronisationSaveServiceStub.saveNewAccountTransactions,
       accountSettings1,
-      [
-        new AccountTransaction({
-          clientId: clientId,
-          accountSettingsId: accountSettingsId,
-          amount: 1100,
-          bic: 'BIC1',
-          date: new Date(2019, 3, 27),
-          iban: 'IBAN1',
-          name: 'Tenant1',
-          text: 'Text1',
-        }),
-      ],
+      accountTransactions,
+    );
+
+    sinon.assert.calledWithExactly(
+      accountSynchronisationBookingServiceStub.createAndSaveBookings,
+      accountTransactions,
     );
   });
 });
