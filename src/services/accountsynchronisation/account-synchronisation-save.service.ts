@@ -2,7 +2,7 @@ import {repository} from '@loopback/repository';
 import {AccountSettings, AccountTransaction} from '../../models';
 import {AccountTransactionRepository} from '../../repositories/account-transaction.repository';
 
-export class AccountTransactionSaveService {
+export class AccountSynchronisationSaveService {
   constructor(
     @repository(AccountTransactionRepository)
     private accountTransactionRepository: AccountTransactionRepository,
@@ -11,7 +11,7 @@ export class AccountTransactionSaveService {
   public async saveNewAccountTransactions(
     accountSettings: AccountSettings,
     accountTransactions: AccountTransaction[],
-  ) {
+  ): Promise<AccountTransaction[]> {
     const newAccountTransactionsInAscendingOrder = accountTransactions.sort(
       this.compareByDateIbanBicNameTextValue,
     );
@@ -28,6 +28,8 @@ export class AccountTransactionSaveService {
     await this.accountTransactionRepository.createAll(
       mergedAccountTransactions,
     );
+
+    return mergedAccountTransactions;
   }
 
   private merge(

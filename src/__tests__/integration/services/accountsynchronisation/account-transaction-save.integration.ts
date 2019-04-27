@@ -38,7 +38,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
     ];
 
     // when
-    await accountTransactionSaveService.saveNewAccountTransactions(
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
       accountSettings,
       accountTransactions,
     );
@@ -51,6 +51,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
       },
     );
     expect(savedAccountTransactions).length(1);
+    expect(newTransactionsList).length(1);
   });
 
   it('should save new transactions which are newer than an existing transaction', async function() {
@@ -92,7 +93,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
     });
 
     // when
-    await accountTransactionSaveService.saveNewAccountTransactions(
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
       accountSettings,
       newAccountTransactions,
     );
@@ -105,6 +106,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
       },
     );
     expect(savedAccountTransactions).length(3);
+    expect(newTransactionsList).length(2);
   });
 
   it('should save new transactions which are almost equal to an existing transaction except for one field', async function() {
@@ -185,7 +187,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
     });
 
     // when
-    await accountTransactionSaveService.saveNewAccountTransactions(
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
       accountSettings,
       newAccountTransactions,
     );
@@ -198,9 +200,10 @@ describe('Account Transaction Save Service Integration Tests', () => {
       },
     );
     expect(savedAccountTransactions).length(7);
+    expect(newTransactionsList).length(6);
   });
 
-  it('should not save new transactions if duplicate but second duplicate if new', async function() {
+  it('should save 2 new transactions but not override an duplicate one', async function() {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const newAccountTransactions = [
@@ -248,7 +251,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
     });
 
     // when
-    await accountTransactionSaveService.saveNewAccountTransactions(
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
       accountSettings,
       newAccountTransactions,
     );
@@ -261,6 +264,82 @@ describe('Account Transaction Save Service Integration Tests', () => {
       },
     );
     expect(savedAccountTransactions).length(3);
+    expect(newTransactionsList).length(2);
+  });
+
+  it('should save a new transactions but not override two duplicates', async function() {
+    // given
+    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const newAccountTransactions = [
+      new AccountTransaction({
+        clientId: 2,
+        accountSettingsId: 1,
+        date: new Date(2019, 3, 13),
+        iban: 'IBAN',
+        bic: 'BIC',
+        name: 'NAME',
+        text: 'text',
+        amount: 1000,
+      }),
+      new AccountTransaction({
+        clientId: 2,
+        accountSettingsId: 1,
+        date: new Date(2019, 3, 13),
+        iban: 'IBAN',
+        bic: 'BIC',
+        name: 'NAME',
+        text: 'text',
+        amount: 1000,
+      }),
+      new AccountTransaction({
+        clientId: 2,
+        accountSettingsId: 1,
+        date: new Date(2019, 3, 13),
+        iban: 'IBAN',
+        bic: 'BIC',
+        name: 'NAME',
+        text: 'text',
+        amount: 1000,
+      }),
+    ];
+
+    await accountTransactionRepository.create({
+      clientId: 2,
+      accountSettingsId: 1,
+      date: new Date(2019, 3, 13),
+      iban: 'IBAN',
+      bic: 'BIC',
+      name: 'NAME',
+      text: 'text',
+      amount: 1000,
+    });
+
+    await accountTransactionRepository.create({
+      clientId: 2,
+      accountSettingsId: 1,
+      date: new Date(2019, 3, 13),
+      iban: 'IBAN',
+      bic: 'BIC',
+      name: 'NAME',
+      text: 'text',
+      amount: 1000,
+    });
+
+    // when
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
+      accountSettings,
+      newAccountTransactions,
+    );
+
+    // then
+    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
+      {
+        where: {clientId: 2, accountSettingsId: 1},
+        order: ['date ASC'],
+      },
+    );
+    expect(savedAccountTransactions).length(3);
+    expect(newTransactionsList).length(1);
   });
 
   it('should save new duplicate transactions in empty database', async function() {
@@ -300,7 +379,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
     ];
 
     // when
-    await accountTransactionSaveService.saveNewAccountTransactions(
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
       accountSettings,
       newAccountTransactions,
     );
@@ -313,6 +392,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
       },
     );
     expect(savedAccountTransactions).length(3);
+    expect(newTransactionsList).length(3);
   });
 
   it('should save new transactions if new transactions are inbetween old transactions', async function() {
@@ -374,7 +454,7 @@ describe('Account Transaction Save Service Integration Tests', () => {
     });
 
     // when
-    await accountTransactionSaveService.saveNewAccountTransactions(
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
       accountSettings,
       newAccountTransactions,
     );
@@ -387,5 +467,6 @@ describe('Account Transaction Save Service Integration Tests', () => {
       },
     );
     expect(savedAccountTransactions).length(5);
+    expect(newTransactionsList).length(3);
   });
 });

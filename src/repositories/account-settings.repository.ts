@@ -1,7 +1,7 @@
-import {DefaultCrudRepository} from '@loopback/repository';
-import {AccountSettings} from '../models';
-import {RentmonitorDataSource} from '../datasources';
 import {inject} from '@loopback/core';
+import {DefaultCrudRepository} from '@loopback/repository';
+import {RentmonitorDataSource} from '../datasources';
+import {AccountSettings} from '../models';
 
 export class AccountSettingsRepository extends DefaultCrudRepository<
   AccountSettings,

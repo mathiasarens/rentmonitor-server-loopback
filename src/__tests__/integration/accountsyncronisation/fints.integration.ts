@@ -1,11 +1,11 @@
 import {expect} from '@loopback/testlab';
-import {FintsAccountTransactionSynchronization} from '../../../services/accountsynchronisation/fints.service';
+import {FintsAccountTransactionSynchronizationService} from '../../../services/accountsynchronisation/fints.service';
 
 describe.skip('FinTs Integration', () => {
-  let fints: FintsAccountTransactionSynchronization;
+  let fints: FintsAccountTransactionSynchronizationService;
 
   before('setupApplication', async () => {
-    fints = new FintsAccountTransactionSynchronization();
+    fints = new FintsAccountTransactionSynchronizationService();
   });
 
   after(async () => {});

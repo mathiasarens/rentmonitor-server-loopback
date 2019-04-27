@@ -5,7 +5,7 @@ import {FinTSClient, TransactionRecord} from 'openfin-ts';
   scope: BindingScope.SINGLETON,
   tags: ['service'],
 })
-export class FintsAccountTransactionSynchronization {
+export class FintsAccountTransactionSynchronizationService {
   constructor() {}
 
   public async load(

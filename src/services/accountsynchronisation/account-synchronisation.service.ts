@@ -5,26 +5,48 @@ import {
   AccountTransaction,
   AccountTransactionLog,
 } from '../../models';
+import {AccountSettingsRepository} from '../../repositories';
 import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
 import {AccountTransactionSaveService} from './account-transaction-save.service';
 import {
   FinTsAccountTransactionDTO,
-  FintsAccountTransactionSynchronization,
+  FintsAccountTransactionSynchronizationService,
 } from './fints.service';
 
-export class AccountTransactionService {
+export class AccountTransactionSynchronisationService {
   constructor(
+    @repository(AccountSettingsRepository)
+    private accountSettingsRepository: AccountSettingsRepository,
     @repository(AccountTransactionLogRepository)
     private accountTransactionLogRepository: AccountTransactionLogRepository,
     @inject(
       'services.accountsynchronisation.FintsAccountTransactionSynchronization',
     )
-    private fintsAccountTransactionSynchronization: FintsAccountTransactionSynchronization,
+    private fintsAccountTransactionSynchronization: FintsAccountTransactionSynchronizationService,
     @inject('services.accountsynchronisation.AccountTransactionSaveService')
     private accountTransactionSaveService: AccountTransactionSaveService,
   ) {}
 
-  public async retrieveAndSaveAccountTransactions(
+  public async retrieveAndSaveNewAccountTransactionsAndCreateNewBookings(
+    now: Date,
+    clientId: number,
+  ) {
+    const accountSettingsList: AccountSettings[] = await this.accountSettingsRepository.find(
+      {where: {clientId: clientId}},
+    );
+    for (const accountSettings of accountSettingsList) {
+      try {
+        await this.retrieveAndSaveNewAccountTransactionsAndCreateBookings(
+          now,
+          accountSettings,
+        );
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  private async retrieveAndSaveNewAccountTransactionsAndCreateBookings(
     now: Date,
     accountSettings: AccountSettings,
   ) {
@@ -42,7 +64,7 @@ export class AccountTransactionService {
     const accountTransactions: AccountTransaction[] = rawAccountTransactions.map(
       at => this.convertToAccountTransaction(accountSettings, at),
     );
-    await this.accountTransactionSaveService.saveNewAccountTransactions(
+    const newAccountTransactions = await this.accountTransactionSaveService.saveNewAccountTransactions(
       accountSettings,
       accountTransactions,
     );
