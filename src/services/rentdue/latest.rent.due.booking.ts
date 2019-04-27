@@ -1,5 +1,5 @@
-import {Debitor} from '../../models';
+import {Contract} from '../../models';
 
 export class LatestRentDueBooking {
-  constructor(public debitor: Debitor, public bookingDate?: Date) {}
+  constructor(public contract: Contract, public bookingDate?: Date) {}
 }

@@ -1,5 +1,4 @@
-import {Entity, hasMany, model, property} from '@loopback/repository';
-import {Debitor, Booking} from '.';
+import {Entity, model, property} from '@loopback/repository';
 
 @model()
 export class Client extends Entity {
@@ -19,11 +18,11 @@ export class Client extends Entity {
   })
   name: string;
 
-  @hasMany(() => Debitor)
-  debitors?: Debitor[];
+  // @hasMany(() => Tenant)
+  // tenants?: Tenant[];
 
-  @hasMany(() => Booking)
-  bookings?: Booking[];
+  // @hasMany(() => Booking)
+  // bookings?: Booking[];
 
   constructor(data?: Partial<Client>) {
     super(data);

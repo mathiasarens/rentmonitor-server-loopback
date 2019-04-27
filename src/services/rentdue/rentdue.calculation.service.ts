@@ -1,16 +1,16 @@
-import {Booking, BookingType, Debitor} from '../../models';
+import {Booking, BookingType, Contract} from '../../models';
 import {LatestRentDueBooking} from './latest.rent.due.booking';
 
 export class RentDueCalculationService {
   public async calculateRentDueBookings(
     today: Date,
-    latestRentDueBookingsPerDebitor: LatestRentDueBooking[],
+    latestRentDueBookingsPerTenant: LatestRentDueBooking[],
   ): Promise<Booking[]> {
     let result: Booking[] = new Array();
-    for (let latestRentDueBooking of latestRentDueBookingsPerDebitor) {
-      const booking: Booking[] = this.calculateRentDueBookingsPerDebitor(
+    for (let latestRentDueBooking of latestRentDueBookingsPerTenant) {
+      const booking: Booking[] = this.calculateRentDueBookingsPerContract(
         today,
-        latestRentDueBooking.debitor,
+        latestRentDueBooking.contract,
         latestRentDueBooking.bookingDate,
       );
       result = result.concat([], booking);
@@ -18,48 +18,49 @@ export class RentDueCalculationService {
     return Promise.resolve(result);
   }
 
-  private calculateRentDueBookingsPerDebitor(
+  private calculateRentDueBookingsPerContract(
     today: Date,
-    debitor: Debitor,
+    contract: Contract,
     latestRentDueBookingDate?: Date,
   ): Booking[] {
     const result: Booking[] = [];
     if (!latestRentDueBookingDate) {
-      latestRentDueBookingDate = debitor.start as Date;
+      latestRentDueBookingDate = contract.start as Date;
     }
     let nextPossibleRentDueDate = this.nextPossibleRentDueDate(
       latestRentDueBookingDate,
-      debitor,
+      contract,
     );
-    while (nextPossibleRentDueDate < this.min(debitor.end, today)) {
-      result.push(this.createBooking(nextPossibleRentDueDate, debitor));
+    while (nextPossibleRentDueDate < this.min(contract.end, today)) {
+      result.push(this.createBooking(nextPossibleRentDueDate, contract));
       nextPossibleRentDueDate = this.nextPossibleRentDueDate(
         nextPossibleRentDueDate,
-        debitor,
+        contract,
       );
     }
     return result;
   }
 
-  private createBooking(nextRentDueDate: Date, debitor: Debitor): Booking {
+  private createBooking(nextRentDueDate: Date, contract: Contract): Booking {
     return new Booking({
-      clientId: debitor.clientId,
-      debitorId: debitor.id,
+      clientId: contract.clientId,
+      tenantId: contract.tenantId,
+      contractId: contract.id,
       date: nextRentDueDate,
       comment: 'Rent',
-      amount: debitor.amount! * -1,
+      amount: contract.amount! * -1,
       type: BookingType.RENT_DUE,
     });
   }
 
   private nextPossibleRentDueDate(
     latestRentDueDate: Date,
-    debitor: Debitor,
+    contract: Contract,
   ): Date {
     return new Date(
       latestRentDueDate.getFullYear(),
-      latestRentDueDate.getMonth() + debitor.rentDueEveryMonth!,
-      debitor.rentDueDayOfMonth,
+      latestRentDueDate.getMonth() + contract.rentDueEveryMonth!,
+      contract.rentDueDayOfMonth,
     );
   }
 

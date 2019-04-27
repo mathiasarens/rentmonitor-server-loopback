@@ -1,14 +1,8 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {Contract} from '.';
 import {Client} from './client.model';
-import {Debitor} from './debitor.model';
-@model({
-  indexes: {
-    clientId_name_index: {
-      keys: {clientId: 1, name: 1},
-      options: {unique: true},
-    },
-  },
-})
+import {Tenant} from './tenant.model';
+@model()
 export class Booking extends Entity {
   @property({
     type: 'number',
@@ -20,8 +14,11 @@ export class Booking extends Entity {
   @belongsTo(() => Client)
   clientId: number;
 
-  @belongsTo(() => Debitor)
-  debitorId: number;
+  @belongsTo(() => Tenant)
+  tenantId: number;
+
+  @belongsTo(() => Contract)
+  contractId: number;
 
   @property({
     type: 'date',

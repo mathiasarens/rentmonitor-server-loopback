@@ -8,7 +8,7 @@ import {Client} from './client.model';
     },
   },
 })
-export class Debitor extends Entity {
+export class Tenant extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -35,32 +35,7 @@ export class Debitor extends Entity {
   })
   phone: string;
 
-  @property({
-    type: 'date',
-  })
-  start?: Date;
-
-  @property({
-    type: 'date',
-  })
-  end?: Date;
-
-  @property({
-    type: 'number',
-  })
-  rentDueEveryMonth?: number;
-
-  @property({
-    type: 'number',
-  })
-  rentDueDayOfMonth?: number;
-
-  @property({
-    type: 'number',
-  })
-  amount?: number;
-
-  constructor(data?: Partial<Debitor>) {
+  constructor(data?: Partial<Tenant>) {
     super(data);
   }
 }

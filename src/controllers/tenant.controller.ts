@@ -16,28 +16,28 @@ import {
   put,
   requestBody,
 } from '@loopback/rest';
-import {Debitor} from '../models';
-import {DebitorRepository} from '../repositories';
+import {Tenant} from '../models';
+import {TenantRepository} from '../repositories';
 
-export class DebitorControllerController {
+export class TenantControllerController {
   constructor(
-    @repository(DebitorRepository)
-    public debitorRepository: DebitorRepository,
+    @repository(TenantRepository)
+    public debitorRepository: TenantRepository,
   ) {}
 
-  @post('/debitors', {
+  @post('/tenants', {
     responses: {
       '200': {
         description: 'Debitor model instance',
-        content: {'application/json': {schema: {'x-ts-type': Debitor}}},
+        content: {'application/json': {schema: {'x-ts-type': Tenant}}},
       },
     },
   })
-  async create(@requestBody() debitor: Debitor): Promise<Debitor> {
+  async create(@requestBody() debitor: Tenant): Promise<Tenant> {
     return await this.debitorRepository.create(debitor);
   }
 
-  @get('/debitors/count', {
+  @get('/tenants/count', {
     responses: {
       '200': {
         description: 'Debitor model count',
@@ -46,30 +46,30 @@ export class DebitorControllerController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Debitor)) where?: Where,
+    @param.query.object('where', getWhereSchemaFor(Tenant)) where?: Where,
   ): Promise<Count> {
     return await this.debitorRepository.count(where);
   }
 
-  @get('/debitors', {
+  @get('/tenants', {
     responses: {
       '200': {
         description: 'Array of Debitor model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Debitor}},
+            schema: {type: 'array', items: {'x-ts-type': Tenant}},
           },
         },
       },
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Debitor)) filter?: Filter,
-  ): Promise<Debitor[]> {
+    @param.query.object('filter', getFilterSchemaFor(Tenant)) filter?: Filter,
+  ): Promise<Tenant[]> {
     return await this.debitorRepository.find(filter);
   }
 
-  @patch('/debitors', {
+  @patch('/tenants', {
     responses: {
       '200': {
         description: 'Debitor PATCH success count',
@@ -78,25 +78,25 @@ export class DebitorControllerController {
     },
   })
   async updateAll(
-    @requestBody() debitor: Debitor,
-    @param.query.object('where', getWhereSchemaFor(Debitor)) where?: Where,
+    @requestBody() debitor: Tenant,
+    @param.query.object('where', getWhereSchemaFor(Tenant)) where?: Where,
   ): Promise<Count> {
     return await this.debitorRepository.updateAll(debitor, where);
   }
 
-  @get('/debitors/{id}', {
+  @get('/tenants/{id}', {
     responses: {
       '200': {
         description: 'Debitor model instance',
-        content: {'application/json': {schema: {'x-ts-type': Debitor}}},
+        content: {'application/json': {schema: {'x-ts-type': Tenant}}},
       },
     },
   })
-  async findById(@param.path.number('id') id: number): Promise<Debitor> {
+  async findById(@param.path.number('id') id: number): Promise<Tenant> {
     return await this.debitorRepository.findById(id);
   }
 
-  @patch('/debitors/{id}', {
+  @patch('/tenants/{id}', {
     responses: {
       '204': {
         description: 'Debitor PATCH success',
@@ -105,12 +105,12 @@ export class DebitorControllerController {
   })
   async updateById(
     @param.path.number('id') id: number,
-    @requestBody() debitor: Debitor,
+    @requestBody() debitor: Tenant,
   ): Promise<void> {
     await this.debitorRepository.updateById(id, debitor);
   }
 
-  @put('/debitors/{id}', {
+  @put('/tenants/{id}', {
     responses: {
       '204': {
         description: 'Debitor PUT success',
@@ -119,12 +119,12 @@ export class DebitorControllerController {
   })
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() debitor: Debitor,
+    @requestBody() debitor: Tenant,
   ): Promise<void> {
     await this.debitorRepository.replaceById(id, debitor);
   }
 
-  @del('/debitors/{id}', {
+  @del('/tenants/{id}', {
     responses: {
       '204': {
         description: 'Debitor DELETE success',

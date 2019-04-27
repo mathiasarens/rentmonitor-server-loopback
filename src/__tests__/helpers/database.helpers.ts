@@ -1,12 +1,13 @@
 import {Getter} from '@loopback/context';
-import {Client, Debitor} from '../../../src/models';
+import {Client, Tenant} from '../../../src/models';
 import {
   AccountSettingsRepository,
   AccountTransactionLogRepository,
   AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
-  DebitorRepository,
+  ContractRepository,
+  TenantRepository,
 } from '../../repositories';
 import {testdb} from '../fixtures/datasources/rentmontior.datasource';
 
@@ -16,28 +17,30 @@ export async function givenEmptyDatabase() {
   const accountTransactionLogRepository = new AccountTransactionLogRepository(
     testdb,
   );
-  const debitorRepository = new DebitorRepository(testdb);
-  const bookingRepository = new BookingRepository(testdb);
-  const clientRepository = new ClientRepository(
+  const clientRepository = new ClientRepository(testdb);
+  const clientRepositoryGetter = Getter.fromValue(clientRepository);
+  const tenantRepository = new TenantRepository(testdb, clientRepositoryGetter);
+  const tenantRepositoryGetter = Getter.fromValue(tenantRepository);
+  const contractRepository = new ContractRepository(
     testdb,
-    Getter.fromValue(debitorRepository),
-    Getter.fromValue(bookingRepository),
+    clientRepositoryGetter,
+    tenantRepositoryGetter,
   );
-  // const debitorRepository = new DebitorRepository(
-  //   testdb,
-  //   Getter.fromValue(clientRepository),
-  // );
-  // const bookingRepository = new BookingRepository(
-  //   testdb,
-  //   Getter.fromValue(clientRepository),
-  //   Getter.fromValue(debitorRepository),
-  // );
-  await accountTransactionRepository.deleteAll();
-  await accountTransactionLogRepository.deleteAll();
-  await accountSettingsRepository.deleteAll();
-  await debitorRepository.deleteAll();
-  await clientRepository.deleteAll();
+  const bookingRepository = new BookingRepository(
+    testdb,
+    clientRepositoryGetter,
+    tenantRepositoryGetter,
+    Getter.fromValue(contractRepository),
+  );
   await bookingRepository.deleteAll();
+  await contractRepository.deleteAll();
+  await tenantRepository.deleteAll();
+
+  await accountTransactionLogRepository.deleteAll();
+  await accountTransactionRepository.deleteAll();
+  await accountSettingsRepository.deleteAll();
+
+  await clientRepository.deleteAll();
 }
 
 export function givenClientData(data?: Partial<Client>) {
@@ -49,7 +52,7 @@ export function givenClientData(data?: Partial<Client>) {
   );
 }
 
-export function givenDebitorData(data?: Partial<Debitor>) {
+export function givenDebitorData(data?: Partial<Tenant>) {
   return Object.assign(
     {
       name: 'Test-Debitor',
@@ -59,15 +62,12 @@ export function givenDebitorData(data?: Partial<Debitor>) {
 }
 
 export async function givenClient(data?: Partial<Client>) {
-  const debitorRepository = new DebitorRepository(testdb);
-  const bookingRepository = new BookingRepository(testdb);
-  return await new ClientRepository(
-    testdb,
-    Getter.fromValue(debitorRepository),
-    Getter.fromValue(bookingRepository),
-  ).create(givenClientData(data));
+  return await new ClientRepository(testdb).create(givenClientData(data));
 }
 
-export async function givenDebitor(data?: Partial<Debitor>) {
-  return await new DebitorRepository(testdb).create(givenDebitorData(data));
+export async function givenDebitor(data?: Partial<Tenant>) {
+  return await new TenantRepository(
+    testdb,
+    Getter.fromValue(new ClientRepository(testdb)),
+  ).create(givenDebitorData(data));
 }

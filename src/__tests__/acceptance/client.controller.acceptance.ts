@@ -1,6 +1,6 @@
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
-import {setupApplication, givenEmptyDatabase} from './test-helper';
+import {givenEmptyDatabase, setupApplication} from './test-helper';
 
 describe('ClientController', () => {
   let app: RentmonitorServerApplication;

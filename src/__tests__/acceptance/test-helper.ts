@@ -1,13 +1,13 @@
-import {RentmonitorServerApplication} from '../..';
 import {
+  Client,
   createRestAppClient,
   givenHttpServerConfig,
-  Client,
 } from '@loopback/testlab';
+import {RentmonitorServerApplication} from '../..';
 import {
-  DebitorRepository,
   BookingRepository,
   ClientRepository,
+  TenantRepository,
 } from '../../repositories';
 
 export async function setupApplication(): Promise<AppWithClient> {
@@ -32,7 +32,7 @@ export interface AppWithClient {
 }
 
 export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
-  const debitorRepository = await app.getRepository(DebitorRepository);
+  const debitorRepository = await app.getRepository(TenantRepository);
   const bookingRepository = await app.getRepository(BookingRepository);
   const clientRepository = await app.getRepository(ClientRepository);
 

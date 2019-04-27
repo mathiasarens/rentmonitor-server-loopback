@@ -1,27 +1,49 @@
 import {repository} from '@loopback/repository';
 import {
+  AccountSettingsRepository,
+  AccountTransactionLogRepository,
+  AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
-  DebitorRepository,
+  ContractRepository,
+  TenantRepository,
 } from '../../repositories';
 
 export class DeletionService {
   constructor(
     @repository(ClientRepository) private clientRepository: ClientRepository,
-    @repository(DebitorRepository) private debitorRepository: DebitorRepository,
+    @repository(TenantRepository) private tenantRepository: TenantRepository,
+    @repository(ContractRepository)
+    private contractRepository: ContractRepository,
     @repository(BookingRepository) private bookingRepository: BookingRepository,
+    @repository(AccountSettingsRepository)
+    private accountSettingsRepository: AccountSettingsRepository,
+    @repository(AccountTransactionRepository)
+    private accountTransactionRepository: AccountTransactionRepository,
+    @repository(AccountTransactionLogRepository)
+    private accountTransactionLogRepository: AccountTransactionLogRepository,
   ) {}
 
   async deleteAll() {
     await this.bookingRepository.deleteAll();
-    await this.debitorRepository.deleteAll();
+    await this.contractRepository.deleteAll();
+    await this.tenantRepository.deleteAll();
+
+    await this.accountTransactionLogRepository.deleteAll();
+    await this.accountTransactionRepository.deleteAll();
+    await this.accountSettingsRepository.deleteAll();
     await this.clientRepository.deleteAll();
   }
 
   async deleteClient(clientId: number) {
     const where = {clientId: clientId};
     await this.bookingRepository.deleteAll(where);
-    await this.debitorRepository.deleteAll(where);
+    await this.contractRepository.deleteAll(where);
+    await this.tenantRepository.deleteAll(where);
+
+    await this.accountTransactionLogRepository.deleteAll(where);
+    await this.accountTransactionRepository.deleteAll(where);
+    await this.accountSettingsRepository.deleteAll(where);
     await this.clientRepository.deleteById(clientId);
   }
 }
