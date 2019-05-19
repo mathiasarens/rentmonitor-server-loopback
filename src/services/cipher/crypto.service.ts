@@ -1,0 +1,45 @@
+import * as crypto from 'crypto';
+
+export class Crypto {
+  private key: Buffer;
+  private iv: Buffer;
+
+  constructor(
+    private algorithm: string,
+    private password: string,
+    private salt: string,
+  ) {
+    // Key length is dependent on the algorithm. In this case for aes192, it is
+    // 24 bytes (192 bits).
+    this.key = crypto.scryptSync(password, salt, 24);
+    // Use `crypto.randomBytes()` to generate a random iv instead of the static iv
+    // shown here.
+    this.iv = Buffer.alloc(16, 0); // Initialization vector.
+  }
+
+  public async encrypt(str?: string): Promise<string> {
+    if (str) {
+      const cipher = crypto.createCipheriv(this.algorithm, this.key, this.iv);
+      let encrypted = cipher.update(str, 'utf8', 'hex');
+      encrypted += cipher.final('hex');
+      return Promise.resolve(encrypted);
+    } else {
+      return Promise.reject();
+    }
+  }
+
+  public async decrypt(str?: string): Promise<string> {
+    if (str) {
+      const decipher = crypto.createDecipheriv(
+        this.algorithm,
+        this.key,
+        this.iv,
+      );
+      let decrypted = decipher.update(str, 'hex', 'utf8');
+      decrypted += decipher.final('utf8');
+      return Promise.resolve(decrypted);
+    } else {
+      return Promise.reject();
+    }
+  }
+}
