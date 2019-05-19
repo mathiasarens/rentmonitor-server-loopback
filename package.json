@@ -57,7 +57,7 @@
     "@loopback/rest-explorer": "^1.1.22",
     "@loopback/service-proxy": "^1.1.10",
     "loopback-connector-postgresql": "^3.6.1",
-    "openfin-ts": "^2.0.4"
+    "openfin-ts": "^1.0.1"
   },
   "devDependencies": {
     "@loopback/build": "^1.5.4",
