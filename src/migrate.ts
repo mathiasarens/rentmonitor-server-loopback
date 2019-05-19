@@ -5,6 +5,7 @@ export async function migrate(args: string[]) {
   console.log('Migrating schemas (%s existing schema)', existingSchema);
 
   const app = new RentmonitorServerApplication();
+  app.bind('datasources.encryption.password').to('dummy_password');
   await app.boot();
   await app.migrateSchema({existingSchema});
 
