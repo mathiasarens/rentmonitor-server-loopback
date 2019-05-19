@@ -18,7 +18,7 @@ export class Contract extends Entity {
   @property({
     type: 'date',
   })
-  start?: Date;
+  start: Date;
 
   @property({
     type: 'date',
@@ -28,17 +28,26 @@ export class Contract extends Entity {
   @property({
     type: 'number',
   })
-  rentDueEveryMonth?: number;
+  rentDueEveryMonth: number;
 
   @property({
     type: 'number',
   })
-  rentDueDayOfMonth?: number;
+  rentDueDayOfMonth: number;
 
   @property({
     type: 'number',
   })
-  amount?: number;
+  amount: number;
+
+  @property({
+    type: 'string',
+  })
+  accountSynchronisationName: string;
+
+  private isActive(now: Date) {
+    return now > this.start && now < this.end!;
+  }
 
   constructor(data?: Partial<Contract>) {
     super(data);

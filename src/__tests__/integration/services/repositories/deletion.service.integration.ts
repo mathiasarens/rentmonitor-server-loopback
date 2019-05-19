@@ -51,12 +51,15 @@ describe('Deletion Service Integration', () => {
 
     clientRepository = new ClientRepository(testdb);
     const clientRepositoryGetter = Getter.fromValue(clientRepository);
-    accountSettingsRepository = new AccountSettingsRepository(testdb);
+    tenantRepository = new TenantRepository(testdb, clientRepositoryGetter);
+    accountSettingsRepository = new AccountSettingsRepository(
+      testdb,
+      clientRepositoryGetter,
+    );
     accountTransactionLogRepository = new AccountTransactionLogRepository(
       testdb,
+      clientRepositoryGetter,
     );
-    accountTransactionRepository = new AccountTransactionRepository(testdb);
-    tenantRepository = new TenantRepository(testdb, clientRepositoryGetter);
     const tenantRepositoryGetter = Getter.fromValue(tenantRepository);
     contractRepository = new ContractRepository(
       testdb,
@@ -68,6 +71,11 @@ describe('Deletion Service Integration', () => {
       clientRepositoryGetter,
       tenantRepositoryGetter,
       Getter.fromValue(contractRepository),
+    );
+    accountTransactionRepository = new AccountTransactionRepository(
+      testdb,
+      clientRepositoryGetter,
+      Getter.fromValue(bookingRepository),
     );
 
     deletionService = new DeletionService(

@@ -8,7 +8,7 @@ import {
 import {AccountSettingsRepository} from '../../repositories';
 import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
 import {AccountSynchronisationBookingService} from './account-synchronisation-booking.service';
-import {AccountSynchronisationSaveService} from './account-synchronisation-save.service';
+import {AccountSynchronisationSaveService} from './account-synchronisation-transaction.service';
 import {
   FinTsAccountTransactionDTO,
   FintsAccountTransactionSynchronizationService,
@@ -39,22 +39,31 @@ export class AccountSynchronisationService {
     const accountSettingsList: AccountSettings[] = await this.accountSettingsRepository.find(
       {where: {clientId: clientId}},
     );
+    let newAccountTransactionsFromAccounts: AccountTransaction[] = [];
     for (const accountSettings of accountSettingsList) {
       try {
-        await this.retrieveAndSaveNewAccountTransactionsAndCreateBookings(
+        const newTransactions = await this.retrieveAndSaveNewAccountTransactions(
           now,
           accountSettings,
+        );
+        newAccountTransactionsFromAccounts = newAccountTransactionsFromAccounts.concat(
+          newTransactions,
         );
       } catch (error) {
         console.error(error);
       }
     }
+    await this.accountSynchronisationBookingService.createAndSaveBookings(
+      clientId,
+      newAccountTransactionsFromAccounts,
+      now,
+    );
   }
 
-  private async retrieveAndSaveNewAccountTransactionsAndCreateBookings(
+  private async retrieveAndSaveNewAccountTransactions(
     now: Date,
     accountSettings: AccountSettings,
-  ) {
+  ): Promise<AccountTransaction[]> {
     const rawAccountTransactions: FinTsAccountTransactionDTO[] = await this.fintsAccountTransactionSynchronization.load(
       accountSettings.fintsBlz!,
       accountSettings.fintsUrl!,
@@ -74,9 +83,7 @@ export class AccountSynchronisationService {
       accountTransactions,
     );
 
-    await this.accountSynchronisationBookingService.createAndSaveBookings(
-      newAccountTransactions,
-    );
+    return newAccountTransactions;
   }
 
   private convertToAccountTransaction(

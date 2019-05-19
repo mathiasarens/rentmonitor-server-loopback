@@ -29,6 +29,7 @@
     "docker:build": "docker build -t rentmonitor-server-loopback .",
     "docker:run": "docker run -p 3000:3000 -d rentmonitor-server-loopback",
     "migrate": "node ./dist/migrate",
+    "migrate:testdb": "NODE_ENV=test node ./dist/migrate -- --rebuild",
     "prestart": "npm run build",
     "start": "node .",
     "prepublishOnly": "npm run test"
@@ -47,22 +48,22 @@
     "!*/__tests__"
   ],
   "dependencies": {
-    "@loopback/boot": "^1.2.3",
-    "@loopback/context": "^1.12.0",
-    "@loopback/core": "^1.6.0",
-    "@loopback/openapi-v3": "^1.3.7",
-    "@loopback/repository": "^1.5.1",
-    "@loopback/rest": "^1.10.4",
-    "@loopback/rest-explorer": "^1.1.18",
-    "@loopback/service-proxy": "^1.1.6",
+    "@loopback/boot": "^1.2.7",
+    "@loopback/context": "^1.15.0",
+    "@loopback/core": "^1.7.0",
+    "@loopback/openapi-v3": "^1.3.11",
+    "@loopback/repository": "^1.5.5",
+    "@loopback/rest": "^1.11.2",
+    "@loopback/rest-explorer": "^1.1.22",
+    "@loopback/service-proxy": "^1.1.10",
     "loopback-connector-postgresql": "^3.6.1",
-    "openfin-ts": "^1.0.1"
+    "openfin-ts": "^2.0.4"
   },
   "devDependencies": {
-    "@loopback/build": "^1.5.0",
-    "@loopback/testlab": "^1.2.5",
+    "@loopback/build": "^1.5.4",
+    "@loopback/testlab": "^1.2.9",
     "@loopback/tslint-config": "^2.0.4",
-    "@types/node": "^11.13.8",
+    "@types/node": "^12.0.2",
     "tslint": "^5.16.0",
     "typescript": "^3.4.5"
   }

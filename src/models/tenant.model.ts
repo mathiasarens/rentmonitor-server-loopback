@@ -1,4 +1,11 @@
-import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository';
+import {Contract} from '.';
 import {Client} from './client.model';
 @model({
   indexes: {
@@ -18,6 +25,9 @@ export class Tenant extends Entity {
 
   @belongsTo(() => Client)
   clientId: number;
+
+  @hasMany(() => Contract)
+  contracts: Contract[];
 
   @property({
     type: 'string',

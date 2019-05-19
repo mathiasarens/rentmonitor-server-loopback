@@ -14,7 +14,7 @@ import {
   AccountTransactionLogRepository,
 } from '../../../../repositories';
 import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
-import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-save.service';
+import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 import {AccountSynchronisationService} from '../../../../services/accountsynchronisation/account-synchronisation.service';
 import {
   FinTsAccountTransactionDTO,
@@ -145,7 +145,9 @@ describe('AccountSynchronisationService Unit Tests', () => {
 
     sinon.assert.calledWithExactly(
       accountSynchronisationBookingServiceStub.createAndSaveBookings,
+      clientId,
       accountTransactions,
+      now,
     );
   });
 });

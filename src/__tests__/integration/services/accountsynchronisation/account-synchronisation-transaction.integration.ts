@@ -1,18 +1,47 @@
+import {Getter} from '@loopback/repository';
 import {expect} from '@loopback/testlab';
 import {AccountSettings, AccountTransaction} from '../../../../models';
-import {AccountTransactionRepository} from '../../../../repositories';
-import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-save.service';
+import {
+  AccountTransactionRepository,
+  BookingRepository,
+  ClientRepository,
+  ContractRepository,
+  TenantRepository,
+} from '../../../../repositories';
+import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
 import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
-describe('Account Transaction Save Service Integration Tests', () => {
+describe('Account Synchronisation Transaction Service Integration Tests', () => {
+  let clientRepository: ClientRepository;
+  let tenantRepository: TenantRepository;
+  let contractRepository: ContractRepository;
+  let bookingRepository: BookingRepository;
   let accountTransactionRepository: AccountTransactionRepository;
   let accountTransactionSaveService: AccountSynchronisationSaveService;
 
   beforeEach('setup service and database', async () => {
     await givenEmptyDatabase();
-
-    accountTransactionRepository = new AccountTransactionRepository(testdb);
+    clientRepository = new ClientRepository(testdb);
+    const clientRepositoryGetter = Getter.fromValue(clientRepository);
+    tenantRepository = new TenantRepository(testdb, clientRepositoryGetter);
+    const tenantRepositoryGetter = Getter.fromValue(tenantRepository);
+    contractRepository = new ContractRepository(
+      testdb,
+      clientRepositoryGetter,
+      tenantRepositoryGetter,
+    );
+    bookingRepository = new BookingRepository(
+      testdb,
+      clientRepositoryGetter,
+      tenantRepositoryGetter,
+      Getter.fromValue(contractRepository),
+    );
+    accountTransactionRepository = new AccountTransactionRepository(
+      testdb,
+      clientRepositoryGetter,
+      Getter.fromValue(bookingRepository),
+    );
 
     accountTransactionSaveService = new AccountSynchronisationSaveService(
       accountTransactionRepository,

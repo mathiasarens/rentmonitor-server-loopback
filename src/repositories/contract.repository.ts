@@ -41,4 +41,20 @@ export class ContractRepository extends DefaultCrudRepository<
       tenantRepositoryGetter,
     );
   }
+
+  public async findActiveContracts(
+    clientId: number,
+    now: Date,
+  ): Promise<Contract[]> {
+    const contracts: Contract[] = await this.find({
+      where: {
+        clientId: clientId,
+        start: {lte: now},
+      },
+    });
+    const activeContracts = contracts.filter(
+      e => e.end == null || e.end >= now,
+    );
+    return activeContracts;
+  }
 }

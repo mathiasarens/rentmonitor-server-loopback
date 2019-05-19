@@ -25,11 +25,11 @@ export class AccountSynchronisationSaveService {
       newAccountTransactionsInAscendingOrder,
     );
 
-    await this.accountTransactionRepository.createAll(
+    const mergedAccountTransactionsFromDb = await this.accountTransactionRepository.createAll(
       mergedAccountTransactions,
     );
 
-    return mergedAccountTransactions;
+    return mergedAccountTransactionsFromDb;
   }
 
   private merge(
