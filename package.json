@@ -3,8 +3,11 @@
   "version": "0.0.1",
   "description": "Monitor the payments of your tenants. Did every renter pay on time?",
   "keywords": [
-    "loopback-application",
-    "loopback"
+    "rent",
+    "check",
+    "tenant",
+    "payments",
+    "fints-support"
   ],
   "main": "index.js",
   "engines": {
@@ -31,14 +34,15 @@
     "migrate": "node ./dist/migrate",
     "migrate:testdb": "NODE_ENV=test node ./dist/migrate -- --rebuild",
     "prestart": "npm run build",
-    "start": "node .",
+    "start": "PORT=3001 node .",
     "prepublishOnly": "npm run test"
   },
   "repository": {
-    "type": "git"
+    "type": "git",
+    "url" : "https://github.com/mathiasarens/rentmonitor-server-loopback.git"
   },
-  "author": "",
-  "license": "",
+  "author": "Mathias Arens",
+  "license": "Apache-2.0",
   "files": [
     "README.md",
     "index.js",
