@@ -39,7 +39,7 @@
   },
   "repository": {
     "type": "git",
-    "url" : "https://github.com/mathiasarens/rentmonitor-server-loopback.git"
+    "url": "https://github.com/mathiasarens/rentmonitor-server-loopback.git"
   },
   "author": "Mathias Arens",
   "license": "Apache-2.0",
@@ -52,23 +52,23 @@
     "!*/__tests__"
   ],
   "dependencies": {
-    "@loopback/boot": "^1.2.8",
-    "@loopback/context": "^1.16.0",
-    "@loopback/core": "^1.7.1",
-    "@loopback/openapi-v3": "^1.4.0",
-    "@loopback/repository": "^1.5.6",
-    "@loopback/rest": "^1.12.0",
-    "@loopback/rest-explorer": "^1.1.23",
-    "@loopback/service-proxy": "^1.1.11",
+    "@loopback/boot": "^1.4.0",
+    "@loopback/context": "^1.19.0",
+    "@loopback/core": "^1.8.1",
+    "@loopback/openapi-v3": "^1.6.1",
+    "@loopback/repository": "^1.6.1",
+    "@loopback/rest": "^1.15.0",
+    "@loopback/rest-explorer": "^1.2.1",
+    "@loopback/service-proxy": "^1.2.1",
     "loopback-connector-postgresql": "^3.6.1",
     "openfin-ts": "^1.0.1"
   },
   "devDependencies": {
-    "@loopback/build": "^1.5.5",
-    "@loopback/testlab": "^1.2.10",
-    "@loopback/tslint-config": "^2.0.4",
-    "@types/node": "^12.0.2",
-    "tslint": "^5.16.0",
-    "typescript": "^3.4.5"
+    "@loopback/build": "^1.7.1",
+    "@loopback/testlab": "^1.5.0",
+    "@loopback/tslint-config": "^2.1.0",
+    "@types/node": "^12.0.7",
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.1"
   }
 }

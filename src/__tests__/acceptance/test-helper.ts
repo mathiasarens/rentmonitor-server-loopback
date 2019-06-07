@@ -5,8 +5,11 @@ import {
 } from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {
+  AccountSettingsRepository,
+  AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
+  ContractRepository,
   TenantRepository,
 } from '../../repositories';
 
@@ -17,7 +20,7 @@ export async function setupApplication(): Promise<AppWithClient> {
     //rest: givenHttpServerConfig(),
     rest: config,
   });
-
+  app.bind('datasources.encryption.password').to('test');
   await app.boot();
   await app.start();
 
@@ -32,11 +35,27 @@ export interface AppWithClient {
 }
 
 export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
-  const debitorRepository = await app.getRepository(TenantRepository);
+  const tenantRepository = await app.getRepository(TenantRepository);
   const bookingRepository = await app.getRepository(BookingRepository);
   const clientRepository = await app.getRepository(ClientRepository);
+  const accountTransactionRepository = await app.getRepository(
+    AccountTransactionRepository,
+  );
+  const contractRepository = await app.getRepository(ContractRepository);
+  const accountSettingsRepository = await app.getRepository(
+    AccountSettingsRepository,
+  );
+  const accountTransactionLogRepository = await app.getRepository(
+    AccountTransactionRepository,
+  );
 
-  await debitorRepository.deleteAll();
-  await clientRepository.deleteAll();
+  await accountTransactionRepository.deleteAll();
   await bookingRepository.deleteAll();
+  await contractRepository.deleteAll();
+  await tenantRepository.deleteAll();
+
+  await accountSettingsRepository.deleteAll();
+  await accountTransactionLogRepository.deleteAll();
+
+  await clientRepository.deleteAll();
 }

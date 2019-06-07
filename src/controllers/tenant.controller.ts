@@ -22,39 +22,40 @@ import {TenantRepository} from '../repositories';
 export class TenantControllerController {
   constructor(
     @repository(TenantRepository)
-    public debitorRepository: TenantRepository,
+    public tenantRepository: TenantRepository,
   ) {}
 
   @post('/tenants', {
     responses: {
       '200': {
-        description: 'Debitor model instance',
+        description: 'Tenant model instance',
         content: {'application/json': {schema: {'x-ts-type': Tenant}}},
       },
     },
   })
-  async create(@requestBody() debitor: Tenant): Promise<Tenant> {
-    return await this.debitorRepository.create(debitor);
+  async create(@requestBody() tenant: Tenant): Promise<Tenant> {
+    return await this.tenantRepository.create(tenant);
   }
 
   @get('/tenants/count', {
     responses: {
       '200': {
-        description: 'Debitor model count',
+        description: 'Tenant model count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Tenant)) where?: Where,
+    @param.query.object('where', getWhereSchemaFor(Tenant))
+    where?: Where<Tenant>,
   ): Promise<Count> {
-    return await this.debitorRepository.count(where);
+    return await this.tenantRepository.count(where);
   }
 
   @get('/tenants', {
     responses: {
       '200': {
-        description: 'Array of Debitor model instances',
+        description: 'Array of Tenant model instances',
         content: {
           'application/json': {
             schema: {type: 'array', items: {'x-ts-type': Tenant}},
@@ -64,74 +65,76 @@ export class TenantControllerController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Tenant)) filter?: Filter,
+    @param.query.object('filter', getFilterSchemaFor(Tenant))
+    filter?: Filter<Tenant>,
   ): Promise<Tenant[]> {
-    return await this.debitorRepository.find(filter);
+    return await this.tenantRepository.find(filter);
   }
 
   @patch('/tenants', {
     responses: {
       '200': {
-        description: 'Debitor PATCH success count',
+        description: 'Tenant PATCH success count',
         content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   async updateAll(
-    @requestBody() debitor: Tenant,
-    @param.query.object('where', getWhereSchemaFor(Tenant)) where?: Where,
+    @requestBody() tenant: Tenant,
+    @param.query.object('where', getWhereSchemaFor(Tenant))
+    where?: Where<Tenant>,
   ): Promise<Count> {
-    return await this.debitorRepository.updateAll(debitor, where);
+    return await this.tenantRepository.updateAll(tenant, where);
   }
 
   @get('/tenants/{id}', {
     responses: {
       '200': {
-        description: 'Debitor model instance',
+        description: 'Tenant model instance',
         content: {'application/json': {schema: {'x-ts-type': Tenant}}},
       },
     },
   })
   async findById(@param.path.number('id') id: number): Promise<Tenant> {
-    return await this.debitorRepository.findById(id);
+    return await this.tenantRepository.findById(id);
   }
 
   @patch('/tenants/{id}', {
     responses: {
       '204': {
-        description: 'Debitor PATCH success',
+        description: 'Tenenat PATCH success',
       },
     },
   })
   async updateById(
     @param.path.number('id') id: number,
-    @requestBody() debitor: Tenant,
+    @requestBody() tenant: Tenant,
   ): Promise<void> {
-    await this.debitorRepository.updateById(id, debitor);
+    await this.tenantRepository.updateById(id, tenant);
   }
 
   @put('/tenants/{id}', {
     responses: {
       '204': {
-        description: 'Debitor PUT success',
+        description: 'Tenant PUT success',
       },
     },
   })
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() debitor: Tenant,
+    @requestBody() tenant: Tenant,
   ): Promise<void> {
-    await this.debitorRepository.replaceById(id, debitor);
+    await this.tenantRepository.replaceById(id, tenant);
   }
 
   @del('/tenants/{id}', {
     responses: {
       '204': {
-        description: 'Debitor DELETE success',
+        description: 'Tenant DELETE success',
       },
     },
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.debitorRepository.deleteById(id);
+    await this.tenantRepository.deleteById(id);
   }
 }

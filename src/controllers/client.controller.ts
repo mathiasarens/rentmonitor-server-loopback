@@ -6,16 +6,16 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getFilterSchemaFor,
   getWhereSchemaFor,
-  patch,
-  put,
-  del,
-  requestBody,
   HttpErrors,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
 } from '@loopback/rest';
 import {Client} from '../models';
 import {ClientRepository} from '../repositories';
@@ -57,7 +57,8 @@ export class ClientController {
     },
   })
   async count(
-    @param.query.object('where', getWhereSchemaFor(Client)) where?: Where,
+    @param.query.object('where', getWhereSchemaFor(Client))
+    where?: Where<Client>,
   ): Promise<Count> {
     return await this.clientRepository.count(where);
   }
@@ -75,7 +76,8 @@ export class ClientController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Client)) filter?: Filter,
+    @param.query.object('filter', getFilterSchemaFor(Client))
+    filter?: Filter<Client>,
   ): Promise<Client[]> {
     return await this.clientRepository.find(filter);
   }
@@ -90,7 +92,8 @@ export class ClientController {
   })
   async updateAll(
     @requestBody() client: Client,
-    @param.query.object('where', getWhereSchemaFor(Client)) where?: Where,
+    @param.query.object('where', getWhereSchemaFor(Client))
+    where?: Where<Client>,
   ): Promise<Count> {
     return await this.clientRepository.updateAll(client, where);
   }
