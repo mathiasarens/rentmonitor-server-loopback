@@ -14,7 +14,7 @@ export class FintsAccountTransactionSynchronizationService {
     fintsUser: string,
     fintsPassword: string,
   ): Promise<FinTsAccountTransactionDTO[]> {
-    let accountTransactions: FinTsAccountTransactionDTO[] = [];
+    const accountTransactions: FinTsAccountTransactionDTO[] = [];
     try {
       const fintsClient: FinTSClient = new FinTSClient(
         fintsBlz,

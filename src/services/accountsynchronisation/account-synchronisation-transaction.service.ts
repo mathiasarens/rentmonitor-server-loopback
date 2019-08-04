@@ -47,7 +47,7 @@ export class AccountSynchronisationSaveService {
         existingTransactionsIndex < existingTransactions.length &&
         newTransactionsIndex < newTransactions.length
       ) {
-        let compareResult = this.compareByDateIbanBicNameTextValue(
+        const compareResult = this.compareByDateIbanBicNameTextValue(
           existingTransactions[existingTransactionsIndex],
           newTransactions[newTransactionsIndex],
         );

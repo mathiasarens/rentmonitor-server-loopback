@@ -37,11 +37,11 @@ export class AccountSynchronisationBookingService {
     activeContracts: Contract[],
     now: Date,
   ): Promise<[Booking[], AccountTransaction[]]> {
-    let unmachtedAccountTransactions: AccountTransaction[] = [];
-    let bookings: Booking[] = [];
-    for (let accountTransaction of accountTransactions) {
+    const unmachtedAccountTransactions: AccountTransaction[] = [];
+    const bookings: Booking[] = [];
+    for (const accountTransaction of accountTransactions) {
       let matched = false;
-      for (let contract of activeContracts) {
+      for (const contract of activeContracts) {
         if (
           this.matchAccountTransactionAndContract(accountTransaction, contract)
         ) {

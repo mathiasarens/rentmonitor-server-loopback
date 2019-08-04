@@ -36,8 +36,8 @@ describe('TenantController', () => {
       .expect('Content-Type', 'application/json');
     expect(res.body.id).to.be.a.Number();
     expect(res.body.name).to.eql(debitorName);
-    let debitorRepository = await app.getRepository(TenantRepository);
-    let debitorsFromDb = await debitorRepository.find({
+    const debitorRepository = await app.getRepository(TenantRepository);
+    const debitorsFromDb = await debitorRepository.find({
       where: {clientId: clientId},
     });
     expect(debitorsFromDb).length(2);
@@ -48,8 +48,8 @@ describe('TenantController', () => {
   }
 
   async function setupClientInDb(): Promise<number> {
-    let clientRepository = await app.getRepository(ClientRepository);
-    let clientFromDb = await clientRepository.create({name: 'TestClient1'});
+    const clientRepository = await app.getRepository(ClientRepository);
+    const clientFromDb = await clientRepository.create({name: 'TestClient1'});
     return clientFromDb.id;
   }
 

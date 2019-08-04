@@ -6,8 +6,8 @@ export class RentDueCalculationService {
     today: Date,
     latestRentDueBookingsPerTenant: LatestRentDueBooking[],
   ): Promise<Booking[]> {
-    let result: Booking[] = new Array();
-    for (let latestRentDueBooking of latestRentDueBookingsPerTenant) {
+    let result: Booking[] = [];
+    for (const latestRentDueBooking of latestRentDueBookingsPerTenant) {
       const booking: Booking[] = this.calculateRentDueBookingsPerContract(
         today,
         latestRentDueBooking.contract,

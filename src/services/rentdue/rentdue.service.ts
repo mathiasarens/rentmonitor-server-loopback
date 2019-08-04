@@ -40,11 +40,11 @@ export class RentDueService {
     const tenants: Tenant[] = await this.tenantRepository.find({
       where: {clientId: clientId},
     });
-    for (let tenant of tenants) {
+    for (const tenant of tenants) {
       const contractsPerTenant: Contract[] = await this.contractRepository.find(
         {where: {clientId: clientId, tenantId: tenant.id}},
       );
-      for (let contract of contractsPerTenant) {
+      for (const contract of contractsPerTenant) {
         const latestBookingDate:
           | Date
           | undefined = await this.findLatestBookingForTenantAndContract(
@@ -63,7 +63,7 @@ export class RentDueService {
     tenant: Tenant,
     contract: Contract,
   ): Promise<Date | undefined> {
-    let booking: Booking | null = await this.bookingRepository.findOne({
+    const booking: Booking | null = await this.bookingRepository.findOne({
       where: {
         clientId: clientId,
         tenantId: tenant.id,
