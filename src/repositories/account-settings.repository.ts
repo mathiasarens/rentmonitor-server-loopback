@@ -36,19 +36,22 @@ export class AccountSettingsRepository {
     entity: DataObject<AccountSettings>,
     options?: Options,
   ): Promise<AccountSettings> {
+    const encryptedEntity = {...entity};
     if (entity.fintsBlz) {
-      entity.fintsBlz = await this.crypto.encrypt(entity.fintsBlz);
+      encryptedEntity.fintsBlz = await this.crypto.encrypt(entity.fintsBlz);
     }
     if (entity.fintsUrl) {
-      entity.fintsUrl = await this.crypto.encrypt(entity.fintsUrl);
+      encryptedEntity.fintsUrl = await this.crypto.encrypt(entity.fintsUrl);
     }
     if (entity.fintsUser) {
-      entity.fintsUser = await this.crypto.encrypt(entity.fintsUser);
+      encryptedEntity.fintsUser = await this.crypto.encrypt(entity.fintsUser);
     }
     if (entity.fintsPassword) {
-      entity.fintsPassword = await this.crypto.encrypt(entity.fintsPassword);
+      encryptedEntity.fintsPassword = await this.crypto.encrypt(
+        entity.fintsPassword,
+      );
     }
-    return this.proxy.create(entity, options);
+    return this.proxy.create(encryptedEntity, options);
   }
 
   public async find(

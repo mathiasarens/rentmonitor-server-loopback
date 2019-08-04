@@ -9,7 +9,7 @@ import {Contract} from '.';
 import {Client} from './client.model';
 @model({
   indexes: {
-    clientId_name_index: {
+    clientIdNameIndex: {
       keys: {clientId: 1, name: 1},
       options: {unique: true},
     },

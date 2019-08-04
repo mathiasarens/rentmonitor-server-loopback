@@ -37,7 +37,7 @@ describe('Account Settings Repository Integration Tests', () => {
 
   after(async () => {});
 
-  it('should create empty accountSettings', async function() {
+  it('should create accountSettings with fints params', async function() {
     // given
     const dbClient: Client = await clientRepository.create({
       name: 'Rentmonitor Test',
@@ -80,7 +80,7 @@ describe('Account Settings Repository Integration Tests', () => {
     expect(accountSettingsFromDb[0].fintsPassword).to.equal('password');
   });
 
-  it('should create empty accountSettings', async function() {
+  it('should create accountSettings without fints params', async function() {
     // given
     const dbClient: Client = await clientRepository.create({
       name: 'Rentmonitor Test',

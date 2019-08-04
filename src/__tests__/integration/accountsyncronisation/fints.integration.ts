@@ -10,10 +10,7 @@ describe.skip('FinTs Integration', () => {
 
   after(async () => {});
 
-  /* tslint:disable:no-invalid-this */
   it('should get account transactions', async function() {
-    this.timeout(8000);
-
     // when
     const finTsAccountTransactions = await fints.load(
       process.env.FINTS_BLZ as string,
@@ -25,5 +22,4 @@ describe.skip('FinTs Integration', () => {
     // then
     expect(finTsAccountTransactions.length).to.be.above(0);
   });
-  /* tslint:enable:no-invalid-this */
 });

@@ -34,7 +34,7 @@ export class TenantControllerController {
     },
   })
   async create(@requestBody() tenant: Tenant): Promise<Tenant> {
-    return await this.tenantRepository.create(tenant);
+    return this.tenantRepository.create(tenant);
   }
 
   @get('/tenants/count', {
@@ -49,7 +49,7 @@ export class TenantControllerController {
     @param.query.object('where', getWhereSchemaFor(Tenant))
     where?: Where<Tenant>,
   ): Promise<Count> {
-    return await this.tenantRepository.count(where);
+    return this.tenantRepository.count(where);
   }
 
   @get('/tenants', {
@@ -68,7 +68,7 @@ export class TenantControllerController {
     @param.query.object('filter', getFilterSchemaFor(Tenant))
     filter?: Filter<Tenant>,
   ): Promise<Tenant[]> {
-    return await this.tenantRepository.find(filter);
+    return this.tenantRepository.find(filter);
   }
 
   @patch('/tenants', {
@@ -84,7 +84,7 @@ export class TenantControllerController {
     @param.query.object('where', getWhereSchemaFor(Tenant))
     where?: Where<Tenant>,
   ): Promise<Count> {
-    return await this.tenantRepository.updateAll(tenant, where);
+    return this.tenantRepository.updateAll(tenant, where);
   }
 
   @get('/tenants/{id}', {
@@ -96,7 +96,7 @@ export class TenantControllerController {
     },
   })
   async findById(@param.path.number('id') id: number): Promise<Tenant> {
-    return await this.tenantRepository.findById(id);
+    return this.tenantRepository.findById(id);
   }
 
   @patch('/tenants/{id}', {

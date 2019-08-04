@@ -36,7 +36,7 @@ export class RentDueService {
   private async findLatestRentDueBookingsForDebitors(
     clientId: number,
   ): Promise<LatestRentDueBooking[]> {
-    const result: LatestRentDueBooking[] = new Array<LatestRentDueBooking>();
+    const result: LatestRentDueBooking[] = [];
     const tenants: Tenant[] = await this.tenantRepository.find({
       where: {clientId: clientId},
     });

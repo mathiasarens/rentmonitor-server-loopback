@@ -60,7 +60,7 @@ export class ClientController {
     @param.query.object('where', getWhereSchemaFor(Client))
     where?: Where<Client>,
   ): Promise<Count> {
-    return await this.clientRepository.count(where);
+    return this.clientRepository.count(where);
   }
 
   @get('/clients', {
@@ -79,7 +79,7 @@ export class ClientController {
     @param.query.object('filter', getFilterSchemaFor(Client))
     filter?: Filter<Client>,
   ): Promise<Client[]> {
-    return await this.clientRepository.find(filter);
+    return this.clientRepository.find(filter);
   }
 
   @patch('/clients', {
@@ -95,7 +95,7 @@ export class ClientController {
     @param.query.object('where', getWhereSchemaFor(Client))
     where?: Where<Client>,
   ): Promise<Count> {
-    return await this.clientRepository.updateAll(client, where);
+    return this.clientRepository.updateAll(client, where);
   }
 
   @get('/clients/{id}', {
@@ -107,7 +107,7 @@ export class ClientController {
     },
   })
   async findById(@param.path.number('id') id: number): Promise<Client> {
-    return await this.clientRepository.findById(id);
+    return this.clientRepository.findById(id);
   }
 
   @patch('/clients/{id}', {

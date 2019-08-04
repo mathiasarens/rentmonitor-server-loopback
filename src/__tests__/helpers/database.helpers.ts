@@ -71,11 +71,11 @@ export function givenDebitorData(data?: Partial<Tenant>) {
 }
 
 export async function givenClient(data?: Partial<Client>) {
-  return await new ClientRepository(testdb).create(givenClientData(data));
+  return new ClientRepository(testdb).create(givenClientData(data));
 }
 
 export async function givenTenant(data?: Partial<Tenant>) {
-  return await new TenantRepository(
+  return new TenantRepository(
     testdb,
     Getter.fromValue(new ClientRepository(testdb)),
   ).create(givenDebitorData(data));
