@@ -1,0 +1,36 @@
+Transaction {refnr: "STARTUMS", kontoBez: "41660124/504134600", auszugNr: "0", …}
+
+transaction
+
+Transaction {refnr: "STARTUMS", kontoBez: "41660124/504134600", auszugNr: "0", …}
+
+Transaction {refnr: "STARTUMS", kontoBez: "41660124/504134600", auszugNr: "0", …}
+
+Description {text: "EREF+442190301R000012LF07005Description {text: "EREF+442190301R000012LF070057637 MREF+MDEM18191314…", buchungstext: "Basislastschrift", primanotenNr: "931", …}
+
+Description {text: "EREF+442190301R000012LF070057637 MREF+MDEM18191314…", buchungstext: "Basislastschrift", primanotenNr: "931", …}
+
+transactionType: "S"
+value 45.77
+
+
+"undefinedHeinrich Hoffmann"
+"PURP+RINP Dauerauftrag/RateSVWZ+Pacht IBAN: DE45416612060108668600 BIC: GENODEM1ANR "
+265.87
+
+"undefinedWB WestfalenBus GmbH 0037"
+
+"EREF+0019000965 SVWZ+Kr0000307710/RefNr.100 157/1.3.2019Miete 100 157Melderaum/KOM-Abs EREF: 0019000965 IBAN: DE63100100100148206106 BIC: PBNKDEFFXXX "
+"H"
+272.59
+
+transaction:
+  transactionRecord:
+    date:
+    description:
+      bicKontrahent: "WELADED1LIP"
+      ibanKontrahent: "DE66416500011806568760"
+      nameKontrahent: "undefinedPatrick Kaiser"
+      text: "PURP+RINP Dauerauftrag/RateSVWZ+Kuckelheim IBAN: DE66416500011806568760 BIC: WELADED1LIP "
+    transactionType: "H"
+    value: 20
