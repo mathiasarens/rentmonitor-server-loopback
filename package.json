@@ -74,6 +74,7 @@
     "eslint-plugin-eslint-plugin": "^2.1.0",
     "eslint-plugin-mocha": "^6.0.0",
     "source-map-support": "^0.5.13",
-    "typescript": "~3.5.3"
+    "typescript": "~3.5.3",
+    "lodash": ">=4.17.13"
   }
 }
