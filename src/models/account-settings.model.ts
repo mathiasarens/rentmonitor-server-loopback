@@ -9,7 +9,7 @@ import {Client} from './client.model';
         name: 'fk_accountSettings_clientId',
         entity: 'Client',
         entityKey: 'id',
-        foreignKey: 'clientId',
+        foreignKey: 'clientid',
       },
     },
   },
