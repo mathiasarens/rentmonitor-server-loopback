@@ -2,10 +2,10 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:11.8
+      - image: circleci/node:12.8
         environment:
           NODE_ENV: test
-      - image: circleci/postgres:11.1-alpine
+      - image: circleci/postgres:11.4-alpine
         environment:
           POSTGRES_DB: rentmonitor_test
           POSTGRES_PASSWORD: rentmonitor
@@ -25,9 +25,7 @@ jobs:
       - run:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
-      - run: npm run build
       - run:
           name: Resetup test database
-          #          command: npm run migrate -- --rebuild
-          command: npm run migrate
+          command: npm run migrate -- --rebuild
       - run: npm run test
