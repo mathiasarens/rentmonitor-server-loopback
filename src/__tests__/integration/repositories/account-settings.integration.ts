@@ -1,12 +1,6 @@
-import {Getter, inject} from '@loopback/context';
-import {
-  BelongsToAccessor,
-  DefaultCrudRepository,
-  repository,
-} from '@loopback/repository';
+import {Getter} from '@loopback/context';
 import {expect} from '@loopback/testlab';
-import {RentmonitorDataSource} from '../../../datasources';
-import {AccountSettings, Client} from '../../../models';
+import {Client} from '../../../models';
 import {
   AccountSettingsRepository,
   ClientRepository,
@@ -17,7 +11,6 @@ import {givenEmptyDatabase} from '../../helpers/database.helpers';
 describe('Account Settings Repository Integration Tests', () => {
   let clientRepository: ClientRepository;
   let accountSettingsRepository: AccountSettingsRepository;
-  let accountSettingsRepositoryInternal: AccountSettingsRepositoryInternal;
 
   beforeEach('setupApplication', async () => {
     await givenEmptyDatabase();
@@ -28,10 +21,6 @@ describe('Account Settings Repository Integration Tests', () => {
       testdb,
       clientRepositoryGetter,
       'test_password',
-    );
-    accountSettingsRepositoryInternal = new AccountSettingsRepositoryInternal(
-      testdb,
-      clientRepositoryGetter,
     );
   });
 
@@ -53,22 +42,6 @@ describe('Account Settings Repository Integration Tests', () => {
     });
 
     // then
-    const encryptedAccountSettingsFromDb = await accountSettingsRepositoryInternal.find();
-    expect(encryptedAccountSettingsFromDb.length).to.equal(1);
-    expect(encryptedAccountSettingsFromDb[0].clientId).to.equal(dbClient.id);
-    expect(encryptedAccountSettingsFromDb[0].fintsBlz).to.equal(
-      'de2ebd388e12e4fc4e74001a7b5cb309',
-    );
-    expect(encryptedAccountSettingsFromDb[0].fintsPassword).to.equal(
-      '3c0f03113526e7bf2335d3e03ae05c31',
-    );
-    expect(encryptedAccountSettingsFromDb[0].fintsUrl).to.equal(
-      'adfcad3fa1baedfe4ebec0287b20126ffe3d1c81dd19d6eb90158a8c9ab89940',
-    );
-    expect(encryptedAccountSettingsFromDb[0].fintsUser).to.equal(
-      'b38c9ce5c926311c0e38828cf738d7ff',
-    );
-
     const accountSettingsFromDb = await accountSettingsRepository.find();
     expect(accountSettingsFromDb.length).to.equal(1);
     expect(accountSettingsFromDb[0].clientId).to.equal(dbClient.id);
@@ -92,7 +65,7 @@ describe('Account Settings Repository Integration Tests', () => {
     });
 
     // then
-    const contractFromDb = await accountSettingsRepositoryInternal.find();
+    const contractFromDb = await accountSettingsRepository.find();
     expect(contractFromDb.length).to.equal(1);
     expect(contractFromDb[0].clientId).to.equal(dbClient.id);
     expect(contractFromDb[0].fintsBlz).to.equal(null);
@@ -101,26 +74,3 @@ describe('Account Settings Repository Integration Tests', () => {
     expect(contractFromDb[0].fintsUser).to.equal(null);
   });
 });
-
-class AccountSettingsRepositoryInternal extends DefaultCrudRepository<
-  AccountSettings,
-  typeof AccountSettings.prototype.id
-> {
-  public readonly client: BelongsToAccessor<
-    Client,
-    typeof AccountSettings.prototype.id
-  >;
-
-  constructor(
-    @inject('datasources.rentmonitor') dataSource: RentmonitorDataSource,
-    @repository.getter('ClientRepository')
-    clientRepositoryGetter: Getter<ClientRepository>,
-  ) {
-    super(AccountSettings, dataSource);
-
-    this.client = this.createBelongsToAccessorFor(
-      'client',
-      clientRepositoryGetter,
-    );
-  }
-}

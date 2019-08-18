@@ -17,18 +17,18 @@ export class Crypto {
     this.iv = Buffer.alloc(16, 0); // Initialization vector.
   }
 
-  public async encrypt(str?: string): Promise<string> {
+  public encrypt(str?: string): string {
     if (str) {
       const cipher = crypto.createCipheriv(this.algorithm, this.key, this.iv);
       let encrypted = cipher.update(str, 'utf8', 'hex');
       encrypted += cipher.final('hex');
-      return Promise.resolve(encrypted);
+      return encrypted;
     } else {
-      return Promise.reject();
+      return '';
     }
   }
 
-  public async decrypt(str?: string): Promise<string> {
+  public decrypt(str?: string): string {
     if (str) {
       const decipher = crypto.createDecipheriv(
         this.algorithm,
@@ -37,9 +37,9 @@ export class Crypto {
       );
       let decrypted = decipher.update(str, 'hex', 'utf8');
       decrypted += decipher.final('utf8');
-      return Promise.resolve(decrypted);
+      return decrypted;
     } else {
-      return Promise.reject();
+      return '';
     }
   }
 }

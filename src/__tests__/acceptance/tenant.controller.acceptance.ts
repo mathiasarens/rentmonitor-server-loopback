@@ -19,23 +19,23 @@ describe('TenantController', () => {
 
   it('should add new tenant on post', async () => {
     const clientId = await setupClientInDb();
-    const debitorName = 'TestDebitor1';
-    const res = await createDebitorViaHttp(clientId, debitorName)
+    const tenantName = 'TestTenant1';
+    const res = await createTenantViaHttp(clientId, tenantName)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.id).to.be.a.Number();
-    expect(res.body.name).to.eql(debitorName);
+    expect(res.body.name).to.eql(tenantName);
   });
 
   it('should add tenant with same name twice', async () => {
     const clientId = await setupClientInDb();
-    const debitorName = 'TestDebitor1';
-    await createDebitorViaHttp(clientId, debitorName);
-    const res = await createDebitorViaHttp(clientId, debitorName)
+    const tenantName = 'TestTenant1';
+    await createTenantViaHttp(clientId, tenantName);
+    const res = await createTenantViaHttp(clientId, tenantName)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.id).to.be.a.Number();
-    expect(res.body.name).to.eql(debitorName);
+    expect(res.body.name).to.eql(tenantName);
     const debitorRepository = await app.getRepository(TenantRepository);
     const debitorsFromDb = await debitorRepository.find({
       where: {clientId: clientId},
@@ -53,7 +53,7 @@ describe('TenantController', () => {
     return clientFromDb.id;
   }
 
-  function createDebitorViaHttp(clientId: number, name: string) {
+  function createTenantViaHttp(clientId: number, name: string) {
     return http
       .post('/tenants')
       .send({clientId: clientId, name: name})

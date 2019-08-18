@@ -1,7 +1,19 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Client} from './client.model';
 
-@model()
+@model({
+  settings: {
+    hiddenProperties: ['fintsPassword'],
+    foreignKeys: {
+      fkAccountSettingsClientId: {
+        name: 'fk_accountSettings_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientId',
+      },
+    },
+  },
+})
 export class AccountSettings extends Entity {
   @property({
     type: 'number',
@@ -37,3 +49,10 @@ export class AccountSettings extends Entity {
     super(data);
   }
 }
+
+export interface AccountSettingsRelations {
+  // describe navigational properties here
+}
+
+export type AccountSettingsWithRelations = AccountSettings &
+  AccountSettingsRelations;
