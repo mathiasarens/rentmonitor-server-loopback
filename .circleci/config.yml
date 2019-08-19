@@ -5,7 +5,7 @@ jobs:
       - image: circleci/node:12.8
         environment:
           NODE_ENV: test
-      - image: circleci/postgres:11.4-alpine
+      - image: circleci/postgres:11.5-alpine
         environment:
           POSTGRES_DB: rentmonitor_test
           POSTGRES_PASSWORD: rentmonitor
