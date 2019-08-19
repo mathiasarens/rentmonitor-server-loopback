@@ -28,5 +28,5 @@ jobs:
       - run: npm run build
       - run:
           name: Resetup test database
-          command: npm run migrate
+          command: npm run migrate -- --rebuild
       - run: npm run test
