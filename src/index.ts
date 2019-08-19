@@ -9,8 +9,9 @@ export async function main(options: ApplicationConfig = {}) {
   };
 
   const app = new RentmonitorServerApplication(options);
-  console.log('Database password: ' + process.env.DB_PASSWORD);
-  app.bind('datasources.encryption.password').to(process.env.DB_PASSWORD);
+  app
+    .bind('datasources.encryption.password')
+    .to(process.env.DB_ENCRYPTION_PASSWORD);
   await app.boot();
   await app.start();
 

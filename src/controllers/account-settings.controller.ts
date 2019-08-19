@@ -20,7 +20,7 @@ import {
 import {AccountSettings} from '../models';
 import {AccountSettingsRepository} from '../repositories';
 
-export class AccountSettingsControllerController {
+export class AccountSettingsController {
   constructor(
     @repository(AccountSettingsRepository)
     public accountSettingsRepository: AccountSettingsRepository,
