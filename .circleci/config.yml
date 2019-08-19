@@ -26,7 +26,7 @@ jobs:
           name: Wait for db
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run: npm run build
-      - run:
-          name: Resetup test database
-          command: npm run migrate -- --rebuild
+      # - run:
+      #     name: Resetup test database
+      #     command: npm run migrate -- --rebuild
       - run: npm run test
