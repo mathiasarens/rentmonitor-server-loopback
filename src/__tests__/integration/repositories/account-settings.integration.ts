@@ -35,6 +35,7 @@ describe('Account Settings Repository Integration Tests', () => {
     // when
     await accountSettingsRepository.create({
       clientId: dbClient.id,
+      name: 'Konto1',
       fintsBlz: '12345678',
       fintsUrl: 'https://fints.bank.com',
       fintsUser: 'login',
@@ -45,32 +46,12 @@ describe('Account Settings Repository Integration Tests', () => {
     const accountSettingsFromDb = await accountSettingsRepository.find();
     expect(accountSettingsFromDb.length).to.equal(1);
     expect(accountSettingsFromDb[0].clientId).to.equal(dbClient.id);
+    expect(accountSettingsFromDb[0].name).to.equal('Konto1');
     expect(accountSettingsFromDb[0].fintsBlz).to.equal('12345678');
     expect(accountSettingsFromDb[0].fintsUrl).to.equal(
       'https://fints.bank.com',
     );
     expect(accountSettingsFromDb[0].fintsUser).to.equal('login');
     expect(accountSettingsFromDb[0].fintsPassword).to.equal('password');
-  });
-
-  it('should create accountSettings without fints params', async function() {
-    // given
-    const dbClient: Client = await clientRepository.create({
-      name: 'Rentmonitor Test',
-    });
-
-    // when
-    await accountSettingsRepository.create({
-      clientId: dbClient.id,
-    });
-
-    // then
-    const contractFromDb = await accountSettingsRepository.find();
-    expect(contractFromDb.length).to.equal(1);
-    expect(contractFromDb[0].clientId).to.equal(dbClient.id);
-    expect(contractFromDb[0].fintsBlz).to.equal(null);
-    expect(contractFromDb[0].fintsPassword).to.equal(null);
-    expect(contractFromDb[0].fintsUrl).to.equal(null);
-    expect(contractFromDb[0].fintsUser).to.equal(null);
   });
 });

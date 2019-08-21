@@ -28,22 +28,27 @@ export class AccountSettings extends Entity {
   @property({
     type: 'string',
   })
-  fintsBlz?: string;
+  name: string;
 
   @property({
     type: 'string',
   })
-  fintsUrl?: string;
+  fintsBlz: string;
 
   @property({
     type: 'string',
   })
-  fintsUser?: string;
+  fintsUrl: string;
 
   @property({
     type: 'string',
   })
-  fintsPassword?: string;
+  fintsUser: string;
+
+  @property({
+    type: 'string',
+  })
+  fintsPassword: string;
 
   constructor(data?: Partial<AccountSettings>) {
     super(data);
