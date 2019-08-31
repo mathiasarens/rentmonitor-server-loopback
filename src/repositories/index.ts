@@ -5,3 +5,4 @@ export * from './booking.repository';
 export * from './client.repository';
 export * from './contract.repository';
 export * from './tenant.repository';
+export * from './user.repository';

@@ -5,3 +5,4 @@ export * from './booking.model';
 export * from './client.model';
 export * from './contract.model';
 export * from './tenant.model';
+export * from './user.model';
