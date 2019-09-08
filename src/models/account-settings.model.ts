@@ -4,14 +4,14 @@ import {Client} from './client.model';
 @model({
   settings: {
     hiddenProperties: ['fintsPassword'],
-    foreignKeys: {
-      fkAccountSettingsClientId: {
-        name: 'fk_accountSettings_clientId',
-        entity: 'Client',
-        entityKey: 'id',
-        foreignKey: 'clientid',
-      },
-    },
+    // foreignKeys: {
+    //   fkAccountSettingsClientId: {
+    //     name: 'fk_accountSettings_clientId',
+    //     entity: 'Client',
+    //     entityKey: 'id',
+    //     foreignKey: 'clientid',
+    //   },
+    // },
   },
 })
 export class AccountSettings extends Entity {

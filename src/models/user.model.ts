@@ -8,22 +8,21 @@ import {Client} from '.';
 
 @model({
   settings: {
-    indexes: {
-      uniqueEmail: {
-        keys: {
-          email: 1,
-        },
-        options: {
-          unique: true,
-        },
-      },
-    },
+    // foreignKeys: {
+    //   fkUserClientId: {
+    //     name: 'fk_user_clientId',
+    //     entity: 'Client',
+    //     entityKey: 'id',
+    //     foreignKey: 'clientid',
+    //   },
+    // },
   },
 })
 export class User extends Entity {
   @property({
     type: 'string',
     id: true,
+    generated: true,
   })
   id: string;
 
@@ -33,6 +32,9 @@ export class User extends Entity {
   @property({
     type: 'string',
     required: true,
+    index: {
+      unique: true,
+    },
   })
   email: string;
 

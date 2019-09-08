@@ -11,6 +11,7 @@ import {
   ClientRepository,
   ContractRepository,
   TenantRepository,
+  UserRepository,
 } from '../../repositories';
 
 export async function setupApplication(): Promise<AppWithClient> {
@@ -48,6 +49,7 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
   const accountTransactionLogRepository = await app.getRepository(
     AccountTransactionRepository,
   );
+  const userRepository = await app.getRepository(UserRepository);
 
   await accountTransactionRepository.deleteAll();
   await bookingRepository.deleteAll();
@@ -57,5 +59,6 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
   await accountSettingsRepository.deleteAll();
   await accountTransactionLogRepository.deleteAll();
 
+  await userRepository.deleteAll();
   await clientRepository.deleteAll();
 }

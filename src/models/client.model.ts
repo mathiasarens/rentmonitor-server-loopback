@@ -12,17 +12,8 @@ export class Client extends Entity {
   @property({
     type: 'string',
     required: true,
-    index: {
-      unique: true,
-    },
   })
   name: string;
-
-  // @hasMany(() => Tenant)
-  // tenants?: Tenant[];
-
-  // @hasMany(() => Booking)
-  // bookings?: Booking[];
 
   constructor(data?: Partial<Client>) {
     super(data);

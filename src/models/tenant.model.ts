@@ -8,11 +8,15 @@ import {
 import {Contract} from '.';
 import {Client} from './client.model';
 @model({
-  indexes: {
-    clientIdNameIndex: {
-      keys: {clientId: 1, name: 1},
-      options: {unique: true},
-    },
+  settings: {
+    // foreignKeys: {
+    //   fkTenantClientId: {
+    //     name: 'fk_tenant_clientId',
+    //     entity: 'Client',
+    //     entityKey: 'id',
+    //     foreignKey: 'clientid',
+    //   },
+    // },
   },
 })
 export class Tenant extends Entity {

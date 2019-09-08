@@ -6,7 +6,7 @@
 import {Getter, inject} from '@loopback/core';
 import {
   BelongsToAccessor,
-  DefaultCrudRepository,
+  DefaultTransactionalRepository,
   juggler,
   repository,
 } from '@loopback/repository';
@@ -18,7 +18,7 @@ export type Credentials = {
   password: string;
 };
 
-export class UserRepository extends DefaultCrudRepository<
+export class UserRepository extends DefaultTransactionalRepository<
   User,
   typeof User.prototype.id
 > {
