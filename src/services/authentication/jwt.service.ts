@@ -7,7 +7,8 @@ import {TokenService, UserProfile} from '@loopback/authentication';
 import {inject} from '@loopback/context';
 import {HttpErrors} from '@loopback/rest';
 import {promisify} from 'util';
-import {TokenServiceBindings} from '../keys';
+import {TokenServiceBindings} from '../../keys';
+import {UserClientProfile} from './user-client-profile.vo';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -28,15 +29,19 @@ export class JWTService implements TokenService {
       );
     }
 
-    let userProfile: UserProfile;
+    let userProfile: UserClientProfile;
 
     try {
       // decode user profile from token
       const decodedToken = await verifyAsync(token, this.jwtSecret);
       // don't copy over  token field 'iat' and 'exp', nor 'email' to user profile
       userProfile = Object.assign(
-        {id: '', name: ''},
-        {id: decodedToken.id, name: decodedToken.name},
+        {id: '', name: '', clientId: 0},
+        {
+          id: decodedToken.id,
+          name: decodedToken.name,
+          clientId: decodedToken.clientId,
+        },
       );
     } catch (error) {
       throw new HttpErrors.Unauthorized(
@@ -47,7 +52,7 @@ export class JWTService implements TokenService {
     return userProfile;
   }
 
-  async generateToken(userProfile: UserProfile): Promise<string> {
+  async generateToken(userProfile: UserClientProfile): Promise<string> {
     if (!userProfile) {
       throw new HttpErrors.Unauthorized(
         'Error generating token : userProfile is null',

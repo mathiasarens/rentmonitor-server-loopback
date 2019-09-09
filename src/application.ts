@@ -20,9 +20,9 @@ import {
   UserServiceBindings,
 } from './keys';
 import {MyAuthenticationSequence} from './sequence';
-import {BcryptHasher} from './services/hash.password.bcryptjs';
-import {JWTService} from './services/jwt.service';
-import {MyUserService} from './services/user.service';
+import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
+import {JWTService} from './services/authentication/jwt.service';
+import {MyUserService} from './services/authentication/user.service';
 
 /**
  * Information from package.json

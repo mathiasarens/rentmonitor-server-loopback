@@ -5,7 +5,7 @@
 
 import {HttpErrors} from '@loopback/rest';
 import * as isemail from 'isemail';
-import {Credentials} from '../repositories/user.repository';
+import {Credentials} from '../../repositories/user.repository';
 
 export function validateCredentials(credentials: Credentials) {
   // Validate Email

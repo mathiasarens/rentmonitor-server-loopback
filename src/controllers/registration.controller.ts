@@ -11,8 +11,8 @@ import {
 import {Client, User} from '../models';
 import {ClientRepository, UserRepository} from '../repositories';
 import {Credentials} from '../repositories/user.repository';
-import {PasswordHasher} from '../services/hash.password.bcryptjs';
-import {validateCredentials} from '../services/validator';
+import {PasswordHasher} from '../services/authentication/hash.password.bcryptjs';
+import {validateCredentials} from '../services/authentication/validator';
 
 export class Registration {
   clientName: string;

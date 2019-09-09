@@ -1,24 +1,10 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  del,
-  get,
-  getFilterSchemaFor,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  put,
-  requestBody,
-} from '@loopback/rest';
-import {AccountSettings} from '../models';
-import {AccountSettingsRepository} from '../repositories';
+import { authenticate, AuthenticationBindings } from '@loopback/authentication';
+import { inject } from '@loopback/core';
+import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
+import { del, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, param, patch, post, put, requestBody } from '@loopback/rest';
+import { AccountSettings } from '../models';
+import { AccountSettingsRepository } from '../repositories';
+import { UserClientProfile } from '../services/authentication/user-client-profile.vo';
 
 export class AccountSettingsController {
   constructor(
@@ -36,6 +22,7 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -45,7 +32,10 @@ export class AccountSettingsController {
       },
     })
     accountSettings: Omit<AccountSettings, 'id'>,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserClientProfile,
   ): Promise<AccountSettings> {
+    accountSettings.clientId = currentUserProfile.clientId;
     const accountSettingsFromDb = await this.accountSettingsRepository.create(
       accountSettings,
     );
@@ -60,11 +50,16 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async count(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserClientProfile,
     @param.query.object('where', getWhereSchemaFor(AccountSettings))
     where?: Where<AccountSettings>,
   ): Promise<Count> {
-    return this.accountSettingsRepository.count(where);
+    return this.accountSettingsRepository.count({
+      and: [{clientId: currentUserProfile.clientId}, {...where}],
+    });
   }
 
   @get('/account-settings', {

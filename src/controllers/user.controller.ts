@@ -22,13 +22,13 @@ import {
 import {User} from '../models';
 import {UserRepository} from '../repositories';
 import {Credentials} from '../repositories/user.repository';
-import {PasswordHasher} from '../services/hash.password.bcryptjs';
-import {validateCredentials} from '../services/validator';
+import {PasswordHasher} from '../services/authentication/hash.password.bcryptjs';
+import {UserClientProfile} from '../services/authentication/user-client-profile.vo';
+import {validateCredentials} from '../services/authentication/validator';
 import {
   CredentialsRequestBody,
   UserProfileSchema,
 } from './specs/user-controller.specs';
-
 export class UserController {
   constructor(
     @repository(UserRepository) public userRepository: UserRepository,
@@ -113,7 +113,7 @@ export class UserController {
   @authenticate('jwt')
   async printCurrentUser(
     @inject(AuthenticationBindings.CURRENT_USER)
-    currentUserProfile: UserProfile,
+    currentUserProfile: UserClientProfile,
   ): Promise<UserProfile> {
     return currentUserProfile;
   }
