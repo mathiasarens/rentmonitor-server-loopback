@@ -1,6 +1,10 @@
+import {DataObject} from '@loopback/repository';
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
-import {ClientRepository} from '../../repositories';
+import {PasswordHasherBindings} from '../../keys';
+import {User} from '../../models';
+import {ClientRepository, UserRepository} from '../../repositories';
+import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
 import {givenEmptyDatabase, setupApplication} from './test-helper';
 
 describe('AccountSettingsController Acceptence Test', () => {
@@ -10,7 +14,6 @@ describe('AccountSettingsController Acceptence Test', () => {
   before('setupApplication', async () => {
     ({app, client: http} = await setupApplication());
   });
-
   beforeEach(clearDatabase);
 
   after(async () => {
@@ -19,13 +22,15 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should add new account-settings on post', async () => {
     const clientId = await setupClientInDb();
+    const testUser = getTestUser('1');
+    await setupUserInDb(clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
     const fintsUrl = 'https://fints.gad.de/fints';
     const fintsUser = 'IDG498345';
     const fintsPassword = 'utF7$30§';
-    const res = await createAccountSettingsViaHttp({
-      clientId: clientId,
+    const token = await login(testUser);
+    const res = await createAccountSettingsViaHttp(token, {
       name: name,
       fintsBlz: fintsBlz,
       fintsUrl: fintsUrl,
@@ -45,13 +50,15 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should return newly created account-settings on get', async () => {
     const clientId = await setupClientInDb();
+    const testUser = getTestUser('2');
+    await setupUserInDb(clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
     const fintsUrl = 'https://fints.gad.de/fints';
     const fintsUser = 'IDG498345';
     const fintsPassword = 'utF7$30§';
-    const createRes = await createAccountSettingsViaHttp({
-      clientId: clientId,
+    const token = await login(testUser);
+    const createRes = await createAccountSettingsViaHttp(token, {
       name: name,
       fintsBlz: fintsBlz,
       fintsUrl: fintsUrl,
@@ -66,6 +73,7 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res = await http
       .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -80,11 +88,15 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return empty result on get', async () => {
-    await setupClientInDb();
+    const clientId = await setupClientInDb();
+    const testUser = getTestUser('3');
+    await setupUserInDb(clientId, testUser);
+    const token = await login(testUser);
 
     // when
     const res = await http
       .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -101,10 +113,47 @@ describe('AccountSettingsController Acceptence Test', () => {
     return clientFromDb.id;
   }
 
-  function createAccountSettingsViaHttp(data: {}) {
+  function createAccountSettingsViaHttp(token: string, data: {}) {
     return http
       .post('/account-settings')
+      .set('Authorization', 'Bearer ' + token)
       .send(data)
       .set('Content-Type', 'application/json');
+  }
+
+  async function setupUserInDb(clientId: number, user: User) {
+    const passwordHasher: PasswordHasher = await app.get(
+      PasswordHasherBindings.PASSWORD_HASHER,
+    );
+    const encryptedPassword = await passwordHasher.hashPassword(user.password);
+    const userRepository: UserRepository = await app.getRepository(
+      UserRepository,
+    );
+    const newUser: DataObject<User> = Object.assign({}, user, {
+      password: encryptedPassword,
+      clientId: clientId,
+    });
+    const newUserFromDb = await userRepository.create(newUser);
+    return newUserFromDb;
+  }
+
+  async function login(user: User): Promise<string> {
+    const res = await http
+      .post('/users/login')
+      .send({email: user.email, password: user.password})
+      .expect(200);
+
+    const token = res.body.token;
+    return token;
+  }
+
+  function getTestUser(testId: string): User {
+    const testUser = Object.assign({}, new User(), {
+      email: 'test@loopback' + testId + '.io',
+      password: 'p4ssw0rd',
+      firstName: 'Example',
+      lastName: 'User ' + testId,
+    });
+    return testUser;
   }
 });

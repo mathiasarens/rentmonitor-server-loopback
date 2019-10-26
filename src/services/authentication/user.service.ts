@@ -2,15 +2,15 @@
 // Node module: @loopback/authentication
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
-import {UserProfile, UserService} from '@loopback/authentication';
+import {UserService} from '@loopback/authentication';
 import {inject} from '@loopback/context';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
+import {securityId, UserProfile} from '@loopback/security';
 import {PasswordHasherBindings} from '../../keys';
 import {User} from '../../models/user.model';
 import {Credentials, UserRepository} from '../../repositories/user.repository';
 import {PasswordHasher} from './hash.password.bcryptjs';
-import {UserClientProfile} from './user-client-profile.vo';
 
 export class MyUserService implements UserService<User, Credentials> {
   constructor(
@@ -37,6 +37,7 @@ export class MyUserService implements UserService<User, Credentials> {
     if (!passwordMatched) {
       throw new HttpErrors.Unauthorized(invalidCredentialsError);
     }
+
     return foundUser;
   }
 
@@ -48,10 +49,6 @@ export class MyUserService implements UserService<User, Credentials> {
       userName = user.firstName
         ? `${userName} ${user.lastName}`
         : `${user.lastName}`;
-    return {
-      id: user.id,
-      clientId: user.clientId,
-      name: userName,
-    } as UserClientProfile;
+    return {[securityId]: user.id, name: userName, clientId: user.clientId};
   }
 }

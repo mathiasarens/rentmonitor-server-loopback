@@ -7,12 +7,12 @@ import {
   authenticate,
   AuthenticationBindings,
   TokenService,
-  UserProfile,
   UserService,
 } from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {get, HttpErrors, param, post, requestBody} from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
 import * as _ from 'lodash';
 import {
   PasswordHasherBindings,
@@ -23,7 +23,6 @@ import {User} from '../models';
 import {UserRepository} from '../repositories';
 import {Credentials} from '../repositories/user.repository';
 import {PasswordHasher} from '../services/authentication/hash.password.bcryptjs';
-import {UserClientProfile} from '../services/authentication/user-client-profile.vo';
 import {validateCredentials} from '../services/authentication/validator';
 import {
   CredentialsRequestBody,
@@ -113,7 +112,7 @@ export class UserController {
   @authenticate('jwt')
   async printCurrentUser(
     @inject(AuthenticationBindings.CURRENT_USER)
-    currentUserProfile: UserClientProfile,
+    currentUserProfile: UserProfile,
   ): Promise<UserProfile> {
     return currentUserProfile;
   }

@@ -1,10 +1,27 @@
-import { authenticate, AuthenticationBindings } from '@loopback/authentication';
-import { inject } from '@loopback/core';
-import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
-import { del, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, param, patch, post, put, requestBody } from '@loopback/rest';
-import { AccountSettings } from '../models';
-import { AccountSettingsRepository } from '../repositories';
-import { UserClientProfile } from '../services/authentication/user-client-profile.vo';
+import {authenticate, AuthenticationBindings} from '@loopback/authentication';
+import {inject} from '@loopback/core';
+import {
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
+} from '@loopback/repository';
+import {
+  del,
+  get,
+  getFilterSchemaFor,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+} from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
+import {AccountSettings} from '../models';
+import {AccountSettingsRepository} from '../repositories';
 
 export class AccountSettingsController {
   constructor(
@@ -33,7 +50,7 @@ export class AccountSettingsController {
     })
     accountSettings: Omit<AccountSettings, 'id'>,
     @inject(AuthenticationBindings.CURRENT_USER)
-    currentUserProfile: UserClientProfile,
+    currentUserProfile: UserProfile,
   ): Promise<AccountSettings> {
     accountSettings.clientId = currentUserProfile.clientId;
     const accountSettingsFromDb = await this.accountSettingsRepository.create(
@@ -53,7 +70,7 @@ export class AccountSettingsController {
   @authenticate('jwt')
   async count(
     @inject(AuthenticationBindings.CURRENT_USER)
-    currentUserProfile: UserClientProfile,
+    currentUserProfile: UserProfile,
     @param.query.object('where', getWhereSchemaFor(AccountSettings))
     where?: Where<AccountSettings>,
   ): Promise<Count> {
@@ -74,12 +91,22 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(AccountSettings))
     filter?: Filter<AccountSettings>,
   ): Promise<AccountSettings[]> {
+    const filterWithClientId = filter
+      ? Object.assign({}, filter, {
+          where: {
+            and: [{clientId: currentUserProfile.clientId}, filter.where],
+          },
+        })
+      : {where: {clientId: currentUserProfile.clientId}};
     const accountSettingsFromDb: AccountSettings[] = await this.accountSettingsRepository.find(
-      filter,
+      filterWithClientId,
     );
     return Promise.resolve(this.filterPasswordList(accountSettingsFromDb));
   }

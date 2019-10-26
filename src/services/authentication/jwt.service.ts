@@ -3,12 +3,12 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {TokenService, UserProfile} from '@loopback/authentication';
+import {TokenService} from '@loopback/authentication';
 import {inject} from '@loopback/context';
 import {HttpErrors} from '@loopback/rest';
+import {securityId, UserProfile} from '@loopback/security';
 import {promisify} from 'util';
 import {TokenServiceBindings} from '../../keys';
-import {UserClientProfile} from './user-client-profile.vo';
 
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
@@ -29,16 +29,16 @@ export class JWTService implements TokenService {
       );
     }
 
-    let userProfile: UserClientProfile;
+    let userProfile: UserProfile;
 
     try {
       // decode user profile from token
       const decodedToken = await verifyAsync(token, this.jwtSecret);
       // don't copy over  token field 'iat' and 'exp', nor 'email' to user profile
       userProfile = Object.assign(
-        {id: '', name: '', clientId: 0},
+        {[securityId]: '', name: '', clientId: 0},
         {
-          id: decodedToken.id,
+          [securityId]: decodedToken.id,
           name: decodedToken.name,
           clientId: decodedToken.clientId,
         },
@@ -48,21 +48,25 @@ export class JWTService implements TokenService {
         `Error verifying token : ${error.message}`,
       );
     }
-
     return userProfile;
   }
 
-  async generateToken(userProfile: UserClientProfile): Promise<string> {
+  async generateToken(userProfile: UserProfile): Promise<string> {
     if (!userProfile) {
       throw new HttpErrors.Unauthorized(
         'Error generating token : userProfile is null',
       );
     }
-
+    const userInfoForToken = {
+      id: userProfile[securityId],
+      name: userProfile.name,
+      email: userProfile.email,
+      clientId: userProfile.clientId,
+    };
     // Generate a JSON Web Token
     let token: string;
     try {
-      token = await signAsync(userProfile, this.jwtSecret, {
+      token = await signAsync(userInfoForToken, this.jwtSecret, {
         expiresIn: Number(this.jwtExpiresIn),
       });
     } catch (error) {
