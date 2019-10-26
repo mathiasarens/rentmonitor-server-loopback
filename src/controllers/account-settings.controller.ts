@@ -13,6 +13,7 @@ import {
   getFilterSchemaFor,
   getModelSchemaRef,
   getWhereSchemaFor,
+  HttpErrors,
   param,
   patch,
   post,
@@ -44,7 +45,9 @@ export class AccountSettingsController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(AccountSettings, {exclude: ['id']}),
+          schema: getModelSchemaRef(AccountSettings, {
+            exclude: ['id', 'clientId'],
+          }),
         },
       },
     })
@@ -74,9 +77,10 @@ export class AccountSettingsController {
     @param.query.object('where', getWhereSchemaFor(AccountSettings))
     where?: Where<AccountSettings>,
   ): Promise<Count> {
-    return this.accountSettingsRepository.count({
-      and: [{clientId: currentUserProfile.clientId}, {...where}],
+    const whereWithClientId = Object.assign({}, where, {
+      clientId: currentUserProfile.clientId,
     });
+    return this.accountSettingsRepository.count(whereWithClientId);
   }
 
   @get('/account-settings', {
@@ -119,7 +123,10 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @requestBody({
       content: {
         'application/json': {
@@ -131,6 +138,14 @@ export class AccountSettingsController {
     @param.query.object('where', getWhereSchemaFor(AccountSettings))
     where?: Where<AccountSettings>,
   ): Promise<Count> {
+    if (
+      accountSettings.clientId &&
+      accountSettings.clientId !== currentUserProfile.clientId
+    ) {
+      throw new HttpErrors.BadRequest(
+        `Invalid clientId: ${currentUserProfile.clientId} for account settings`,
+      );
+    }
     return this.accountSettingsRepository.updateAll(accountSettings, where);
   }
 
@@ -144,10 +159,19 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async findById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.path.number('id') id: number,
   ): Promise<AccountSettings> {
-    return this.accountSettingsRepository.findById(id);
+    const result = await this.accountSettingsRepository.findById(id);
+    if (result && result.clientId !== currentUserProfile.clientId) {
+      throw new HttpErrors.BadRequest(
+        `Wrong clientId: ${currentUserProfile.clientId} for result`,
+      );
+    }
+    return result;
   }
 
   @patch('/account-settings/{id}', {
@@ -157,7 +181,10 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.path.number('id') id: number,
     @requestBody({
       content: {
@@ -168,6 +195,14 @@ export class AccountSettingsController {
     })
     accountSettings: AccountSettings,
   ): Promise<void> {
+    if (
+      accountSettings.clientId &&
+      accountSettings.clientId !== currentUserProfile.clientId
+    ) {
+      throw new HttpErrors.BadRequest(
+        `Wrong clientId: ${currentUserProfile.clientId} for accountsSettings object to update`,
+      );
+    }
     await this.accountSettingsRepository.updateById(id, accountSettings);
   }
 
@@ -178,10 +213,21 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.path.number('id') id: number,
     @requestBody() accountSettings: AccountSettings,
   ): Promise<void> {
+    if (
+      accountSettings.clientId &&
+      accountSettings.clientId !== currentUserProfile.clientId
+    ) {
+      throw new HttpErrors.BadRequest(
+        `Wrong clientId: ${currentUserProfile.clientId} for accountsSettings object to update`,
+      );
+    }
     await this.accountSettingsRepository.replaceById(id, accountSettings);
   }
 
@@ -192,6 +238,7 @@ export class AccountSettingsController {
       },
     },
   })
+  @authenticate('jwt')
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.accountSettingsRepository.deleteById(id);
   }
