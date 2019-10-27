@@ -138,15 +138,13 @@ export class AccountSettingsController {
     @param.query.object('where', getWhereSchemaFor(AccountSettings))
     where?: Where<AccountSettings>,
   ): Promise<Count> {
-    if (
-      accountSettings.clientId &&
-      accountSettings.clientId !== currentUserProfile.clientId
-    ) {
-      throw new HttpErrors.BadRequest(
-        `Invalid clientId: ${currentUserProfile.clientId} for account settings`,
-      );
-    }
-    return this.accountSettingsRepository.updateAll(accountSettings, where);
+    const whereWithClientId = Object.assign({}, where, {
+      clientId: currentUserProfile.clientId,
+    });
+    return this.accountSettingsRepository.updateAll(
+      accountSettings,
+      whereWithClientId,
+    );
   }
 
   @get('/account-settings/{id}', {
@@ -203,7 +201,10 @@ export class AccountSettingsController {
         `Wrong clientId: ${currentUserProfile.clientId} for accountsSettings object to update`,
       );
     }
-    await this.accountSettingsRepository.updateById(id, accountSettings);
+    await this.accountSettingsRepository.updateAll(accountSettings, {
+      id: id,
+      clientId: currentUserProfile.clientId,
+    });
   }
 
   @put('/account-settings/{id}', {
