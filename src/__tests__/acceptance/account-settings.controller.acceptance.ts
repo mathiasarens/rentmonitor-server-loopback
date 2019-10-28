@@ -48,6 +48,39 @@ describe('AccountSettingsController Acceptence Test', () => {
     expect(res.body.fintsPassword).to.be.empty();
   });
 
+  it('should return 422 on create with clientId', async () => {
+    const clientId = await setupClientInDb('TestClient1');
+    const testUser = getTestUser('2');
+    await setupUserInDb(clientId, testUser);
+    const token = await login(testUser);
+    const name = 'Konto1';
+    const fintsBlz = '41627645';
+    const fintsUrl = 'https://fints.gad.de/fints';
+    const fintsUser = 'IDG498345';
+    const fintsPassword = 'utF7$30§';
+
+    //when
+    await createAccountSettingsViaHttp(token, {
+      name: name,
+      clientId: clientId,
+      fintsBlz: fintsBlz,
+      fintsUrl: fintsUrl,
+      fintsUser: fintsUser,
+      fintsPassword: fintsPassword,
+    })
+      .expect(422)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+
+    // then
+    const res = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res.body.length).to.eql(0);
+  });
+
   it('should return newly created account-settings on get', async () => {
     const clientId = await setupClientInDb('TestClient1');
     const testUser = getTestUser('2');
@@ -85,22 +118,6 @@ describe('AccountSettingsController Acceptence Test', () => {
     expect(res.body[0].fintsUrl).to.eql(fintsUrl);
     expect(res.body[0].fintsUser).to.eql(fintsUser);
     expect(res.body[0].fintsPassword).to.be.empty();
-  });
-
-  it('should return empty result on get', async () => {
-    const clientId = await setupClientInDb('TestClient1');
-    const testUser = getTestUser('3');
-    await setupUserInDb(clientId, testUser);
-    const token = await login(testUser);
-
-    // when
-    const res = await http
-      .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token)
-      .expect(200)
-      .expect('Content-Type', 'application/json');
-
-    expect(res.body.length).to.eql(0);
   });
 
   it('should not allow to count account settings from other clients', async () => {
@@ -153,111 +170,225 @@ describe('AccountSettingsController Acceptence Test', () => {
     expect(res.body.count).to.eql(1);
   });
 
-  it('should not allow to patch a single account settings from another client', async () => {
-    const clientId1 = await setupClientInDb('TestClient1');
-    const testUser1 = getTestUser('6');
-    await setupUserInDb(clientId1, testUser1);
-    const clientId2 = await setupClientInDb('TestClient2');
-    const testUser2 = getTestUser('7');
-    await setupUserInDb(clientId2, testUser2);
-    const token1 = await login(testUser1);
-    const token2 = await login(testUser2);
-
-    const name1 = 'Konto1';
-    const fintsBlz1 = '41627645';
-    const fintsUrl1 = 'https://fints.gad.de/fints';
-    const fintsUser1 = 'IDG498345';
-    const fintsPassword1 = 'utF7$30§';
-    await createAccountSettingsViaHttp(token1, {
-      name: name1,
-      fintsBlz: fintsBlz1,
-      fintsUrl: fintsUrl1,
-      fintsUser: fintsUser1,
-      fintsPassword: fintsPassword1,
-    })
-      .expect(200)
-      .expect('Content-Type', 'application/json');
-
-    const name2 = 'Konto2';
-    const fintsBlz2 = '12345678';
-    const fintsUrl2 = 'https://fints.gad.de/fints';
-    const fintsUser2 = 'WLI4984536';
-    const fintsPassword2 = '1aTgs7$3';
-    const accountSettings2Result = await createAccountSettingsViaHttp(token2, {
-      name: name2,
-      fintsBlz: fintsBlz2,
-      fintsUrl: fintsUrl2,
-      fintsUser: fintsUser2,
-      fintsPassword: fintsPassword2,
-    })
-      .expect(200)
-      .expect('Content-Type', 'application/json');
+  it('should return empty result on get', async () => {
+    const clientId = await setupClientInDb('TestClient1');
+    const testUser = getTestUser('3');
+    await setupUserInDb(clientId, testUser);
+    const token = await login(testUser);
 
     // when
-    await http
-      .patch(`/account-settings/${accountSettings2Result.body.id}`)
-      .set('Authorization', 'Bearer ' + token1)
-      .set('Content-Type', 'application/json')
-      .send({clientId: clientId1})
-      .expect(204);
-
     const res = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res.body.length).to.eql(0);
+  });
+
+  it('should return return data for both clients', async () => {
+    const {token1, fintsName1, token2, fintsName2} = await setup2();
+    // when
+    const res1 = await http
       .get('/account-settings')
       .set('Authorization', 'Bearer ' + token1)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
-    expect(res.body.length).to.eql(1);
+    expect(res1.body.length).to.eql(1);
+    expect(res1.body[0].name).to.eql(fintsName1);
+
+    // when
+    const res2 = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token2)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res2.body.length).to.eql(1);
+    expect(res2.body[0].name).to.eql(fintsName2);
   });
 
-  it('should not allow to patch a single account settings to a different clientId', async () => {
-    const clientId1 = await setupClientInDb('TestClient1');
-    const testUser1 = getTestUser('6');
-    await setupUserInDb(clientId1, testUser1);
-    const clientId2 = await setupClientInDb('TestClient2');
-    const testUser2 = getTestUser('7');
-    await setupUserInDb(clientId2, testUser2);
-    const token1 = await login(testUser1);
-    const token2 = await login(testUser2);
-
-    const name1 = 'Konto1';
-    const fintsBlz1 = '41627645';
-    const fintsUrl1 = 'https://fints.gad.de/fints';
-    const fintsUser1 = 'IDG498345';
-    const fintsPassword1 = 'utF7$30§';
-    await createAccountSettingsViaHttp(token1, {
-      name: name1,
-      fintsBlz: fintsBlz1,
-      fintsUrl: fintsUrl1,
-      fintsUser: fintsUser1,
-      fintsPassword: fintsPassword1,
-    })
+  it('should return not return data from another client on get by filtering for a different clientId', async () => {
+    const {token1, clientId2} = await setup2();
+    // when
+    const res = await http
+      .get('/account-settings?filter[where][clientId]=' + clientId2)
+      .set('Authorization', 'Bearer ' + token1)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
-    const name2 = 'Konto2';
-    const fintsBlz2 = '12345678';
-    const fintsUrl2 = 'https://fints.gad.de/fints';
-    const fintsUser2 = 'WLI4984536';
-    const fintsPassword2 = '1aTgs7$3';
-    const accountSettings2Result = await createAccountSettingsViaHttp(token2, {
-      name: name2,
-      fintsBlz: fintsBlz2,
-      fintsUrl: fintsUrl2,
-      fintsUser: fintsUser2,
-      fintsPassword: fintsPassword2,
-    })
+    expect(res.body.length).to.eql(0);
+  });
+
+  it('should return not return data from another client on get by filtering for a different id', async () => {
+    const {token1, accountSettingsResult2} = await setup2();
+
+    // when
+    const res = await http
+      .get(
+        '/account-settings?filter[where][id]=' + accountSettingsResult2.body.id,
+      )
+      .set('Authorization', 'Bearer ' + token1)
       .expect(200)
       .expect('Content-Type', 'application/json');
+
+    expect(res.body.length).to.eql(0);
+  });
+
+  it('should not allow to patch account settings for another client', async () => {
+    const {
+      clientId1,
+      token1,
+      fintsName1,
+      fintsUrl1,
+      token2,
+      fintsName2,
+      fintsUrl2,
+    } = await setup2();
 
     // when
     await http
-      .patch(`/account-settings/${accountSettings2Result.body.id}`)
+      .patch('/account-settings')
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
-      .send({clientId: clientId1})
-      .expect(400);
+      .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
+      .expect(422)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+
+    const res1 = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token1)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res1.body.length).to.eql(1);
+    expect(res1.body[0].name).to.eql(fintsName1);
+    expect(res1.body[0].fintsUrl).to.eql(fintsUrl1);
+
+    const res2 = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token2)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res2.body.length).to.eql(1);
+    expect(res2.body[0].name).to.eql(fintsName2);
+    expect(res2.body[0].fintsUrl).to.eql(fintsUrl2);
   });
+
+  it('should not allow to patch account settings for another client using where clause', async () => {
+    const {
+      clientId1,
+      token1,
+      fintsName1,
+      fintsUrl1,
+      token2,
+      fintsName2,
+      fintsUrl2,
+    } = await setup2();
+
+    // when
+    await http
+      .patch('/account-settings?where[clientId]=' + clientId1)
+      .set('Authorization', 'Bearer ' + token2)
+      .set('Content-Type', 'application/json')
+      .send({fintsUrl: 'http://fints-url.com'})
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    const res1 = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token1)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res1.body.length).to.eql(1);
+    expect(res1.body[0].name).to.eql(fintsName1);
+    expect(res1.body[0].fintsUrl).to.eql(fintsUrl1);
+
+    const res2 = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token2)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res2.body.length).to.eql(1);
+    expect(res2.body[0].name).to.eql(fintsName2);
+    expect(res2.body[0].fintsUrl).to.eql(fintsUrl2);
+  });
+
+  it('should not allow to find account settings for another client by id', async () => {
+    const {accountSettingsResult1, token2} = await setup2();
+
+    // when
+    await http
+      .get('/account-settings/' + accountSettingsResult1.body.id)
+      .set('Authorization', 'Bearer ' + token2)
+      .expect(204);
+  });
+
+  it('should find account settings for the same client by id', async () => {
+    const {
+      fintsName2,
+      fintsUrl2,
+      accountSettingsResult2,
+      token2,
+    } = await setup2();
+
+    // when
+    const res1 = await http
+      .get('/account-settings/' + accountSettingsResult2.body.id)
+      .set('Authorization', 'Bearer ' + token2)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res1.body.name).to.eql(fintsName2);
+    expect(res1.body.fintsUrl).to.eql(fintsUrl2);
+  });
+
+  it('should not allow to patch a single account settings from another client by id', async () => {
+    const {
+      clientId1,
+      token1,
+      fintsName1,
+      fintsUrl1,
+      token2,
+      fintsName2,
+      fintsUrl2,
+      accountSettingsResult2,
+    } = await setup2();
+
+    // when
+    await http
+      .patch(`/account-settings/${accountSettingsResult2.body.id}`)
+      .set('Authorization', 'Bearer ' + token1)
+      .set('Content-Type', 'application/json')
+      .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
+      .expect(422)
+      .expect('Content-Type', 'application/json; charset=utf-8');
+
+    const res1 = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token1)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res1.body.length).to.eql(1);
+    expect(res1.body[0].name).to.eql(fintsName1);
+    expect(res1.body[0].fintsUrl).to.eql(fintsUrl1);
+
+    const res2 = await http
+      .get('/account-settings')
+      .set('Authorization', 'Bearer ' + token2)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    expect(res2.body.length).to.eql(1);
+    expect(res2.body[0].name).to.eql(fintsName2);
+    expect(res2.body[0].fintsUrl).to.eql(fintsUrl2);
+  });
+
   // non test methods --------------------------------------------------------------------
 
   async function clearDatabase() {
@@ -312,5 +443,67 @@ describe('AccountSettingsController Acceptence Test', () => {
       lastName: 'User ' + testId,
     });
     return testUser;
+  }
+
+  async function setup2() {
+    const clientId1 = await setupClientInDb('TestClient1');
+    const testUser1 = getTestUser('1');
+    await setupUserInDb(clientId1, testUser1);
+    const clientId2 = await setupClientInDb('TestClient2');
+    const testUser2 = getTestUser('2');
+    await setupUserInDb(clientId2, testUser2);
+    const token1 = await login(testUser1);
+    const token2 = await login(testUser2);
+
+    const name1 = 'Konto1';
+    const fintsBlz1 = '41627645';
+    const fintsUrl1 = 'https://fints.gad.de/fints1';
+    const fintsUser1 = 'IDG498345';
+    const fintsPassword1 = 'utF7$30§';
+    const accountSettingsResult1 = await createAccountSettingsViaHttp(token1, {
+      name: name1,
+      fintsBlz: fintsBlz1,
+      fintsUrl: fintsUrl1,
+      fintsUser: fintsUser1,
+      fintsPassword: fintsPassword1,
+    })
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    const name2 = 'Konto2';
+    const fintsBlz2 = '12345678';
+    const fintsUrl2 = 'https://fints.gad.de/fints2';
+    const fintsUser2 = 'WLI4984536';
+    const fintsPassword2 = '1aTgs7$3';
+    const accountSettingsResult2 = await createAccountSettingsViaHttp(token2, {
+      name: name2,
+      fintsBlz: fintsBlz2,
+      fintsUrl: fintsUrl2,
+      fintsUser: fintsUser2,
+      fintsPassword: fintsPassword2,
+    })
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    return {
+      clientId1: clientId1,
+      testUser1: testUser1,
+      token1: token1,
+      fintsName1: name1,
+      fintsUrl1: fintsUrl1,
+      fintsBlz1: fintsBlz1,
+      fintsUser1: fintsUser1,
+      fintsPassword1: fintsPassword1,
+      accountSettingsResult1: accountSettingsResult1,
+      clientId2: clientId2,
+      testUser2: testUser2,
+      token2: token2,
+      fintsName2: name2,
+      fintsUrl2: fintsUrl2,
+      fintsBlz2: fintsBlz2,
+      fintsUser2: fintsUser2,
+      fintsPassword2: fintsPassword2,
+      accountSettingsResult2: accountSettingsResult2,
+    };
   }
 });

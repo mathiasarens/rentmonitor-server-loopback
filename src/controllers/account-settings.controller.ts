@@ -130,7 +130,10 @@ export class AccountSettingsController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(AccountSettings, {partial: true}),
+          schema: getModelSchemaRef(AccountSettings, {
+            partial: true,
+            exclude: ['id', 'clientId'],
+          }),
         },
       },
     })
@@ -138,12 +141,9 @@ export class AccountSettingsController {
     @param.query.object('where', getWhereSchemaFor(AccountSettings))
     where?: Where<AccountSettings>,
   ): Promise<Count> {
-    const whereWithClientId = Object.assign({}, where, {
-      clientId: currentUserProfile.clientId,
-    });
     return this.accountSettingsRepository.updateAll(
       accountSettings,
-      whereWithClientId,
+      Object.assign({}, where, {clientId: currentUserProfile.clientId}),
     );
   }
 
@@ -163,13 +163,10 @@ export class AccountSettingsController {
     currentUserProfile: UserProfile,
     @param.path.number('id') id: number,
   ): Promise<AccountSettings> {
-    const result = await this.accountSettingsRepository.findById(id);
-    if (result && result.clientId !== currentUserProfile.clientId) {
-      throw new HttpErrors.BadRequest(
-        `Wrong clientId: ${currentUserProfile.clientId} for result`,
-      );
-    }
-    return result;
+    const result = await this.accountSettingsRepository.find({
+      where: {clientId: currentUserProfile.clientId, id: id},
+    });
+    return result[0];
   }
 
   @patch('/account-settings/{id}', {
@@ -187,20 +184,15 @@ export class AccountSettingsController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(AccountSettings, {partial: true}),
+          schema: getModelSchemaRef(AccountSettings, {
+            partial: true,
+            exclude: ['clientId'],
+          }),
         },
       },
     })
     accountSettings: AccountSettings,
   ): Promise<void> {
-    if (
-      accountSettings.clientId &&
-      accountSettings.clientId !== currentUserProfile.clientId
-    ) {
-      throw new HttpErrors.BadRequest(
-        `Wrong clientId: ${currentUserProfile.clientId} for accountsSettings object to update`,
-      );
-    }
     await this.accountSettingsRepository.updateAll(accountSettings, {
       id: id,
       clientId: currentUserProfile.clientId,
