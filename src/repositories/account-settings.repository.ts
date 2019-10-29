@@ -1,17 +1,18 @@
 import {Getter, inject} from '@loopback/core';
 import {
   BelongsToAccessor,
+  Count,
   DataObject,
   DefaultCrudRepository,
   Filter,
   Options,
   repository,
+  Where,
 } from '@loopback/repository';
 import {ClientRepository} from '.';
 import {RentmonitorDataSource} from '../datasources';
 import {AccountSettings, AccountSettingsRelations, Client} from '../models';
 import {Crypto} from '../services/cipher/crypto.service';
-
 export class AccountSettingsRepository extends DefaultCrudRepository<
   AccountSettings,
   typeof AccountSettings.prototype.id,
@@ -55,6 +56,25 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
   ): Promise<AccountSettings[]> {
     const results: AccountSettings[] = await super.find(filter, options);
     return Promise.resolve(this.decryptList(results));
+  }
+
+  public async updateAll(
+    data: DataObject<AccountSettings>,
+    where?: Where<AccountSettings>,
+    options?: Options,
+  ): Promise<Count> {
+    const encryptedEntity = this.encrypt(data);
+    const count = await super.updateAll(encryptedEntity, where, options);
+    return count;
+  }
+
+  public async replaceById(
+    id: number,
+    data: DataObject<AccountSettings>,
+    options?: Options,
+  ): Promise<void> {
+    const encryptedEntity = this.encrypt(data);
+    await super.replaceById(id, encryptedEntity, options);
   }
 
   private encrypt(
