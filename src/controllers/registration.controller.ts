@@ -34,7 +34,7 @@ export class RegistrationController {
     public userService: UserService<User, Credentials>,
   ) {}
 
-  @post('/registrations', {
+  @post('/registration', {
     responses: {
       '200': {
         description: 'Token',

@@ -64,7 +64,7 @@ describe('RegistrationController', () => {
     password: string,
   ) {
     return http
-      .post('/registrations')
+      .post('/registration')
       .send({clientName: clientName, email: email, password: password})
       .set('Content-Type', 'application/json');
   }
