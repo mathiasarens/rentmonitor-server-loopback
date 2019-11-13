@@ -6,6 +6,30 @@ export async function migrate(args: string[]) {
 
   const app = new RentmonitorServerApplication();
   app.bind('datasources.encryption.password').to('dummy_password');
+  app.bind('datasources.encryption.salt').to('dummy_salt');
+  if (process.env.NODE_ENV === 'test') {
+    app.bind('datasources.config.rentmonitor').to({
+      name: 'rentmonitor_test',
+      connector: 'postgresql',
+      url: '',
+      host: 'localhost',
+      port: 5432,
+      user: 'rentmonitor_test',
+      password: 'rentmonitor',
+      database: 'rentmonitor_test',
+    });
+  } else {
+    app.bind('datasources.config.rentmonitor').to({
+      name: 'rentmonitor',
+      connector: 'postgresql',
+      url: '',
+      host: process.env.RENTMONITOR_DB_HOST,
+      port: process.env.RENTMONITOR_DB_PORT,
+      user: process.env.RENTMONITOR_DB_USER,
+      password: process.env.RENTMONITOR_DB_PASSWORD,
+      database: process.env.RENTMONITOR_DB_USER,
+    });
+  }
   await app.boot();
   await app.migrateSchema({
     existingSchema,

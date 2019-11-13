@@ -35,6 +35,7 @@ export async function givenEmptyDatabase() {
     testdb,
     clientRepositoryGetter,
     'test_password',
+    'test_salt',
   );
   const accountTransactionRepository = new AccountTransactionRepository(
     testdb,

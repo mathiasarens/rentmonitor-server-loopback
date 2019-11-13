@@ -30,6 +30,8 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
     clientRepositoryGetter: Getter<ClientRepository>,
     @inject('datasources.encryption.password')
     password: string,
+    @inject('datasources.encryption.salt')
+    salt: string,
   ) {
     super(AccountSettings, dataSource);
 
@@ -38,7 +40,7 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
       clientRepositoryGetter,
     );
 
-    this.crypto = new Crypto('aes-192-cbc', password, '!!RentMonitor!!');
+    this.crypto = new Crypto('aes-192-cbc', password, salt);
   }
 
   public async create(

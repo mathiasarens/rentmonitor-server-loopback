@@ -56,6 +56,7 @@ describe('Deletion Service Integration', () => {
       testdb,
       clientRepositoryGetter,
       'test_password',
+      'test_salt',
     );
     accountTransactionLogRepository = new AccountTransactionLogRepository(
       testdb,

@@ -77,10 +77,6 @@ export class RentmonitorServerApplication extends BootMixin(
     // Bind package.json to the application context
     this.bind(PackageKey).to(pkg);
 
-    this.bind(TokenServiceBindings.TOKEN_SECRET).to(
-      TokenServiceConstants.TOKEN_SECRET_VALUE,
-    );
-
     this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
       TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     );

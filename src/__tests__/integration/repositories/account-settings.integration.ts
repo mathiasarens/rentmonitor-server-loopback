@@ -21,6 +21,7 @@ describe('Account Settings Repository Integration Tests', () => {
       testdb,
       clientRepositoryGetter,
       'test_password',
+      'test_salt',
     );
   });
 

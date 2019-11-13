@@ -13,6 +13,7 @@ import {
   TenantRepository,
   UserRepository,
 } from '../../repositories';
+import {TokenServiceBindings} from './../../keys';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
@@ -21,7 +22,19 @@ export async function setupApplication(): Promise<AppWithClient> {
     //rest: givenHttpServerConfig(),
     rest: config,
   });
-  app.bind('datasources.encryption.password').to('test');
+  app.bind('datasources.encryption.password').to('password');
+  app.bind('datasources.encryption.salt').to('salt');
+  app.bind('datasources.config.rentmonitor').to({
+    name: 'rentmonitor_test',
+    connector: 'postgresql',
+    url: '',
+    host: 'localhost',
+    port: 5432,
+    user: 'rentmonitor_test',
+    password: 'rentmonitor',
+    database: 'rentmonitor_test',
+  });
+  app.bind(TokenServiceBindings.TOKEN_SECRET).to('test');
   await app.boot();
   await app.start();
 
