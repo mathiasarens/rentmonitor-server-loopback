@@ -24,10 +24,7 @@ import {UserRepository} from '../repositories';
 import {Credentials} from '../repositories/user.repository';
 import {PasswordHasher} from '../services/authentication/hash.password.bcryptjs';
 import {validateCredentials} from '../services/authentication/validator';
-import {
-  CredentialsRequestBody,
-  UserProfileSchema,
-} from './specs/user-controller.specs';
+import {UserProfileSchema} from './specs/user-controller.specs';
 export class UserController {
   constructor(
     @repository(UserRepository) public userRepository: UserRepository,
@@ -91,8 +88,14 @@ export class UserController {
       },
     },
   })
-  async findById(@param.path.string('userId') userId: string): Promise<User> {
-    return this.userRepository.findById(userId, {
+  @authenticate('jwt')
+  async findById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+    @param.path.string('userId') userId: string,
+  ): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: {id: userId, clientId: currentUserProfile.clientId},
       fields: {password: false},
     });
   }
@@ -137,7 +140,7 @@ export class UserController {
     },
   })
   async login(
-    @requestBody(CredentialsRequestBody) credentials: Credentials,
+    @requestBody() credentials: Credentials,
   ): Promise<{token: string}> {
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);

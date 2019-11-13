@@ -13,7 +13,10 @@ import {
   TenantRepository,
   UserRepository,
 } from '../../repositories';
+import {JWTService} from '../../services/authentication/jwt.service';
 import {TokenServiceBindings} from './../../keys';
+
+const JWT_TOKEN_SECRET = 'test';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
@@ -34,18 +37,24 @@ export async function setupApplication(): Promise<AppWithClient> {
     password: 'rentmonitor',
     database: 'rentmonitor_test',
   });
-  app.bind(TokenServiceBindings.TOKEN_SECRET).to('test');
+  app.bind(TokenServiceBindings.TOKEN_SECRET).to(JWT_TOKEN_SECRET);
   await app.boot();
   await app.start();
 
   const client = createRestAppClient(app);
 
-  return {app, client};
+  const jwtService = new JWTService(
+    JWT_TOKEN_SECRET,
+    TokenServiceBindings.TOKEN_EXPIRES_IN.key,
+  );
+
+  return {app, client, jwtService};
 }
 
 export interface AppWithClient {
   app: RentmonitorServerApplication;
   client: Client;
+  jwtService: JWTService;
 }
 
 export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
