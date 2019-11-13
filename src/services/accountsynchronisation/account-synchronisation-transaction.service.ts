@@ -15,10 +15,12 @@ export class AccountSynchronisationSaveService {
     const newAccountTransactionsInAscendingOrder = accountTransactions.sort(
       this.compareByDateIbanBicNameTextValue,
     );
-    const alreadySavedAccountTransactionsFromDb = (await this.findAlreadySavedAccountTransactions(
-      newAccountTransactionsInAscendingOrder,
-      accountSettings,
-    )).sort(this.compareByDateIbanBicNameTextValue);
+    const alreadySavedAccountTransactionsFromDb = (
+      await this.findAlreadySavedAccountTransactions(
+        newAccountTransactionsInAscendingOrder,
+        accountSettings,
+      )
+    ).sort(this.compareByDateIbanBicNameTextValue);
 
     const mergedAccountTransactions = this.merge(
       alreadySavedAccountTransactionsFromDb,

@@ -1,7 +1,7 @@
 import {inject} from '@loopback/core';
 import {juggler} from '@loopback/repository';
-import * as config from './rentmonitor.datasource.json';
-import * as testConfig from './rentmonitor_test.datasource.json';
+import * as config from './rentmonitor.datasource.config.json';
+import * as testConfig from './rentmonitor_test.datasource.config.json';
 
 export class RentmonitorDataSource extends juggler.DataSource {
   static dataSourceName = 'rentmonitor';

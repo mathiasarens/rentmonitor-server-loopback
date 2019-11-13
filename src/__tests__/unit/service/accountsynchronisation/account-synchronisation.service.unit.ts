@@ -23,21 +23,11 @@ import {
 
 describe('AccountSynchronisationService Unit Tests', () => {
   let accountTransactionService: AccountSynchronisationService;
-  let accountSettingsRepositoryStub: StubbedInstanceWithSinonAccessor<
-    AccountSettingsRepository
-  >;
-  let fintsAccountSynchronisationStub: SinonStubbedInstance<
-    FintsAccountTransactionSynchronizationService
-  >;
-  let accountTransactionLogRepositoryStub: StubbedInstanceWithSinonAccessor<
-    AccountTransactionLogRepository
-  >;
-  let accountSynchronisationSaveServiceStub: SinonStubbedInstance<
-    AccountSynchronisationSaveService
-  >;
-  let accountSynchronisationBookingServiceStub: SinonStubbedInstance<
-    AccountSynchronisationBookingService
-  >;
+  let accountSettingsRepositoryStub: StubbedInstanceWithSinonAccessor<AccountSettingsRepository>;
+  let fintsAccountSynchronisationStub: SinonStubbedInstance<FintsAccountTransactionSynchronizationService>;
+  let accountTransactionLogRepositoryStub: StubbedInstanceWithSinonAccessor<AccountTransactionLogRepository>;
+  let accountSynchronisationSaveServiceStub: SinonStubbedInstance<AccountSynchronisationSaveService>;
+  let accountSynchronisationBookingServiceStub: SinonStubbedInstance<AccountSynchronisationBookingService>;
 
   beforeEach('setup service and database', async () => {
     accountSettingsRepositoryStub = createStubInstance(
