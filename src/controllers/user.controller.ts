@@ -50,6 +50,7 @@ export class UserController {
       },
     },
   })
+  @authenticate('jwt')
   async create(@requestBody() user: User): Promise<User> {
     // ensure a valid email value and password value
     validateCredentials(_.pick(user, ['email', 'password']));

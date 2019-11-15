@@ -1,14 +1,13 @@
-import { DataObject } from '@loopback/repository';
-import { UserProfile } from '@loopback/security';
-import { Client, expect } from '@loopback/testlab';
-import { RentmonitorServerApplication } from '../..';
-import { PasswordHasherBindings } from '../../keys';
-import { User } from '../../models';
-import { ClientRepository, UserRepository } from '../../repositories';
-import { PasswordHasher } from '../../services/authentication/hash.password.bcryptjs';
-import { JWTService } from '../../services/authentication/jwt.service';
-import { givenEmptyDatabase, setupApplication } from './test-helper';
-
+import {DataObject} from '@loopback/repository';
+import {UserProfile} from '@loopback/security';
+import {Client, expect} from '@loopback/testlab';
+import {RentmonitorServerApplication} from '../..';
+import {PasswordHasherBindings} from '../../keys';
+import {User} from '../../models';
+import {ClientRepository, UserRepository} from '../../repositories';
+import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
+import {JWTService} from '../../services/authentication/jwt.service';
+import {givenEmptyDatabase, setupApplication} from './test-helper';
 
 describe('UserController Acceptence Test', () => {
   let app: RentmonitorServerApplication;
@@ -16,7 +15,7 @@ describe('UserController Acceptence Test', () => {
   let jwtService: JWTService;
 
   before('setupApplication', async () => {
-    ({ app, client: http, jwtService } = await setupApplication());
+    ({app, client: http, jwtService} = await setupApplication());
   });
   beforeEach(clearDatabase);
 
@@ -32,7 +31,7 @@ describe('UserController Acceptence Test', () => {
     const res = await http
       .post('/users/login')
       .set('Content-Type', 'application/json')
-      .send({ email: testUser.email, password: testUser.password });
+      .send({email: testUser.email, password: testUser.password});
 
     expect(res.status).to.eql(200);
     const userProfile = await decryptJWTToken(res.body.token);
@@ -47,7 +46,7 @@ describe('UserController Acceptence Test', () => {
     const res = await http
       .post('/users/login')
       .set('Content-Type', 'application/json')
-      .send({ email: testUser.email, password: '1' });
+      .send({email: testUser.email, password: '1'});
 
     expect(res.status).to.eql(401);
     expect(res.body.error.message).to.eql('Invalid email or password.');
@@ -65,7 +64,7 @@ describe('UserController Acceptence Test', () => {
     const loginResponse = await http
       .post('/users/login')
       .set('Content-Type', 'application/json')
-      .send({ email: testUser1.email, password: testUser1.password });
+      .send({email: testUser1.email, password: testUser1.password});
 
     expect(loginResponse.status).to.eql(200);
 
@@ -87,7 +86,7 @@ describe('UserController Acceptence Test', () => {
     const loginResponse = await http
       .post('/users/login')
       .set('Content-Type', 'application/json')
-      .send({ email: testUser1.email, password: testUser1.password });
+      .send({email: testUser1.email, password: testUser1.password});
 
     expect(loginResponse.status).to.eql(200);
 
@@ -116,7 +115,7 @@ describe('UserController Acceptence Test', () => {
 
   async function setupClientInDb(name: string): Promise<number> {
     const clientRepository = await app.getRepository(ClientRepository);
-    const clientFromDb = await clientRepository.create({ name: name });
+    const clientFromDb = await clientRepository.create({name: name});
     return clientFromDb.id;
   }
 
