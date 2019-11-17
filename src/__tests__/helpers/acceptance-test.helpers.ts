@@ -4,6 +4,7 @@ import {
   givenHttpServerConfig,
 } from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
+import {TokenServiceBindings} from '../../keys';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
@@ -14,7 +15,6 @@ import {
   UserRepository,
 } from '../../repositories';
 import {JWTService} from '../../services/authentication/jwt.service';
-import {TokenServiceBindings} from './../../keys';
 
 const JWT_TOKEN_SECRET = 'test';
 

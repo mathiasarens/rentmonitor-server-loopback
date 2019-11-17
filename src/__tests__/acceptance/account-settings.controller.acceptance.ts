@@ -5,7 +5,10 @@ import {PasswordHasherBindings} from '../../keys';
 import {User} from '../../models';
 import {ClientRepository, UserRepository} from '../../repositories';
 import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
-import {givenEmptyDatabase, setupApplication} from './test-helper';
+import {
+  givenEmptyDatabase,
+  setupApplication,
+} from '../helpers/acceptance-test.helpers';
 
 describe('AccountSettingsController Acceptence Test', () => {
   let app: RentmonitorServerApplication;

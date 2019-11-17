@@ -1,6 +1,6 @@
 import {Client} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
-import {setupApplication} from './test-helper';
+import {setupApplication} from '../helpers/acceptance-test.helpers';
 
 describe('HomePage', () => {
   let app: RentmonitorServerApplication;
