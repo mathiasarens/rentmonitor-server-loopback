@@ -1,8 +1,9 @@
+import {BindingKey} from '@loopback/context';
 import {repository} from '@loopback/repository';
 import {AccountSettings, AccountTransaction} from '../../models';
 import {AccountTransactionRepository} from '../../repositories/account-transaction.repository';
 
-export class AccountSynchronisationSaveService {
+export class AccountSynchronisationTransactionService {
   constructor(
     @repository(AccountTransactionRepository)
     private accountTransactionRepository: AccountTransactionRepository,
@@ -103,4 +104,10 @@ export class AccountSynchronisationSaveService {
       a.amount! - b.amount!
     );
   }
+}
+
+export namespace AccountSynchronisationTransactionServiceBindings {
+  export const SERVICE = BindingKey.create<
+    AccountSynchronisationTransactionService
+  >('services.accountsynchronisationtransaction.service');
 }

@@ -1,4 +1,4 @@
-import {inject} from '@loopback/core';
+import {BindingKey, inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {
   AccountSettings,
@@ -7,11 +7,18 @@ import {
 } from '../../models';
 import {AccountSettingsRepository} from '../../repositories';
 import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
-import {AccountSynchronisationBookingService} from './account-synchronisation-booking.service';
-import {AccountSynchronisationSaveService} from './account-synchronisation-transaction.service';
+import {
+  AccountSynchronisationBookingService,
+  AccountSynchronisationBookingServiceBindings,
+} from './account-synchronisation-booking.service';
+import {
+  AccountSynchronisationTransactionService,
+  AccountSynchronisationTransactionServiceBindings,
+} from './account-synchronisation-transaction.service';
 import {
   FinTsAccountTransactionDTO,
   FintsAccountTransactionSynchronizationService,
+  FintsAccountTransactionSynchronizationServiceBindings,
 } from './fints.service';
 
 export class AccountSynchronisationService {
@@ -20,15 +27,11 @@ export class AccountSynchronisationService {
     private accountSettingsRepository: AccountSettingsRepository,
     @repository(AccountTransactionLogRepository)
     private accountTransactionLogRepository: AccountTransactionLogRepository,
-    @inject(
-      'services.accountsynchronisation.FintsAccountTransactionSynchronization',
-    )
+    @inject(FintsAccountTransactionSynchronizationServiceBindings.SERVICE)
     private fintsAccountTransactionSynchronization: FintsAccountTransactionSynchronizationService,
-    @inject('services.accountsynchronisation.AccountSynchronisationSaveService')
-    private accountSynchronisationSaveService: AccountSynchronisationSaveService,
-    @inject(
-      'services.accountsynchronisation.AccountSynchronisationBookingService',
-    )
+    @inject(AccountSynchronisationTransactionServiceBindings.SERVICE)
+    private accountSynchronisationSaveService: AccountSynchronisationTransactionService,
+    @inject(AccountSynchronisationBookingServiceBindings.SERVICE)
     private accountSynchronisationBookingService: AccountSynchronisationBookingService,
   ) {}
 
@@ -120,4 +123,10 @@ export class AccountSynchronisationService {
       accountTransactionsToSave,
     );
   }
+}
+
+export namespace AccountSynchronisationServiceBindings {
+  export const SERVICE = BindingKey.create<AccountSynchronisationService>(
+    'services.accountsynchronisation.service',
+  );
 }

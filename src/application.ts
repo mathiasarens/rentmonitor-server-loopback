@@ -20,6 +20,22 @@ import {
   UserServiceBindings,
 } from './keys';
 import {MyAuthenticationSequence} from './sequence';
+import {
+  AccountSynchronisationBookingService,
+  AccountSynchronisationBookingServiceBindings,
+} from './services/accountsynchronisation/account-synchronisation-booking.service';
+import {
+  AccountSynchronisationTransactionService,
+  AccountSynchronisationTransactionServiceBindings,
+} from './services/accountsynchronisation/account-synchronisation-transaction.service';
+import {
+  AccountSynchronisationService,
+  AccountSynchronisationServiceBindings,
+} from './services/accountsynchronisation/account-synchronisation.service';
+import {
+  FintsAccountTransactionSynchronizationService,
+  FintsAccountTransactionSynchronizationServiceBindings,
+} from './services/accountsynchronisation/fints.service';
 import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
 import {JWTService} from './services/authentication/jwt.service';
 import {MyUserService} from './services/authentication/user.service';
@@ -88,5 +104,18 @@ export class RentmonitorServerApplication extends BootMixin(
     this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
 
     this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
+
+    this.bind(AccountSynchronisationServiceBindings.SERVICE).toClass(
+      AccountSynchronisationService,
+    );
+    this.bind(
+      FintsAccountTransactionSynchronizationServiceBindings.SERVICE,
+    ).toClass(FintsAccountTransactionSynchronizationService);
+    this.bind(AccountSynchronisationTransactionServiceBindings.SERVICE).toClass(
+      AccountSynchronisationTransactionService,
+    );
+    this.bind(AccountSynchronisationBookingServiceBindings.SERVICE).toClass(
+      AccountSynchronisationBookingService,
+    );
   }
 }

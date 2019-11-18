@@ -1,3 +1,4 @@
+import {BindingKey} from '@loopback/context';
 import {repository} from '@loopback/repository';
 import {AccountTransaction, Booking, BookingType, Contract} from '../../models';
 import {
@@ -86,4 +87,10 @@ export class AccountSynchronisationBookingService {
       accountTransactionId: accountTransaction.id,
     });
   }
+}
+
+export namespace AccountSynchronisationBookingServiceBindings {
+  export const SERVICE = BindingKey.create<
+    AccountSynchronisationBookingService
+  >('services.accountsynchronisationbooking.service');
 }

@@ -1,4 +1,4 @@
-import {bind, BindingScope} from '@loopback/core';
+import {bind, BindingKey, BindingScope} from '@loopback/core';
 import {FinTSClient, TransactionRecord} from 'openfin-ts';
 
 @bind({
@@ -89,4 +89,10 @@ export class FinTsAccountTransactionDTO {
     public text?: string,
     public value?: number,
   ) {}
+}
+
+export namespace FintsAccountTransactionSynchronizationServiceBindings {
+  export const SERVICE = BindingKey.create<
+    FintsAccountTransactionSynchronizationService
+  >('services.fintsaccountsynchronisation.service');
 }

@@ -8,7 +8,7 @@ import {
   ContractRepository,
   TenantRepository,
 } from '../../../../repositories';
-import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
+import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
 import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
@@ -18,7 +18,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
   let contractRepository: ContractRepository;
   let bookingRepository: BookingRepository;
   let accountTransactionRepository: AccountTransactionRepository;
-  let accountTransactionSaveService: AccountSynchronisationSaveService;
+  let accountTransactionSaveService: AccountSynchronisationTransactionService;
 
   beforeEach('setup service and database', async () => {
     await givenEmptyDatabase();
@@ -43,7 +43,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
       Getter.fromValue(bookingRepository),
     );
 
-    accountTransactionSaveService = new AccountSynchronisationSaveService(
+    accountTransactionSaveService = new AccountSynchronisationTransactionService(
       accountTransactionRepository,
     );
   });

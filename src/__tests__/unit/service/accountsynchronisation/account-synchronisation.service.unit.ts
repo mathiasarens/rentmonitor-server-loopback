@@ -14,7 +14,7 @@ import {
   AccountTransactionLogRepository,
 } from '../../../../repositories';
 import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
-import {AccountSynchronisationSaveService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
+import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 import {AccountSynchronisationService} from '../../../../services/accountsynchronisation/account-synchronisation.service';
 import {
   FinTsAccountTransactionDTO,
@@ -26,7 +26,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
   let accountSettingsRepositoryStub: StubbedInstanceWithSinonAccessor<AccountSettingsRepository>;
   let fintsAccountSynchronisationStub: SinonStubbedInstance<FintsAccountTransactionSynchronizationService>;
   let accountTransactionLogRepositoryStub: StubbedInstanceWithSinonAccessor<AccountTransactionLogRepository>;
-  let accountSynchronisationSaveServiceStub: SinonStubbedInstance<AccountSynchronisationSaveService>;
+  let accountSynchronisationSaveServiceStub: SinonStubbedInstance<AccountSynchronisationTransactionService>;
   let accountSynchronisationBookingServiceStub: SinonStubbedInstance<AccountSynchronisationBookingService>;
 
   beforeEach('setup service and database', async () => {
@@ -40,7 +40,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
       FintsAccountTransactionSynchronizationService,
     );
     accountSynchronisationSaveServiceStub = sinon.createStubInstance(
-      AccountSynchronisationSaveService,
+      AccountSynchronisationTransactionService,
     );
     accountSynchronisationBookingServiceStub = sinon.createStubInstance(
       AccountSynchronisationBookingService,
@@ -50,7 +50,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
       accountSettingsRepositoryStub,
       accountTransactionLogRepositoryStub,
       (fintsAccountSynchronisationStub as unknown) as FintsAccountTransactionSynchronizationService,
-      (accountSynchronisationSaveServiceStub as unknown) as AccountSynchronisationSaveService,
+      (accountSynchronisationSaveServiceStub as unknown) as AccountSynchronisationTransactionService,
       (accountSynchronisationBookingServiceStub as unknown) as AccountSynchronisationBookingService,
     );
   });

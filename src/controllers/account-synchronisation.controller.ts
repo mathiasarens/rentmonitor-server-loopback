@@ -1,13 +1,15 @@
 import {authenticate, AuthenticationBindings} from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {repository} from '@loopback/repository';
 import {post} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
-import {AccountSynchronisationService} from '../services/accountsynchronisation/account-synchronisation.service';
+import {
+  AccountSynchronisationService,
+  AccountSynchronisationServiceBindings,
+} from '../services/accountsynchronisation/account-synchronisation.service';
 
 export class AccountSynchronisationController {
   constructor(
-    @repository(AccountSynchronisationService)
+    @inject(AccountSynchronisationServiceBindings.SERVICE)
     public accountSynchronisationService: AccountSynchronisationService,
   ) {}
 
