@@ -37,9 +37,10 @@ export class FintsAccountTransactionSynchronizationService {
         });
       });
       await fintsClient.close();
-      return Promise.resolve(accountTransactions);
+      return await Promise.resolve(accountTransactions);
     } catch (err) {
       console.log(err);
+      // eslint-disable-next-line @typescript-eslint/return-await
       return Promise.reject();
     }
   }

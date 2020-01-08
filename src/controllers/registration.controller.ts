@@ -60,7 +60,6 @@ export class RegistrationController {
     validateCredentials(_.pick(registration, ['email', 'password']));
 
     // encrypt the password
-    // eslint-disable-next-line require-atomic-updates
     registration.password = await this.passwordHasher.hashPassword(
       registration.password,
     );
