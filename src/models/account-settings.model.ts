@@ -50,6 +50,11 @@ export class AccountSettings extends Entity {
   })
   fintsPassword: string;
 
+  @property({
+    type: 'string',
+  })
+  selectedAccount: string;
+
   constructor(data?: Partial<AccountSettings>) {
     super(data);
   }

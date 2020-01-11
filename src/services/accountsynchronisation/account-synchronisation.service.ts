@@ -17,8 +17,8 @@ import {
 } from './account-synchronisation-transaction.service';
 import {
   FinTsAccountTransactionDTO,
-  FintsAccountTransactionSynchronizationService,
-  FintsAccountTransactionSynchronizationServiceBindings,
+  FintsService,
+  FintsServiceBindings,
 } from './fints.service';
 
 export class AccountSynchronisationService {
@@ -27,8 +27,8 @@ export class AccountSynchronisationService {
     private accountSettingsRepository: AccountSettingsRepository,
     @repository(AccountTransactionLogRepository)
     private accountTransactionLogRepository: AccountTransactionLogRepository,
-    @inject(FintsAccountTransactionSynchronizationServiceBindings.SERVICE)
-    private fintsAccountTransactionSynchronization: FintsAccountTransactionSynchronizationService,
+    @inject(FintsServiceBindings.SERVICE)
+    private fintsAccountTransactionSynchronization: FintsService,
     @inject(AccountSynchronisationTransactionServiceBindings.SERVICE)
     private accountSynchronisationSaveService: AccountSynchronisationTransactionService,
     @inject(AccountSynchronisationBookingServiceBindings.SERVICE)
@@ -67,11 +67,12 @@ export class AccountSynchronisationService {
     now: Date,
     accountSettings: AccountSettings,
   ): Promise<AccountTransaction[]> {
-    const rawAccountTransactions: FinTsAccountTransactionDTO[] = await this.fintsAccountTransactionSynchronization.load(
+    const rawAccountTransactions: FinTsAccountTransactionDTO[] = await this.fintsAccountTransactionSynchronization.fetchStatements(
       accountSettings.fintsBlz!,
       accountSettings.fintsUrl!,
       accountSettings.fintsUser!,
       accountSettings.fintsPassword!,
+      accountSettings.selectedAccount,
     );
     await this.logAccountTransactions(
       now,

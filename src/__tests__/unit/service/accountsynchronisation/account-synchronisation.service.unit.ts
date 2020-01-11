@@ -18,13 +18,13 @@ import {AccountSynchronisationTransactionService} from '../../../../services/acc
 import {AccountSynchronisationService} from '../../../../services/accountsynchronisation/account-synchronisation.service';
 import {
   FinTsAccountTransactionDTO,
-  FintsAccountTransactionSynchronizationService,
+  FintsService,
 } from '../../../../services/accountsynchronisation/fints.service';
 
 describe('AccountSynchronisationService Unit Tests', () => {
   let accountTransactionService: AccountSynchronisationService;
   let accountSettingsRepositoryStub: StubbedInstanceWithSinonAccessor<AccountSettingsRepository>;
-  let fintsAccountSynchronisationStub: SinonStubbedInstance<FintsAccountTransactionSynchronizationService>;
+  let fintsAccountSynchronisationStub: SinonStubbedInstance<FintsService>;
   let accountTransactionLogRepositoryStub: StubbedInstanceWithSinonAccessor<AccountTransactionLogRepository>;
   let accountSynchronisationSaveServiceStub: SinonStubbedInstance<AccountSynchronisationTransactionService>;
   let accountSynchronisationBookingServiceStub: SinonStubbedInstance<AccountSynchronisationBookingService>;
@@ -36,9 +36,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
     accountTransactionLogRepositoryStub = createStubInstance(
       AccountTransactionLogRepository,
     );
-    fintsAccountSynchronisationStub = sinon.createStubInstance(
-      FintsAccountTransactionSynchronizationService,
-    );
+    fintsAccountSynchronisationStub = sinon.createStubInstance(FintsService);
     accountSynchronisationSaveServiceStub = sinon.createStubInstance(
       AccountSynchronisationTransactionService,
     );
@@ -49,7 +47,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
     accountTransactionService = new AccountSynchronisationService(
       accountSettingsRepositoryStub,
       accountTransactionLogRepositoryStub,
-      (fintsAccountSynchronisationStub as unknown) as FintsAccountTransactionSynchronizationService,
+      (fintsAccountSynchronisationStub as unknown) as FintsService,
       (accountSynchronisationSaveServiceStub as unknown) as AccountSynchronisationTransactionService,
       (accountSynchronisationBookingServiceStub as unknown) as AccountSynchronisationBookingService,
     );
@@ -68,9 +66,10 @@ describe('AccountSynchronisationService Unit Tests', () => {
       fintsUrl: 'url',
       fintsUser: 'user',
       fintsPassword: 'password',
+      selectedAccount: 'serializedFintsAccount',
     });
     accountSettingsRepositoryStub.stubs.find.resolves([accountSettings1]);
-    fintsAccountSynchronisationStub.load.resolves([
+    fintsAccountSynchronisationStub.fetchStatements.resolves([
       new FinTsAccountTransactionDTO(
         'rawstring1',
         new Date(2019, 3, 27),
@@ -108,11 +107,12 @@ describe('AccountSynchronisationService Unit Tests', () => {
 
     // then
     sinon.assert.calledWithExactly(
-      fintsAccountSynchronisationStub.load,
+      fintsAccountSynchronisationStub.fetchStatements,
       'blz',
       'url',
       'user',
       'password',
+      'serializedFintsAccount',
     );
 
     sinon.assert.calledWithExactly(

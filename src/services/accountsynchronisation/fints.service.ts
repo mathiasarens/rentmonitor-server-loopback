@@ -1,79 +1,106 @@
 import {bind, BindingKey, BindingScope} from '@loopback/core';
-import {FinTSClient, TransactionRecord} from 'openfin-ts';
+import {PinTanClient, SEPAAccount, Transaction} from 'fints-psd2-lib';
 
 @bind({
   scope: BindingScope.SINGLETON,
   tags: ['service'],
 })
-export class FintsAccountTransactionSynchronizationService {
+export class FintsService {
   constructor() {}
 
-  public async load(
+  public async fetchStatements(
     fintsBlz: string,
     fintsUrl: string,
     fintsUser: string,
     fintsPassword: string,
+    selectedAccount: string,
   ): Promise<FinTsAccountTransactionDTO[]> {
     const accountTransactions: FinTsAccountTransactionDTO[] = [];
-    try {
-      const fintsClient: FinTSClient = new FinTSClient(
-        fintsBlz,
-        fintsUrl,
-        fintsUser!,
-        fintsPassword!,
-      );
-      await fintsClient.connect();
-      const transactions = await fintsClient.getTransactions(
-        fintsClient.konten[0].sepaData,
-        null,
-        null,
-      );
+    const fintsClient: PinTanClient = new PinTanClient({
+      blz: fintsBlz,
+      url: fintsUrl,
+      name: fintsUser!,
+      pin: fintsPassword!,
+      productId: '9FA6681DEC0CF3046BFC2F8A6',
+    });
+    const account: SEPAAccount = JSON.parse(selectedAccount);
 
-      transactions.forEach(transaction => {
-        transaction.records.forEach(transactionRecord => {
-          accountTransactions.push(
-            this.parseFinTsTransactionRecord(transactionRecord),
-          );
-        });
+    const endDate = new Date();
+    const startDate = new Date(endDate);
+    startDate.setMonth(startDate.getMonth() - 3);
+
+    const statements = await fintsClient.statements(
+      account,
+      startDate,
+      endDate,
+    );
+    statements.forEach(statement => {
+      statement.transactions.forEach(transactionRecord => {
+        accountTransactions.push(
+          this.parseFinTsTransactionRecord(transactionRecord),
+        );
       });
-      await fintsClient.close();
-      return await Promise.resolve(accountTransactions);
-    } catch (err) {
-      console.log(err);
-      // eslint-disable-next-line @typescript-eslint/return-await
-      return Promise.reject();
-    }
+    });
+
+    return Promise.resolve(accountTransactions);
+  }
+
+  public async fetchAccounts(
+    fintsBlz: string,
+    fintsUrl: string,
+    fintsUser: string,
+    fintsPassword: string,
+  ): Promise<FinTsAccountDTO[]> {
+    const fintsClient: PinTanClient = new PinTanClient({
+      blz: fintsBlz,
+      url: fintsUrl,
+      name: fintsUser!,
+      pin: fintsPassword!,
+      productId: '9FA6681DEC0CF3046BFC2F8A6',
+    });
+
+    const accounts = await fintsClient.accounts();
+
+    return accounts.map(
+      account =>
+        new FinTsAccountDTO(
+          JSON.stringify(account),
+          account.accountName,
+          account.iban,
+          account.bic,
+        ),
+    );
   }
 
   private parseFinTsTransactionRecord(
-    transactionRecord: TransactionRecord,
+    transaction: Transaction,
   ): FinTsAccountTransactionDTO {
     try {
       return new FinTsAccountTransactionDTO(
-        JSON.stringify(transactionRecord),
-        transactionRecord.date,
-        transactionRecord.description.nameKontrahent.replace('undefined', ''),
-        transactionRecord.description.ibanKontrahent,
-        transactionRecord.description.bicKontrahent,
-        transactionRecord.description.text,
-        this.parseValueFromFinTsTransactionRecord(transactionRecord),
+        JSON.stringify(transaction),
+        new Date(transaction.valueDate),
+        transaction.descriptionStructured!.name,
+        transaction.descriptionStructured!.iban,
+        transaction.descriptionStructured!.bic,
+        transaction.descriptionStructured!.reference.text,
+        this.parseValueFromFinTsTransactionRecord(transaction),
       );
     } catch (err) {
       console.log(err);
-      return new FinTsAccountTransactionDTO(JSON.stringify(transactionRecord));
+      return new FinTsAccountTransactionDTO(JSON.stringify(transaction));
     }
   }
 
   private parseValueFromFinTsTransactionRecord(
-    transactionRecord: TransactionRecord,
+    transactionRecord: Transaction,
   ): number {
     let value: number = parseInt(
-      transactionRecord.value
+      transactionRecord.amount
         .toString()
         .split('.')
         .join(''),
     );
-    if (transactionRecord.transactionType === 'S') {
+    if (!transactionRecord.isCredit) {
       value = value * -1;
     }
     return value;
@@ -92,8 +119,17 @@ export class FinTsAccountTransactionDTO {
   ) {}
 }
 
-export namespace FintsAccountTransactionSynchronizationServiceBindings {
-  export const SERVICE = BindingKey.create<
-    FintsAccountTransactionSynchronizationService
-  >('services.fintsaccountsynchronisation.service');
+export class FinTsAccountDTO {
+  constructor(
+    public rawstring: string,
+    public name?: string,
+    public iban?: string,
+    public bic?: string,
+  ) {}
+}
+
+export namespace FintsServiceBindings {
+  export const SERVICE = BindingKey.create<FintsService>(
+    'services.fints.service',
+  );
 }
