@@ -39,11 +39,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mocha Current Test",
+      "name": "Mocha Single Test",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/${$relativeFile}"
+        "${workspaceFolder}/dist/__tests__/**/account-settings.controller.*.js"
       ],
       "env": {
         "NODE_ENV": "test"

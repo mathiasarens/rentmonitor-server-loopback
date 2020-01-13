@@ -53,7 +53,17 @@ export class AccountSettings extends Entity {
   @property({
     type: 'string',
   })
-  selectedAccount: string;
+  iban: string;
+
+  @property({
+    type: 'string',
+  })
+  bic: string;
+
+  @property({
+    type: 'string',
+  })
+  rawAccount: string;
 
   constructor(data?: Partial<AccountSettings>) {
     super(data);

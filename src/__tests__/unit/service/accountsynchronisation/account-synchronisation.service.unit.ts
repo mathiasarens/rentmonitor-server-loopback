@@ -20,6 +20,7 @@ import {
   FinTsAccountTransactionDTO,
   FintsService,
 } from '../../../../services/accountsynchronisation/fints.service';
+import {FintsServiceImpl} from '../../../../services/accountsynchronisation/fints.service.impl';
 
 describe('AccountSynchronisationService Unit Tests', () => {
   let accountTransactionService: AccountSynchronisationService;
@@ -36,7 +37,9 @@ describe('AccountSynchronisationService Unit Tests', () => {
     accountTransactionLogRepositoryStub = createStubInstance(
       AccountTransactionLogRepository,
     );
-    fintsAccountSynchronisationStub = sinon.createStubInstance(FintsService);
+    fintsAccountSynchronisationStub = sinon.createStubInstance(
+      FintsServiceImpl,
+    );
     accountSynchronisationSaveServiceStub = sinon.createStubInstance(
       AccountSynchronisationTransactionService,
     );
@@ -66,7 +69,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
       fintsUrl: 'url',
       fintsUser: 'user',
       fintsPassword: 'password',
-      selectedAccount: 'serializedFintsAccount',
+      rawAccount: 'serializedFintsAccount',
     });
     accountSettingsRepositoryStub.stubs.find.resolves([accountSettings1]);
     fintsAccountSynchronisationStub.fetchStatements.resolves([

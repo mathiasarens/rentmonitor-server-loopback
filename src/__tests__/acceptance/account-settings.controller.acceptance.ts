@@ -622,6 +622,62 @@ describe('AccountSettingsController Acceptence Test', () => {
     expect(res2.body[0].fintsPassword).to.be.empty();
   });
 
+  it('should return http status 209 on successful post to /account-settings/fints-accounts', async () => {
+    const clientId = await setupClientInDb('TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(clientId, testUser);
+    const name = 'Konto1';
+    const fintsBlz = '41627645';
+    const fintsUrl = 'https://fints.gad.de/fints';
+    const fintsUser = 'IDG498345';
+    const fintsPassword = 'utF7$30§';
+    const token = await login(testUser);
+    const res = await http
+      .post('/account-settings/fints-accounts')
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json')
+      .send({
+        name: name,
+        fintsBlz: fintsBlz,
+        fintsUrl: fintsUrl,
+        fintsUser: fintsUser,
+        fintsPassword: fintsPassword,
+      })
+      .expect(209)
+      .expect('Content-Type', 'application/json');
+    expect(res.body[0].rawstring).to.eql('rawString1');
+    expect(res.body[0].name).to.eql('name1');
+    expect(res.body[0].iban).to.eql('iban1');
+    expect(res.body[0].bic).to.eql('bic1');
+  });
+
+  it('should return http status 210 if tan required on post to /account-settings/fints-accounts', async () => {
+    const clientId = await setupClientInDb('TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(clientId, testUser);
+    const name = 'Konto1';
+    const fintsBlz = '41627645';
+    const fintsUrl = 'https://fints.gad.de/fints';
+    const fintsUser = 'TanRequired';
+    const fintsPassword = 'utF7$30§';
+    const token = await login(testUser);
+    const res = await http
+      .post('/account-settings/fints-accounts')
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json')
+      .send({
+        name: name,
+        fintsBlz: fintsBlz,
+        fintsUrl: fintsUrl,
+        fintsUser: fintsUser,
+        fintsPassword: fintsPassword,
+      })
+      .expect(210)
+      .expect('Content-Type', 'application/json');
+    expect(res.body.transactionReference).to.eql('reference1');
+    expect(res.body.challengeMediaBase64).to.eql('bWVkaWEx');
+  });
+
   // non test methods --------------------------------------------------------------------
 
   async function clearDatabase() {

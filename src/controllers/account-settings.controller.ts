@@ -19,15 +19,26 @@ import {
   post,
   put,
   requestBody,
+  Response,
+  RestBindings,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
+import {TanRequiredError} from 'fints-psd2-lib';
 import {AccountSettings} from '../models';
 import {AccountSettingsRepository} from '../repositories';
+import {
+  FinTsAccountDTO,
+  FintsService,
+} from '../services/accountsynchronisation/fints.service';
+import {FintsServiceBindings} from '../services/accountsynchronisation/fints.service.impl';
 
 export class AccountSettingsController {
   constructor(
     @repository(AccountSettingsRepository)
     public accountSettingsRepository: AccountSettingsRepository,
+    @inject(FintsServiceBindings.SERVICE)
+    private fintsService: FintsService,
+    @inject(RestBindings.Http.RESPONSE) protected response: Response,
   ) {}
 
   @post('/account-settings', {
@@ -60,6 +71,56 @@ export class AccountSettingsController {
       accountSettings,
     );
     return Promise.resolve(this.filterPassword(accountSettingsFromDb));
+  }
+
+  @post('/account-settings/fints-accounts', {
+    responses: {
+      '200': {
+        description: 'AccountSettings model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(AccountSettings),
+          },
+        },
+      },
+    },
+  })
+  @authenticate('jwt')
+  async retrieveFintsAccounts(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(AccountSettings, {
+            exclude: ['id', 'clientId', 'iban', 'bic', 'rawAccount'],
+          }),
+        },
+      },
+    })
+    accountSettings: Omit<
+      AccountSettings,
+      'id' | 'iban' | 'bic' | 'rawAccount'
+    >,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+  ): Promise<FinTsAccountDTO[] | TanRequiredResult> {
+    try {
+      const fintsAccounts = await this.fintsService.fetchAccounts(
+        accountSettings.fintsBlz,
+        accountSettings.fintsUrl,
+        accountSettings.fintsUser,
+        accountSettings.fintsPassword,
+      );
+      this.response.status(209);
+      return fintsAccounts;
+    } catch (error) {
+      if (error instanceof TanRequiredError) {
+        this.response.status(210);
+        return new TanRequiredResult(error);
+      } else {
+        console.error(error);
+        throw error;
+      }
+    }
   }
 
   @get('/account-settings/count', {
@@ -262,5 +323,14 @@ export class AccountSettingsController {
     accountSettings: AccountSettings[],
   ): AccountSettings[] {
     return accountSettings.map(this.filterPassword);
+  }
+}
+
+class TanRequiredResult {
+  transactionReference: string;
+  challengeMediaBase64: string;
+  constructor(error: TanRequiredError) {
+    this.transactionReference = error.transactionReference;
+    this.challengeMediaBase64 = error.challengeMedia.toString('base64');
   }
 }

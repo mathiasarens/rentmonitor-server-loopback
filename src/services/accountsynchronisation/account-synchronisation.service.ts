@@ -15,11 +15,8 @@ import {
   AccountSynchronisationTransactionService,
   AccountSynchronisationTransactionServiceBindings,
 } from './account-synchronisation-transaction.service';
-import {
-  FinTsAccountTransactionDTO,
-  FintsService,
-  FintsServiceBindings,
-} from './fints.service';
+import {FinTsAccountTransactionDTO, FintsService} from './fints.service';
+import {FintsServiceBindings} from './fints.service.impl';
 
 export class AccountSynchronisationService {
   constructor(
@@ -72,7 +69,7 @@ export class AccountSynchronisationService {
       accountSettings.fintsUrl!,
       accountSettings.fintsUser!,
       accountSettings.fintsPassword!,
-      accountSettings.selectedAccount,
+      accountSettings.rawAccount,
     );
     await this.logAccountTransactions(
       now,

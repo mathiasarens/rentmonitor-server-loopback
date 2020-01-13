@@ -1,15 +1,17 @@
 {
-  "editor.rulers": [120],
+  "editor.rulers": [
+    120
+  ],
   "editor.tabCompletion": "on",
   "editor.tabSize": 2,
   "editor.trimAutoWhitespace": true,
   "editor.formatOnSave": true,
   "[typescript]": {
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+      "source.organizeImports": true,
+      "source.fixAll.eslint": true
     }
   },
-
   "files.exclude": {
     "**/.DS_Store": true,
     "**/.git": true,
@@ -20,7 +22,6 @@
   },
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-
   "tslint.ignoreDefinitionFiles": true,
   "typescript.tsdk": "./node_modules/typescript/lib"
 }
