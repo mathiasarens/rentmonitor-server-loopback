@@ -1,44 +1,22 @@
-import {
-  AuthenticationComponent,
-  registerAuthenticationStrategy,
-} from '@loopback/authentication';
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig, BindingKey} from '@loopback/core';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
-import {
-  RestExplorerBindings,
-  RestExplorerComponent,
-} from '@loopback/rest-explorer';
-import {ServiceMixin} from '@loopback/service-proxy';
+import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
+import { BootMixin } from '@loopback/boot';
+import { ApplicationConfig, BindingKey } from '@loopback/core';
+import { RepositoryMixin } from '@loopback/repository';
+import { RestApplication } from '@loopback/rest';
+import { RestExplorerBindings, RestExplorerComponent } from '@loopback/rest-explorer';
+import { ServiceMixin } from '@loopback/service-proxy';
 import * as path from 'path';
-import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
-import {
-  PasswordHasherBindings,
-  TokenServiceBindings,
-  TokenServiceConstants,
-  UserServiceBindings,
-} from './keys';
-import {MyAuthenticationSequence} from './sequence';
-import {
-  AccountSynchronisationBookingService,
-  AccountSynchronisationBookingServiceBindings,
-} from './services/accountsynchronisation/account-synchronisation-booking.service';
-import {
-  AccountSynchronisationTransactionService,
-  AccountSynchronisationTransactionServiceBindings,
-} from './services/accountsynchronisation/account-synchronisation-transaction.service';
-import {
-  AccountSynchronisationService,
-  AccountSynchronisationServiceBindings,
-} from './services/accountsynchronisation/account-synchronisation.service';
-import {
-  FintsServiceBindings,
-  FintsServiceImpl,
-} from './services/accountsynchronisation/fints.service.impl';
-import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
-import {JWTService} from './services/authentication/jwt.service';
-import {MyUserService} from './services/authentication/user.service';
+import { JWTAuthenticationStrategy } from './authentication-strategies/jwt-strategy';
+import { PasswordHasherBindings, TokenServiceBindings, TokenServiceConstants, UserServiceBindings } from './keys';
+import { MyAuthenticationSequence } from './sequence';
+import { AccountSynchronisationBookingService, AccountSynchronisationBookingServiceBindings } from './services/accountsynchronisation/account-synchronisation-booking.service';
+import { AccountSynchronisationTransactionService, AccountSynchronisationTransactionServiceBindings } from './services/accountsynchronisation/account-synchronisation-transaction.service';
+import { AccountSynchronisationService, AccountSynchronisationServiceBindings } from './services/accountsynchronisation/account-synchronisation.service';
+import { FintsClientBindings, FintsClientFactoryImpl } from './services/accountsynchronisation/fints-client.factory.impl';
+import { FintsServiceBindings, FintsServiceImpl } from './services/accountsynchronisation/fints.service.impl';
+import { BcryptHasher } from './services/authentication/hash.password.bcryptjs';
+import { JWTService } from './services/authentication/jwt.service';
+import { MyUserService } from './services/authentication/user.service';
 
 /**
  * Information from package.json
@@ -115,5 +93,6 @@ export class RentmonitorServerApplication extends BootMixin(
     this.bind(AccountSynchronisationBookingServiceBindings.SERVICE).toClass(
       AccountSynchronisationBookingService,
     );
+    this.bind(FintsClientBindings.FACTORY).toClass(FintsClientFactoryImpl);
   }
 }

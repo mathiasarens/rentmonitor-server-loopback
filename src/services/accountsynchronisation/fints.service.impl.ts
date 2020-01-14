@@ -1,17 +1,18 @@
-import {bind, BindingKey, BindingScope} from '@loopback/core';
-import {PinTanClient, SEPAAccount, Transaction} from 'fints-psd2-lib';
-import {
-  FinTsAccountDTO,
-  FinTsAccountTransactionDTO,
-  FintsService,
-} from './fints.service';
+import { bind, BindingKey, BindingScope, inject } from '@loopback/core';
+import { PinTanClient, SEPAAccount, Transaction } from 'fints-psd2-lib';
+import { FintsClientFactory } from './fints-client.factory';
+import { FintsClientBindings } from './fints-client.factory.impl';
+import { FinTsAccountDTO, FinTsAccountTransactionDTO, FintsService } from './fints.service';
 
 @bind({
   scope: BindingScope.SINGLETON,
   tags: ['service'],
 })
 export class FintsServiceImpl implements FintsService {
-  constructor() {}
+  constructor(
+    @inject(FintsClientBindings.FACTORY)
+    private fintsClientFactory: FintsClientFactory,
+  ) { }
 
   public async fetchStatements(
     fintsBlz: string,
@@ -21,18 +22,17 @@ export class FintsServiceImpl implements FintsService {
     selectedAccount: string,
   ): Promise<FinTsAccountTransactionDTO[]> {
     const accountTransactions: FinTsAccountTransactionDTO[] = [];
-    const fintsClient: PinTanClient = new PinTanClient({
-      blz: fintsBlz,
-      url: fintsUrl,
-      name: fintsUser!,
-      pin: fintsPassword!,
-      productId: '9FA6681DEC0CF3046BFC2F8A6',
-    });
+    const fintsClient: PinTanClient = this.fintsClientFactory.create(
+      fintsBlz,
+      fintsUrl,
+      fintsUser,
+      fintsPassword,
+    );
     const account: SEPAAccount = JSON.parse(selectedAccount);
 
     const endDate = new Date();
     const startDate = new Date(endDate);
-    startDate.setMonth(startDate.getMonth() - 3);
+    startDate.setMonth(startDate.getMonth() - 2);
 
     const statements = await fintsClient.statements(
       account,
@@ -56,13 +56,12 @@ export class FintsServiceImpl implements FintsService {
     fintsUser: string,
     fintsPassword: string,
   ): Promise<FinTsAccountDTO[]> {
-    const fintsClient: PinTanClient = new PinTanClient({
-      blz: fintsBlz,
-      url: fintsUrl,
-      name: fintsUser!,
-      pin: fintsPassword!,
-      productId: '9FA6681DEC0CF3046BFC2F8A6',
-    });
+    const fintsClient: PinTanClient = this.fintsClientFactory.create(
+      fintsBlz,
+      fintsUrl,
+      fintsUser,
+      fintsPassword,
+    );
 
     const accounts = await fintsClient.accounts();
 
@@ -99,12 +98,7 @@ export class FintsServiceImpl implements FintsService {
   private parseValueFromFinTsTransactionRecord(
     transactionRecord: Transaction,
   ): number {
-    let value: number = parseInt(
-      transactionRecord.amount
-        .toString()
-        .split('.')
-        .join(''),
-    );
+    let value: number = Math.round(transactionRecord.amount * 100);
     if (!transactionRecord.isCredit) {
       value = value * -1;
     }

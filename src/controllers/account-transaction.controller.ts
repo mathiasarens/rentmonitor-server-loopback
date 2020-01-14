@@ -1,23 +1,10 @@
-import {authenticate, AuthenticationBindings} from '@loopback/authentication';
-import {inject} from '@loopback/core';
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  del,
-  get,
-  getFilterSchemaFor,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-} from '@loopback/rest';
-import {UserProfile} from '@loopback/security';
-import {AccountTransaction} from '../models';
-import {AccountTransactionRepository} from '../repositories';
+import { authenticate, AuthenticationBindings } from '@loopback/authentication';
+import { inject } from '@loopback/core';
+import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
+import { del, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, param } from '@loopback/rest';
+import { UserProfile } from '@loopback/security';
+import { AccountTransaction } from '../models';
+import { AccountTransactionRepository } from '../repositories';
 
 export const AccountTransactionUrl = '/account-transactions';
 
@@ -25,13 +12,13 @@ export class AccountTransactionController {
   constructor(
     @repository(AccountTransactionRepository)
     public accountTransactionRepository: AccountTransactionRepository,
-  ) {}
+  ) { }
 
   @get(AccountTransactionUrl + '/count', {
     responses: {
       '200': {
         description: 'AccountTransaction model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -72,11 +59,11 @@ export class AccountTransactionController {
   ): Promise<AccountTransaction[]> {
     const filterWithClientId = filter
       ? Object.assign({}, filter, {
-          where: {
-            and: [{clientId: currentUserProfile.clientId}, filter.where],
-          },
-        })
-      : {where: {clientId: currentUserProfile.clientId}};
+        where: {
+          and: [{ clientId: currentUserProfile.clientId }, filter.where],
+        },
+      })
+      : { where: { clientId: currentUserProfile.clientId } };
     return this.accountTransactionRepository.find(filterWithClientId);
   }
 
@@ -99,7 +86,7 @@ export class AccountTransactionController {
     @param.path.number('id') id: number,
   ): Promise<AccountTransaction> {
     const result = await this.accountTransactionRepository.find({
-      where: {clientId: currentUserProfile.clientId, id: id},
+      where: { clientId: currentUserProfile.clientId, id: id },
     });
     return result[0];
   }

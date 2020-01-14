@@ -1,4 +1,5 @@
 import {expect} from '@loopback/testlab';
+import {FintsClientFactoryImpl} from '../../../services/accountsynchronisation/fints-client.factory.impl';
 import {FintsService} from '../../../services/accountsynchronisation/fints.service';
 import {FintsServiceImpl} from '../../../services/accountsynchronisation/fints.service.impl';
 
@@ -6,7 +7,7 @@ describe.skip('FinTs Integration', () => {
   let fints: FintsService;
 
   before('setupApplication', async () => {
-    fints = new FintsServiceImpl();
+    fints = new FintsServiceImpl(new FintsClientFactoryImpl());
   });
 
   after(async () => {});

@@ -13,19 +13,22 @@ export class AccountSynchronisationTransactionService {
     accountSettings: AccountSettings,
     accountTransactions: AccountTransaction[],
   ): Promise<AccountTransaction[]> {
-    const newAccountTransactionsInAscendingOrder = accountTransactions.sort(
+    const newAccountTransactionsAsc = accountTransactions.sort(
       this.compareByDateIbanBicNameTextValue,
     );
-    const alreadySavedAccountTransactionsFromDb = (
-      await this.findAlreadySavedAccountTransactions(
-        newAccountTransactionsInAscendingOrder,
-        accountSettings,
-      )
-    ).sort(this.compareByDateIbanBicNameTextValue);
+    const alreadySavedAccountTransactionsFromDb = await this.findAlreadySavedAccountTransactions(
+      newAccountTransactionsAsc,
+      accountSettings,
+    );
+    console.log('Already saved:');
+    console.log(alreadySavedAccountTransactionsFromDb);
+    const alreadySavedAccountTransactionsFromDbAsc = alreadySavedAccountTransactionsFromDb.sort(
+      this.compareByDateIbanBicNameTextValue,
+    );
 
     const mergedAccountTransactions = this.merge(
-      alreadySavedAccountTransactionsFromDb,
-      newAccountTransactionsInAscendingOrder,
+      alreadySavedAccountTransactionsFromDbAsc,
+      newAccountTransactionsAsc,
     );
 
     const mergedAccountTransactionsFromDb = await this.accountTransactionRepository.createAll(
@@ -94,15 +97,16 @@ export class AccountSynchronisationTransactionService {
     a: AccountTransaction,
     b: AccountTransaction,
   ): number {
-    return (
-      (a.date.getTime === b.date.getTime ? 0 : a.date < b.date ? 1 : -1) ||
-      a.iban!.localeCompare(b.iban!) ||
-      a.bic!.localeCompare(b.bic!) ||
-      a.name!.localeCompare(b.name!) ||
-      a.text!.localeCompare(b.text!) ||
-      a.text!.localeCompare(b.text!) ||
-      a.amount! - b.amount!
-    );
+    return (a.date.getTime === b.date.getTime ? 0 : a.date < b.date ? 1 : -1) ||
+      a.iban !== undefined
+      ? a.iban!.localeCompare(b.iban!)
+      : 0 || a.bic !== undefined
+      ? a.bic!.localeCompare(b.bic!)
+      : 0 || a.name !== undefined
+      ? a.name!.localeCompare(b.name!)
+      : 0 || a.text !== undefined
+      ? a.text!.localeCompare(b.text!)
+      : 0 || a.amount! - b.amount!;
   }
 }
 
