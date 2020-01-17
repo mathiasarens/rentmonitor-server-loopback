@@ -1,8 +1,12 @@
-import { bind, BindingKey, BindingScope, inject } from '@loopback/core';
-import { PinTanClient, SEPAAccount, Transaction } from 'fints-psd2-lib';
-import { FintsClientFactory } from './fints-client.factory';
-import { FintsClientBindings } from './fints-client.factory.impl';
-import { FinTsAccountDTO, FinTsAccountTransactionDTO, FintsService } from './fints.service';
+import {bind, BindingKey, BindingScope, inject} from '@loopback/core';
+import {PinTanClient, SEPAAccount, Transaction} from 'fints-psd2-lib';
+import {FintsClientFactory} from './fints-client.factory';
+import {FintsClientBindings} from './fints-client.factory.impl';
+import {
+  FinTsAccountDTO,
+  FinTsAccountTransactionDTO,
+  FintsService,
+} from './fints.service';
 
 @bind({
   scope: BindingScope.SINGLETON,
@@ -12,7 +16,7 @@ export class FintsServiceImpl implements FintsService {
   constructor(
     @inject(FintsClientBindings.FACTORY)
     private fintsClientFactory: FintsClientFactory,
-  ) { }
+  ) {}
 
   public async fetchStatements(
     fintsBlz: string,
@@ -20,6 +24,10 @@ export class FintsServiceImpl implements FintsService {
     fintsUser: string,
     fintsPassword: string,
     selectedAccount: string,
+    from?: Date,
+    to?: Date,
+    transactionReference?: string,
+    tan?: string,
   ): Promise<FinTsAccountTransactionDTO[]> {
     const accountTransactions: FinTsAccountTransactionDTO[] = [];
     const fintsClient: PinTanClient = this.fintsClientFactory.create(
@@ -29,15 +37,20 @@ export class FintsServiceImpl implements FintsService {
       fintsPassword,
     );
     const account: SEPAAccount = JSON.parse(selectedAccount);
-
-    const endDate = new Date();
-    const startDate = new Date(endDate);
-    startDate.setMonth(startDate.getMonth() - 2);
-
+    const endDate = to ?? new Date();
+    let startDate: Date;
+    if (from === undefined) {
+      startDate = new Date();
+      startDate.setMonth(endDate.getMonth() - 2);
+    } else {
+      startDate = from;
+    }
     const statements = await fintsClient.statements(
       account,
-      startDate,
+      from,
       endDate,
+      transactionReference,
+      tan,
     );
     statements.forEach(statement => {
       statement.transactions.forEach(transactionRecord => {

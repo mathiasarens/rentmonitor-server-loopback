@@ -35,6 +35,10 @@ export class AccountSynchronisationService {
   public async retrieveAndSaveNewAccountTransactionsAndCreateNewBookings(
     now: Date,
     clientId: number,
+    from?: Date,
+    to?: Date,
+    transactionReference?: string,
+    tan?: string,
   ) {
     const accountSettingsList: AccountSettings[] = await this.accountSettingsRepository.find(
       {where: {clientId: clientId}},
@@ -45,6 +49,10 @@ export class AccountSynchronisationService {
         const newTransactions = await this.retrieveAndSaveNewAccountTransactions(
           now,
           accountSettings,
+          from,
+          to,
+          transactionReference,
+          tan,
         );
         newAccountTransactionsFromAccounts = newAccountTransactionsFromAccounts.concat(
           newTransactions,
@@ -63,6 +71,10 @@ export class AccountSynchronisationService {
   private async retrieveAndSaveNewAccountTransactions(
     now: Date,
     accountSettings: AccountSettings,
+    from?: Date,
+    to?: Date,
+    transactionReference?: string,
+    tan?: string,
   ): Promise<AccountTransaction[]> {
     const rawAccountTransactions: FinTsAccountTransactionDTO[] = await this.fintsAccountTransactionSynchronization.fetchStatements(
       accountSettings.fintsBlz!,
@@ -70,6 +82,10 @@ export class AccountSynchronisationService {
       accountSettings.fintsUser!,
       accountSettings.fintsPassword!,
       accountSettings.rawAccount,
+      from,
+      to,
+      transactionReference,
+      tan,
     );
     await this.logAccountTransactions(
       now,

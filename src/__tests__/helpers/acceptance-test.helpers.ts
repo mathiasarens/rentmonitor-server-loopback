@@ -79,6 +79,7 @@ class FintsServiceDummy implements FintsService {
       throw new TanRequiredError(
         'Tan required',
         'reference1',
+        'text1',
         Buffer.from('media1'),
       );
     }

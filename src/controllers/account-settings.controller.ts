@@ -31,6 +31,7 @@ import {
   FintsService,
 } from '../services/accountsynchronisation/fints.service';
 import {FintsServiceBindings} from '../services/accountsynchronisation/fints.service.impl';
+import {TanRequiredResult} from './results/TanRequiredResult';
 
 export class AccountSettingsController {
   constructor(
@@ -38,7 +39,8 @@ export class AccountSettingsController {
     public accountSettingsRepository: AccountSettingsRepository,
     @inject(FintsServiceBindings.SERVICE)
     private fintsService: FintsService,
-    @inject(RestBindings.Http.RESPONSE) protected response: Response,
+    @inject(RestBindings.Http.RESPONSE)
+    protected response: Response,
   ) {}
 
   @post('/account-settings', {
@@ -75,11 +77,19 @@ export class AccountSettingsController {
 
   @post('/account-settings/fints-accounts', {
     responses: {
-      '200': {
+      '209': {
         description: 'AccountSettings model instance',
         content: {
           'application/json': {
             schema: getModelSchemaRef(AccountSettings),
+          },
+        },
+      },
+      '210': {
+        description: 'TanRequiredResult model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(TanRequiredResult),
           },
         },
       },
@@ -323,14 +333,5 @@ export class AccountSettingsController {
     accountSettings: AccountSettings[],
   ): AccountSettings[] {
     return accountSettings.map(this.filterPassword);
-  }
-}
-
-class TanRequiredResult {
-  transactionReference: string;
-  challengeMediaBase64: string;
-  constructor(error: TanRequiredError) {
-    this.transactionReference = error.transactionReference;
-    this.challengeMediaBase64 = error.challengeMedia.toString('base64');
   }
 }

@@ -116,6 +116,10 @@ describe('AccountSynchronisationService Unit Tests', () => {
       'user',
       'password',
       'serializedFintsAccount',
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     );
 
     sinon.assert.calledWithExactly(

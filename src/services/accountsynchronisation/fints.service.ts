@@ -5,6 +5,10 @@ export interface FintsService {
     fintsUser: string,
     fintsPassword: string,
     selectedAccount: string,
+    from?: Date,
+    to?: Date,
+    transactionReference?: string,
+    tan?: string,
   ): Promise<FinTsAccountTransactionDTO[]>;
 
   fetchAccounts(
