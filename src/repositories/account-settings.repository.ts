@@ -1,23 +1,14 @@
-import {Getter, inject} from '@loopback/core';
-import {
-  BelongsToAccessor,
-  Count,
-  DataObject,
-  DefaultCrudRepository,
-  Filter,
-  Options,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {ClientRepository} from '.';
-import {RentmonitorDataSource} from '../datasources';
-import {AccountSettings, AccountSettingsRelations, Client} from '../models';
-import {Crypto} from '../services/cipher/crypto.service';
+import { Getter, inject } from '@loopback/core';
+import { BelongsToAccessor, Count, DataObject, DefaultCrudRepository, Filter, Options, repository, Where } from '@loopback/repository';
+import { ClientRepository } from '.';
+import { RentmonitorDataSource } from '../datasources';
+import { AccountSettings, AccountSettingsRelations, Client } from '../models';
+import { Crypto } from '../services/cipher/crypto.service';
 export class AccountSettingsRepository extends DefaultCrudRepository<
   AccountSettings,
   typeof AccountSettings.prototype.id,
   AccountSettingsRelations
-> {
+  > {
   public readonly client: BelongsToAccessor<
     Client,
     typeof AccountSettings.prototype.id
@@ -60,6 +51,18 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
     return Promise.resolve(this.decryptList(results));
   }
 
+  public async findOne(
+    filter?: Filter<AccountSettings>,
+    options?: Options,
+  ): Promise<AccountSettings | null> {
+    const result = await super.findOne(filter, options);
+    if (result) {
+      return Promise.resolve(this.decrypt(result));
+    } else {
+      return Promise.resolve(null);
+    }
+  }
+
   public async updateAll(
     data: DataObject<AccountSettings>,
     where?: Where<AccountSettings>,
@@ -82,7 +85,7 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
   private encrypt(
     entity: DataObject<AccountSettings>,
   ): DataObject<AccountSettings> {
-    const encryptedEntity = {...entity};
+    const encryptedEntity = { ...entity };
     if (entity.fintsBlz) {
       encryptedEntity.fintsBlz = this.crypto.encrypt(entity.fintsBlz);
     }

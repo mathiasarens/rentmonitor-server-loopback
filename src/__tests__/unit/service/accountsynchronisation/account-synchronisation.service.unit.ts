@@ -103,7 +103,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
 
     const now = new Date(2019, 3, 11);
     // when
-    await accountTransactionService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookings(
+    await accountTransactionService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
       now,
       clientId,
     );

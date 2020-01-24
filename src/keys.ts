@@ -10,7 +10,7 @@ import {Credentials} from './repositories';
 import {PasswordHasher} from './services/authentication/hash.password.bcryptjs';
 
 export namespace TokenServiceConstants {
-  export const TOKEN_EXPIRES_IN_VALUE = '600';
+  export const TOKEN_EXPIRES_IN_VALUE = '3600';
 }
 
 export namespace TokenServiceBindings {

@@ -1,13 +1,13 @@
-import {BindingKey} from '@loopback/context';
-import {repository} from '@loopback/repository';
-import {AccountSettings, AccountTransaction} from '../../models';
-import {AccountTransactionRepository} from '../../repositories/account-transaction.repository';
+import { BindingKey } from '@loopback/context';
+import { repository } from '@loopback/repository';
+import { AccountSettings, AccountTransaction } from '../../models';
+import { AccountTransactionRepository } from '../../repositories/account-transaction.repository';
 
 export class AccountSynchronisationTransactionService {
   constructor(
     @repository(AccountTransactionRepository)
     private accountTransactionRepository: AccountTransactionRepository,
-  ) {}
+  ) { }
 
   public async saveNewAccountTransactions(
     accountSettings: AccountSettings,
@@ -88,7 +88,7 @@ export class AccountSynchronisationTransactionService {
       where: {
         clientId: accountSettings.clientId,
         accountSettingsId: accountSettings.id,
-        date: {gte: latestBookingDate},
+        date: { gte: latestBookingDate },
       },
     });
   }
@@ -97,16 +97,16 @@ export class AccountSynchronisationTransactionService {
     a: AccountTransaction,
     b: AccountTransaction,
   ): number {
-    return (a.date.getTime === b.date.getTime ? 0 : a.date < b.date ? 1 : -1) ||
+    return (a.date === b.date ? 0 : a.date < b.date ? 1 : -1) ||
       a.iban !== undefined
       ? a.iban!.localeCompare(b.iban!)
       : 0 || a.bic !== undefined
-      ? a.bic!.localeCompare(b.bic!)
-      : 0 || a.name !== undefined
-      ? a.name!.localeCompare(b.name!)
-      : 0 || a.text !== undefined
-      ? a.text!.localeCompare(b.text!)
-      : 0 || a.amount! - b.amount!;
+        ? a.bic!.localeCompare(b.bic!)
+        : 0 || a.name !== undefined
+          ? a.name!.localeCompare(b.name!)
+          : 0 || a.text !== undefined
+            ? a.text!.localeCompare(b.text!)
+            : 0 || a.amount! - b.amount!;
   }
 }
 
