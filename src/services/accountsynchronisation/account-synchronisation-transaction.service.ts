@@ -14,16 +14,15 @@ export class AccountSynchronisationTransactionService {
     accountTransactions: AccountTransaction[],
   ): Promise<AccountTransaction[]> {
     const newAccountTransactionsAsc = accountTransactions.sort(
-      this.compareByDateIbanBicNameTextValue,
+      (...args) => this.compareByDateIbanBicNameTextValue(...args),
     );
     const alreadySavedAccountTransactionsFromDb = await this.findAlreadySavedAccountTransactions(
       newAccountTransactionsAsc,
       accountSettings,
     );
-    console.log('Already saved:');
-    console.log(alreadySavedAccountTransactionsFromDb);
+
     const alreadySavedAccountTransactionsFromDbAsc = alreadySavedAccountTransactionsFromDb.sort(
-      this.compareByDateIbanBicNameTextValue,
+      (...args) => this.compareByDateIbanBicNameTextValue(...args),
     );
 
     const mergedAccountTransactions = this.merge(
@@ -97,16 +96,50 @@ export class AccountSynchronisationTransactionService {
     a: AccountTransaction,
     b: AccountTransaction,
   ): number {
-    return (a.date === b.date ? 0 : a.date < b.date ? 1 : -1) ||
-      a.iban !== undefined
-      ? a.iban!.localeCompare(b.iban!)
-      : 0 || a.bic !== undefined
-        ? a.bic!.localeCompare(b.bic!)
-        : 0 || a.name !== undefined
-          ? a.name!.localeCompare(b.name!)
-          : 0 || a.text !== undefined
-            ? a.text!.localeCompare(b.text!)
-            : 0 || a.amount! - b.amount!;
+    let result = this.compareDate(a.date, b.date);
+    if (result !== 0) {
+      return result;
+    }
+    result = this.compareString(a.iban, b.iban);
+    if (result !== 0) {
+      return result;
+    }
+    result = this.compareString(a.bic, b.bic);
+    if (result !== 0) {
+      return result;
+    }
+    result = this.compareString(a.name, b.name);
+    if (result !== 0) {
+      return result;
+    }
+    result = this.compareString(a.text, b.text);
+    if (result !== 0) {
+      return result;
+    }
+    result = a.amount! - b.amount!
+    return result;
+  }
+
+  private compareDate(a: Date, b: Date): number {
+    if (a < b) {
+      return -1;
+    } else if (a > b) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  private compareString(a?: string, b?: string): number {
+    if (a === b) {
+      return 0;
+    } else if (a === undefined && b !== undefined) {
+      return -1;
+    } else if (a !== undefined && b === undefined) {
+      return 1;
+    } else {
+      return a!.localeCompare(b!);
+    }
   }
 }
 

@@ -1,8 +1,7 @@
 import { createStubInstance, sinon, StubbedInstanceWithSinonAccessor } from '@loopback/testlab';
-import { AccountTransaction, AccountTransactionLog } from '../../../../models';
+import { AccountSettings, AccountTransaction } from '../../../../models';
 import { AccountTransactionRepository } from '../../../../repositories';
 import { AccountSynchronisationTransactionService } from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
-import { FinTsAccountTransactionDTO } from '../../../../services/accountsynchronisation/fints.service';
 
 describe('AccountSynchronisationTransactionService Unit Tests', () => {
   let accountSynchronisationTransactionService: AccountSynchronisationTransactionService;
@@ -20,23 +19,23 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
 
   after(async () => { });
 
-  it('should save only new fints transactions', async function () {
+  it('should ignore single new account transaction if already saved in database', async function () {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
 
-    accountSettingsRepositoryStub.stubs.find.resolves([accountSettings1]);
-    fintsAccountSynchronisationStub.fetchStatements.resolves([
-      new FinTsAccountTransactionDTO(
-        'rawstring1',
-        new Date(2019, 3, 27),
-        'Tenant1',
-        'IBAN1',
-        'BIC1',
-        'Text1',
-        1100,
-      ),
-    ]);
+    const existingAccountTransactions = [
+      new AccountTransaction({
+        clientId: clientId,
+        accountSettingsId: accountSettingsId,
+        amount: 1100,
+        bic: 'BIC1',
+        date: new Date(2019, 3, 27),
+        iban: 'IBAN1',
+        name: 'Tenant1',
+        text: 'Text1',
+      }),
+    ];
 
     const accountTransactions = [
       new AccountTransaction({
@@ -51,54 +50,173 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
       }),
     ];
 
-    accountSynchronisationSaveServiceStub.saveNewAccountTransactions.resolves(
-      accountTransactions,
-    );
+    await runTest(accountSettingsId, clientId, existingAccountTransactions, [], accountTransactions);
+  });
 
-    const now = new Date(2019, 3, 11);
+  it('should add only new booking if new booking is newer than old booking and placed at the end of the list', async function () {
+    // given
+    const clientId = 1;
+    const accountSettingsId = 3234421;
+
+    const existingAccountTransaction1 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 27),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const newAccountTransaction1 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 28),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const existingAccountTransactions = [
+      existingAccountTransaction1
+    ];
+
+    const accountTransactions = [
+      existingAccountTransaction1,
+      newAccountTransaction1
+    ];
+
+    await runTest(accountSettingsId, clientId, existingAccountTransactions, [newAccountTransaction1], accountTransactions);
+  });
+
+  it('should add only new booking if new booking is between existing bookings and placed at the end of the list', async function () {
+    // given
+    const clientId = 1;
+    const accountSettingsId = 3234421;
+
+    const existingAccountTransaction1 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 27),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const existingAccountTransaction2 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 29),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const newAccountTransaction1 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 28),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const existingAccountTransactions = [
+      existingAccountTransaction2,
+      existingAccountTransaction1,
+    ];
+
+    const accountTransactions = [
+      existingAccountTransaction1,
+      existingAccountTransaction2,
+      newAccountTransaction1
+    ];
+
+    await runTest(accountSettingsId, clientId, existingAccountTransactions, [newAccountTransaction1], accountTransactions);
+  });
+
+  it('should add only new bookings if new bookings is between existing bookings and placed at the beginning of the list', async function () {
+    // given
+    const clientId = 1;
+    const accountSettingsId = 3234421;
+
+    const existingAccountTransaction1 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 27),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const existingAccountTransaction2 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 29),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const newAccountTransaction1 = new AccountTransaction({
+      clientId: clientId,
+      accountSettingsId: accountSettingsId,
+      amount: 1100,
+      bic: 'BIC1',
+      date: new Date(2019, 3, 28),
+      iban: 'IBAN1',
+      name: 'Tenant1',
+      text: 'Text1',
+    });
+
+    const existingAccountTransactions = [
+      existingAccountTransaction1,
+      existingAccountTransaction2,
+    ];
+    const accountTransactions = [
+      newAccountTransaction1,
+      existingAccountTransaction1,
+      existingAccountTransaction2,
+    ];
+    await runTest(accountSettingsId, clientId, existingAccountTransactions, [newAccountTransaction1], accountTransactions);
+  });
+
+  const runTest = async (accountSettingsId: number, clientId: number, existingAccountTransactions: AccountTransaction[], expectedAccountTransactions: AccountTransaction[], accountTransactions: AccountTransaction[]) => {
+    accountTransactionRepositoryStub.stubs.find.resolves(existingAccountTransactions);
+
+    const accountSettings1 = new AccountSettings({
+      id: accountSettingsId,
+      clientId: clientId,
+      fintsBlz: 'blz',
+      fintsUrl: 'url',
+      fintsUser: 'user',
+      fintsPassword: 'password',
+      rawAccount: 'serializedFintsAccount',
+    });
+
     // when
     await accountSynchronisationTransactionService.saveNewAccountTransactions(
-      now,
-      clientId,
-    );
-
-    // then
-    sinon.assert.calledWithExactly(
-      fintsAccountSynchronisationStub.fetchStatements,
-      'blz',
-      'url',
-      'user',
-      'password',
-      'serializedFintsAccount',
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-    );
-
-    sinon.assert.calledWithExactly(
-      accountTransactionLogRepositoryStub.stubs.createAll,
-      [
-        new AccountTransactionLog({
-          clientId: clientId,
-          accountSettingsId: accountSettingsId,
-          rawstring: 'rawstring1',
-          time: now,
-        }),
-      ],
-    );
-
-    sinon.assert.calledWithExactly(
-      accountSynchronisationSaveServiceStub.saveNewAccountTransactions,
       accountSettings1,
       accountTransactions,
     );
 
+    // then
     sinon.assert.calledWithExactly(
-      accountSynchronisationBookingServiceStub.createAndSaveBookings,
-      clientId,
-      accountTransactions,
-      now,
+      accountTransactionRepositoryStub.stubs.createAll,
+      expectedAccountTransactions,
     );
-  });
+  }
 });
