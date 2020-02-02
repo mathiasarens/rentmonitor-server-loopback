@@ -1,20 +1,20 @@
-import { BindingKey } from '@loopback/context';
-import { repository } from '@loopback/repository';
-import { AccountSettings, AccountTransaction } from '../../models';
-import { AccountTransactionRepository } from '../../repositories/account-transaction.repository';
+import {BindingKey} from '@loopback/context';
+import {repository} from '@loopback/repository';
+import {AccountSettings, AccountTransaction} from '../../models';
+import {AccountTransactionRepository} from '../../repositories/account-transaction.repository';
 
 export class AccountSynchronisationTransactionService {
   constructor(
     @repository(AccountTransactionRepository)
     private accountTransactionRepository: AccountTransactionRepository,
-  ) { }
+  ) {}
 
   public async saveNewAccountTransactions(
     accountSettings: AccountSettings,
     accountTransactions: AccountTransaction[],
   ): Promise<AccountTransaction[]> {
-    const newAccountTransactionsAsc = accountTransactions.sort(
-      (...args) => this.compareByDateIbanBicNameTextValue(...args),
+    const newAccountTransactionsAsc = accountTransactions.sort((...args) =>
+      this.compareByDateIbanBicNameTextValue(...args),
     );
     const alreadySavedAccountTransactionsFromDb = await this.findAlreadySavedAccountTransactions(
       newAccountTransactionsAsc,
@@ -87,7 +87,7 @@ export class AccountSynchronisationTransactionService {
       where: {
         clientId: accountSettings.clientId,
         accountSettingsId: accountSettings.id,
-        date: { gte: latestBookingDate },
+        date: {gte: latestBookingDate},
       },
     });
   }
@@ -116,7 +116,7 @@ export class AccountSynchronisationTransactionService {
     if (result !== 0) {
       return result;
     }
-    result = a.amount! - b.amount!
+    result = a.amount! - b.amount!;
     return result;
   }
 

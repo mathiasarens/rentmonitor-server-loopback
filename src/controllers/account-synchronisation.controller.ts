@@ -1,10 +1,20 @@
-import { authenticate, AuthenticationBindings } from '@loopback/authentication';
-import { inject } from '@loopback/core';
-import { getModelSchemaRef, post, requestBody, Response, RestBindings } from '@loopback/rest';
-import { UserProfile } from '@loopback/security';
-import { TanRequiredError } from 'fints-psd2-lib';
-import { AccountSynchronisationResult, AccountSynchronisationService, AccountSynchronisationServiceBindings } from '../services/accountsynchronisation/account-synchronisation.service';
-import { TanRequiredResult } from './results/TanRequiredResult';
+import {authenticate, AuthenticationBindings} from '@loopback/authentication';
+import {inject} from '@loopback/core';
+import {
+  getModelSchemaRef,
+  post,
+  requestBody,
+  Response,
+  RestBindings,
+} from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
+import {TanRequiredError} from 'fints-psd2-lib';
+import {
+  AccountSynchronisationResult,
+  AccountSynchronisationService,
+  AccountSynchronisationServiceBindings,
+} from '../services/accountsynchronisation/account-synchronisation.service';
+import {TanRequiredResult} from './results/TanRequiredResult';
 
 class AccountSynchronisationRequestSingleAccount {
   accountId: number;
@@ -12,7 +22,7 @@ class AccountSynchronisationRequestSingleAccount {
   to?: string;
   transactionReference?: string;
   tan?: string;
-  constructor() { }
+  constructor() {}
 }
 
 export class AccountSynchronisationController {
@@ -21,7 +31,7 @@ export class AccountSynchronisationController {
     public accountSynchronisationService: AccountSynchronisationService,
     @inject(RestBindings.Http.RESPONSE)
     protected response: Response,
-  ) { }
+  ) {}
 
   @post('/account-synchronization/single', {
     responses: {
@@ -52,11 +62,11 @@ export class AccountSynchronisationController {
           schema: {
             type: 'object',
             properties: {
-              from: { type: 'string' },
-              to: { type: 'string' },
-              accountId: { type: 'number' },
-              transactionReference: { type: 'string' },
-              tan: { type: 'string' },
+              from: {type: 'string'},
+              to: {type: 'string'},
+              accountId: {type: 'number'},
+              transactionReference: {type: 'string'},
+              tan: {type: 'string'},
             },
           },
         },
@@ -109,11 +119,11 @@ export class AccountSynchronisationController {
           schema: {
             type: 'object',
             properties: {
-              from: { type: 'string' },
-              to: { type: 'string' },
-              accountId: { type: 'number' },
-              transactionReference: { type: 'string' },
-              tan: { type: 'string' },
+              from: {type: 'string'},
+              to: {type: 'string'},
+              accountId: {type: 'number'},
+              transactionReference: {type: 'string'},
+              tan: {type: 'string'},
             },
           },
         },

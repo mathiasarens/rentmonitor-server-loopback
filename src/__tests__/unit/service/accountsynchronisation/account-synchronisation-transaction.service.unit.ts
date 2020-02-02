@@ -1,7 +1,11 @@
-import { createStubInstance, sinon, StubbedInstanceWithSinonAccessor } from '@loopback/testlab';
-import { AccountSettings, AccountTransaction } from '../../../../models';
-import { AccountTransactionRepository } from '../../../../repositories';
-import { AccountSynchronisationTransactionService } from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
+import {
+  createStubInstance,
+  sinon,
+  StubbedInstanceWithSinonAccessor,
+} from '@loopback/testlab';
+import {AccountSettings, AccountTransaction} from '../../../../models';
+import {AccountTransactionRepository} from '../../../../repositories';
+import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 
 describe('AccountSynchronisationTransactionService Unit Tests', () => {
   let accountSynchronisationTransactionService: AccountSynchronisationTransactionService;
@@ -13,13 +17,13 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
     );
 
     accountSynchronisationTransactionService = new AccountSynchronisationTransactionService(
-      accountTransactionRepositoryStub
+      accountTransactionRepositoryStub,
     );
   });
 
-  after(async () => { });
+  after(async () => {});
 
-  it('should ignore single new account transaction if already saved in database', async function () {
+  it('should ignore single new account transaction if already saved in database', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -50,10 +54,16 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
       }),
     ];
 
-    await runTest(accountSettingsId, clientId, existingAccountTransactions, [], accountTransactions);
+    await runTest(
+      accountSettingsId,
+      clientId,
+      existingAccountTransactions,
+      [],
+      accountTransactions,
+    );
   });
 
-  it('should add only new booking if new booking is newer than old booking and placed at the end of the list', async function () {
+  it('should add only new booking if new booking is newer than old booking and placed at the end of the list', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -80,19 +90,23 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
       text: 'Text1',
     });
 
-    const existingAccountTransactions = [
-      existingAccountTransaction1
-    ];
+    const existingAccountTransactions = [existingAccountTransaction1];
 
     const accountTransactions = [
       existingAccountTransaction1,
-      newAccountTransaction1
+      newAccountTransaction1,
     ];
 
-    await runTest(accountSettingsId, clientId, existingAccountTransactions, [newAccountTransaction1], accountTransactions);
+    await runTest(
+      accountSettingsId,
+      clientId,
+      existingAccountTransactions,
+      [newAccountTransaction1],
+      accountTransactions,
+    );
   });
 
-  it('should add only new booking if new booking is between existing bookings and placed at the end of the list', async function () {
+  it('should add only new booking if new booking is between existing bookings and placed at the end of the list', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -138,13 +152,19 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
     const accountTransactions = [
       existingAccountTransaction1,
       existingAccountTransaction2,
-      newAccountTransaction1
+      newAccountTransaction1,
     ];
 
-    await runTest(accountSettingsId, clientId, existingAccountTransactions, [newAccountTransaction1], accountTransactions);
+    await runTest(
+      accountSettingsId,
+      clientId,
+      existingAccountTransactions,
+      [newAccountTransaction1],
+      accountTransactions,
+    );
   });
 
-  it('should add only new bookings if new bookings is between existing bookings and placed at the beginning of the list', async function () {
+  it('should add only new bookings if new bookings is between existing bookings and placed at the beginning of the list', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -191,11 +211,25 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
       existingAccountTransaction1,
       existingAccountTransaction2,
     ];
-    await runTest(accountSettingsId, clientId, existingAccountTransactions, [newAccountTransaction1], accountTransactions);
+    await runTest(
+      accountSettingsId,
+      clientId,
+      existingAccountTransactions,
+      [newAccountTransaction1],
+      accountTransactions,
+    );
   });
 
-  const runTest = async (accountSettingsId: number, clientId: number, existingAccountTransactions: AccountTransaction[], expectedAccountTransactions: AccountTransaction[], accountTransactions: AccountTransaction[]) => {
-    accountTransactionRepositoryStub.stubs.find.resolves(existingAccountTransactions);
+  const runTest = async (
+    accountSettingsId: number,
+    clientId: number,
+    existingAccountTransactions: AccountTransaction[],
+    expectedAccountTransactions: AccountTransaction[],
+    accountTransactions: AccountTransaction[],
+  ) => {
+    accountTransactionRepositoryStub.stubs.find.resolves(
+      existingAccountTransactions,
+    );
 
     const accountSettings1 = new AccountSettings({
       id: accountSettingsId,
@@ -218,5 +252,5 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
       accountTransactionRepositoryStub.stubs.createAll,
       expectedAccountTransactions,
     );
-  }
+  };
 });

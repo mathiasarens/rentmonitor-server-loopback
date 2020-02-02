@@ -1,12 +1,22 @@
-import { BindingKey, inject } from '@loopback/core';
-import { repository } from '@loopback/repository';
-import { AccountSettings, AccountTransaction, AccountTransactionLog } from '../../models';
-import { AccountSettingsRepository } from '../../repositories';
-import { AccountTransactionLogRepository } from '../../repositories/account-transaction-log.repository';
-import { AccountSynchronisationBookingService, AccountSynchronisationBookingServiceBindings } from './account-synchronisation-booking.service';
-import { AccountSynchronisationTransactionService, AccountSynchronisationTransactionServiceBindings } from './account-synchronisation-transaction.service';
-import { FinTsAccountTransactionDTO, FintsService } from './fints.service';
-import { FintsServiceBindings } from './fints.service.impl';
+import {BindingKey, inject} from '@loopback/core';
+import {repository} from '@loopback/repository';
+import {
+  AccountSettings,
+  AccountTransaction,
+  AccountTransactionLog,
+} from '../../models';
+import {AccountSettingsRepository} from '../../repositories';
+import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
+import {
+  AccountSynchronisationBookingService,
+  AccountSynchronisationBookingServiceBindings,
+} from './account-synchronisation-booking.service';
+import {
+  AccountSynchronisationTransactionService,
+  AccountSynchronisationTransactionServiceBindings,
+} from './account-synchronisation-transaction.service';
+import {FinTsAccountTransactionDTO, FintsService} from './fints.service';
+import {FintsServiceBindings} from './fints.service.impl';
 
 export class AccountSynchronisationResult {
   constructor(
@@ -15,7 +25,7 @@ export class AccountSynchronisationResult {
     public newBookings: number,
     public unmatchedTransactions: number,
     public error?: string,
-  ) { }
+  ) {}
 }
 export class AccountSynchronisationService {
   constructor(
@@ -29,7 +39,7 @@ export class AccountSynchronisationService {
     private accountSynchronisationSaveService: AccountSynchronisationTransactionService,
     @inject(AccountSynchronisationBookingServiceBindings.SERVICE)
     private accountSynchronisationBookingService: AccountSynchronisationBookingService,
-  ) { }
+  ) {}
 
   public async retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
     now: Date,
@@ -38,7 +48,7 @@ export class AccountSynchronisationService {
     to?: Date,
   ): Promise<AccountSynchronisationResult[]> {
     const accountSettingsList: AccountSettings[] = await this.accountSettingsRepository.find(
-      { where: { clientId: clientId } },
+      {where: {clientId: clientId}},
     );
     const accountSynchronisationResults: AccountSynchronisationResult[] = [];
     for (const accountSettings of accountSettingsList) {
@@ -91,7 +101,7 @@ export class AccountSynchronisationService {
     tan?: string,
   ): Promise<AccountSynchronisationResult> {
     const accountSettings = await this.accountSettingsRepository.findOne({
-      where: { clientId: clientId, id: accountId },
+      where: {clientId: clientId, id: accountId},
     });
     if (accountSettings) {
       const newTransactions = await this.retrieveAndSaveNewAccountTransactions(
