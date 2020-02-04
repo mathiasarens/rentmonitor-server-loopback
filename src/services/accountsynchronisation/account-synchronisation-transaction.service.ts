@@ -1,13 +1,14 @@
-import {BindingKey} from '@loopback/context';
-import {repository} from '@loopback/repository';
-import {AccountSettings, AccountTransaction} from '../../models';
-import {AccountTransactionRepository} from '../../repositories/account-transaction.repository';
+import { BindingKey } from '@loopback/context';
+import { repository } from '@loopback/repository';
+import { isNullOrUndefined } from 'util';
+import { AccountSettings, AccountTransaction } from '../../models';
+import { AccountTransactionRepository } from '../../repositories/account-transaction.repository';
 
 export class AccountSynchronisationTransactionService {
   constructor(
     @repository(AccountTransactionRepository)
     private accountTransactionRepository: AccountTransactionRepository,
-  ) {}
+  ) { }
 
   public async saveNewAccountTransactions(
     accountSettings: AccountSettings,
@@ -80,14 +81,12 @@ export class AccountSynchronisationTransactionService {
     accountSettings: AccountSettings,
   ): Promise<AccountTransaction[]> {
     const latestBookingDate: Date =
-      accountTransactionsInAscendingDateOrder[
-        accountTransactionsInAscendingDateOrder.length - 1
-      ].date;
+      accountTransactionsInAscendingDateOrder[0].date;
     return this.accountTransactionRepository.find({
       where: {
         clientId: accountSettings.clientId,
         accountSettingsId: accountSettings.id,
-        date: {gte: latestBookingDate},
+        date: { gte: latestBookingDate },
       },
     });
   }
@@ -131,11 +130,11 @@ export class AccountSynchronisationTransactionService {
   }
 
   private compareString(a?: string, b?: string): number {
-    if (a === b) {
+    if (a === b || isNullOrUndefined(a) === isNullOrUndefined(b)) {
       return 0;
-    } else if (a === undefined && b !== undefined) {
+    } else if (isNullOrUndefined(a) && !isNullOrUndefined(b)) {
       return -1;
-    } else if (a !== undefined && b === undefined) {
+    } else if (!isNullOrUndefined(a) && isNullOrUndefined(b)) {
       return 1;
     } else {
       return a!.localeCompare(b!);
