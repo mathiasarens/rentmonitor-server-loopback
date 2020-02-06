@@ -7,6 +7,8 @@ export class TanRequiredResult {
   constructor(error: TanRequiredError) {
     this.transactionReference = error.transactionReference;
     this.challengeText = error.challengeText;
-    this.challengeMediaBase64 = error.challengeMedia.toString('base64');
+    if (error.challengeMedia) {
+      this.challengeMediaBase64 = error.challengeMedia.toString('base64');
+    }
   }
 }

@@ -31,7 +31,7 @@ import {
   FintsService,
 } from '../services/accountsynchronisation/fints.service';
 import {FintsServiceBindings} from '../services/accountsynchronisation/fints.service.impl';
-import {TanRequiredResult} from './results/TanRequiredResult';
+import {TanRequiredResult} from './results/tan-required-result';
 
 export class AccountSettingsController {
   constructor(

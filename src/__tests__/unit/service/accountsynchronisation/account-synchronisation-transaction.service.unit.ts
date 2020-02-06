@@ -1,7 +1,11 @@
-import { createStubInstance, sinon, StubbedInstanceWithSinonAccessor } from '@loopback/testlab';
-import { AccountSettings, AccountTransaction } from '../../../../models';
-import { AccountTransactionRepository } from '../../../../repositories';
-import { AccountSynchronisationTransactionService } from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
+import {
+  createStubInstance,
+  sinon,
+  StubbedInstanceWithSinonAccessor,
+} from '@loopback/testlab';
+import {AccountSettings, AccountTransaction} from '../../../../models';
+import {AccountTransactionRepository} from '../../../../repositories';
+import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 
 describe('AccountSynchronisationTransactionService Unit Tests', () => {
   let accountSynchronisationTransactionService: AccountSynchronisationTransactionService;
@@ -17,9 +21,9 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
     );
   });
 
-  after(async () => { });
+  after(async () => {});
 
-  it('should ignore single new account transaction if already saved in database', async function () {
+  it('should ignore single new account transaction if already saved in database', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -59,7 +63,7 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
     );
   });
 
-  it('should add only new booking if new booking is newer than old booking and placed at the end of the list', async function () {
+  it('should add only new booking if new booking is newer than old booking and placed at the end of the list', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -102,7 +106,7 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
     );
   });
 
-  it('should add only new booking if new booking is between existing bookings and placed at the end of the list', async function () {
+  it('should add only new booking if new booking is between existing bookings and placed at the end of the list', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -160,7 +164,7 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
     );
   });
 
-  it('should add only new bookings if new bookings is between existing bookings and placed at the beginning of the list', async function () {
+  it('should add only new bookings if new bookings is between existing bookings and placed at the beginning of the list', async function() {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;

@@ -14,7 +14,7 @@ import {
   AccountSynchronisationService,
   AccountSynchronisationServiceBindings,
 } from '../services/accountsynchronisation/account-synchronisation.service';
-import {TanRequiredResult} from './results/TanRequiredResult';
+import {TanRequiredResult} from './results/tan-required-result';
 
 class AccountSynchronisationRequestSingleAccount {
   accountId: number;
