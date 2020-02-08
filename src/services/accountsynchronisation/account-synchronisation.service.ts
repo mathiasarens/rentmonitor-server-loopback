@@ -97,7 +97,6 @@ export class AccountSynchronisationService {
     accountId: number,
     from?: Date,
     to?: Date,
-    transactionReference?: string,
     tan?: string,
   ): Promise<AccountSynchronisationResult> {
     const accountSettings = await this.accountSettingsRepository.findOne({
@@ -109,7 +108,6 @@ export class AccountSynchronisationService {
         accountSettings!,
         from,
         to,
-        transactionReference,
         tan,
       );
       const [
@@ -120,6 +118,7 @@ export class AccountSynchronisationService {
         newTransactions,
         now,
       );
+      await this.clearTanRequiredErrorOnAccountSettings(accountSettings);
       return new AccountSynchronisationResult(
         accountSettings!.id,
         accountSettings!.name,
@@ -131,23 +130,24 @@ export class AccountSynchronisationService {
     }
   }
 
+  private async clearTanRequiredErrorOnAccountSettings(
+    accountSettings: AccountSettings,
+  ) {
+    accountSettings.fintsTanRequiredError = undefined;
+    await this.accountSettingsRepository.update(accountSettings);
+  }
+
   private async retrieveAndSaveNewAccountTransactions(
     now: Date,
     accountSettings: AccountSettings,
     from?: Date,
     to?: Date,
-    transactionReference?: string,
     tan?: string,
   ): Promise<AccountTransaction[]> {
     const rawAccountTransactions: FinTsAccountTransactionDTO[] = await this.fintsAccountTransactionSynchronization.fetchStatements(
-      accountSettings.fintsBlz!,
-      accountSettings.fintsUrl!,
-      accountSettings.fintsUser!,
-      accountSettings.fintsPassword!,
-      accountSettings.rawAccount,
+      accountSettings,
       from,
       to,
-      transactionReference,
       tan,
     );
     await this.logAccountTransactions(

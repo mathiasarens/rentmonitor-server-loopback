@@ -3,9 +3,15 @@ import {
   createRestAppClient,
   givenHttpServerConfig,
 } from '@loopback/testlab';
-import {TanRequiredError} from 'fints-psd2-lib';
+import {
+  Connection,
+  Dialog,
+  DialogConfig,
+  TanRequiredError,
+} from 'fints-psd2-lib';
 import {RentmonitorServerApplication} from '../..';
 import {TokenServiceBindings} from '../../keys';
+import {AccountSettings} from '../../models';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
@@ -61,11 +67,7 @@ export async function setupApplication(): Promise<AppWithClient> {
 
 class FintsServiceDummy implements FintsService {
   fetchStatements(
-    fintsBlz: string,
-    fintsUrl: string,
-    fintsUser: string,
-    fintsPassword: string,
-    selectedAccount: string,
+    accountSettings: AccountSettings,
   ): Promise<FinTsAccountTransactionDTO[]> {
     throw new Error('Method not implemented.');
   }
@@ -81,6 +83,7 @@ class FintsServiceDummy implements FintsService {
         'reference1',
         'text1',
         Buffer.from('media1'),
+        new Dialog({} as DialogConfig, {} as Connection),
       );
     }
     return Promise.resolve(

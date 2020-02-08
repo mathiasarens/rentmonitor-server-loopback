@@ -20,7 +20,6 @@ class AccountSynchronisationRequestSingleAccount {
   accountId: number;
   from?: string;
   to?: string;
-  transactionReference?: string;
   tan?: string;
   constructor() {}
 }
@@ -65,7 +64,6 @@ export class AccountSynchronisationController {
               from: {type: 'string'},
               to: {type: 'string'},
               accountId: {type: 'number'},
-              transactionReference: {type: 'string'},
               tan: {type: 'string'},
             },
           },
@@ -83,7 +81,6 @@ export class AccountSynchronisationController {
         accountSynchronisationRequest.accountId,
         new Date(accountSynchronisationRequest.from!),
         new Date(accountSynchronisationRequest.to!),
-        accountSynchronisationRequest.transactionReference,
         accountSynchronisationRequest.tan,
       );
       return accountSynchronisationResult;

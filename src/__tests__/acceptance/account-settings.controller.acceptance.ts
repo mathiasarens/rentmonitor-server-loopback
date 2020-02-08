@@ -674,7 +674,6 @@ describe('AccountSettingsController Acceptence Test', () => {
       })
       .expect(210)
       .expect('Content-Type', 'application/json');
-    expect(res.body.transactionReference).to.eql('reference1');
     expect(res.body.challengeMediaBase64).to.eql('bWVkaWEx');
   });
 

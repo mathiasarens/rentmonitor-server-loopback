@@ -111,12 +111,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
     // then
     sinon.assert.calledWithExactly(
       fintsAccountSynchronisationStub.fetchStatements,
-      'blz',
-      'url',
-      'user',
-      'password',
-      'serializedFintsAccount',
-      undefined,
+      accountSettings1,
       undefined,
       undefined,
       undefined,

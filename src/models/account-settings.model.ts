@@ -65,6 +65,11 @@ export class AccountSettings extends Entity {
   })
   rawAccount: string;
 
+  @property({
+    type: 'string',
+  })
+  fintsTanRequiredError?: string;
+
   constructor(data?: Partial<AccountSettings>) {
     super(data);
   }

@@ -3,6 +3,7 @@ import {
   StubbedInstanceWithSinonAccessor,
 } from '@loopback/testlab';
 import {PinTanClient} from 'fints-psd2-lib';
+import {AccountSettingsRepository} from '../../../../repositories';
 import {FintsClientFactory} from '../../../../services/accountsynchronisation/fints-client.factory';
 import {FintsServiceImpl} from '../../../../services/accountsynchronisation/fints.service.impl';
 
@@ -10,12 +11,14 @@ describe('FinTs Service Imple Unit Tests', () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let fintsService: FintsServiceImpl;
   let pintanClientStub: StubbedInstanceWithSinonAccessor<PinTanClient>;
+  let accountSettingsRepositoryStub: StubbedInstanceWithSinonAccessor<AccountSettingsRepository>;
 
   beforeEach('setup service and database', async () => {
     pintanClientStub = createStubInstance(PinTanClient);
 
     fintsService = new FintsServiceImpl(
       new FintsClientFactoryTestImpl(pintanClientStub),
+      accountSettingsRepositoryStub,
     );
   });
 

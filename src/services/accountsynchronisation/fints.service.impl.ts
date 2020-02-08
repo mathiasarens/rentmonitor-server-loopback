@@ -1,5 +1,13 @@
 import {bind, BindingKey, BindingScope, inject} from '@loopback/core';
-import {PinTanClient, SEPAAccount, Transaction} from 'fints-psd2-lib';
+import {repository} from '@loopback/repository';
+import {
+  PinTanClient,
+  SEPAAccount,
+  TanRequiredError,
+  Transaction,
+} from 'fints-psd2-lib';
+import {AccountSettings} from '../../models';
+import {AccountSettingsRepository} from '../../repositories';
 import {FintsClientFactory} from './fints-client.factory';
 import {FintsClientBindings} from './fints-client.factory.impl';
 import {
@@ -16,27 +24,24 @@ export class FintsServiceImpl implements FintsService {
   constructor(
     @inject(FintsClientBindings.FACTORY)
     private fintsClientFactory: FintsClientFactory,
+    @repository(AccountSettingsRepository)
+    private accountSettingsRepository: AccountSettingsRepository,
   ) {}
 
   public async fetchStatements(
-    fintsBlz: string,
-    fintsUrl: string,
-    fintsUser: string,
-    fintsPassword: string,
-    selectedAccount: string,
+    accountSettings: AccountSettings,
     from?: Date,
     to?: Date,
-    transactionReference?: string,
     tan?: string,
   ): Promise<FinTsAccountTransactionDTO[]> {
     const accountTransactions: FinTsAccountTransactionDTO[] = [];
     const fintsClient: PinTanClient = this.fintsClientFactory.create(
-      fintsBlz,
-      fintsUrl,
-      fintsUser,
-      fintsPassword,
+      accountSettings.fintsBlz,
+      accountSettings.fintsUrl,
+      accountSettings.fintsUser,
+      accountSettings.fintsPassword,
     );
-    const account: SEPAAccount = JSON.parse(selectedAccount);
+    const account: SEPAAccount = JSON.parse(accountSettings.rawAccount);
     const endDate = to ?? new Date();
     let startDate: Date;
     if (from === undefined) {
@@ -45,22 +50,36 @@ export class FintsServiceImpl implements FintsService {
     } else {
       startDate = from;
     }
-    const statements = await fintsClient.statements(
-      account,
-      from,
-      endDate,
-      transactionReference,
-      tan,
-    );
-    statements.forEach(statement => {
-      statement.transactions.forEach(transactionRecord => {
-        accountTransactions.push(
-          this.parseFinTsTransactionRecord(transactionRecord),
+    let statements;
+    try {
+      if (tan) {
+        const tanRequiredError: TanRequiredError = JSON.parse(
+          accountSettings.fintsTanRequiredError!,
         );
+        statements = await fintsClient.completeStatements(
+          tanRequiredError.dialog,
+          tanRequiredError.transactionReference,
+          tan,
+        );
+      } else {
+        statements = await fintsClient.statements(account, from, endDate);
+      }
+      statements.forEach(statement => {
+        statement.transactions.forEach(transactionRecord => {
+          accountTransactions.push(
+            this.parseFinTsTransactionRecord(transactionRecord),
+          );
+        });
       });
-    });
 
-    return Promise.resolve(accountTransactions);
+      return await Promise.resolve(accountTransactions);
+    } catch (error) {
+      if (error instanceof TanRequiredError) {
+        accountSettings.fintsTanRequiredError = JSON.stringify(error);
+        await this.accountSettingsRepository.update(accountSettings);
+      }
+      throw error;
+    }
   }
 
   public async fetchAccounts(

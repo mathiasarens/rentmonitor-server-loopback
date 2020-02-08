@@ -1,13 +1,10 @@
+import {AccountSettings} from '../../models';
+
 export interface FintsService {
   fetchStatements(
-    fintsBlz: string,
-    fintsUrl: string,
-    fintsUser: string,
-    fintsPassword: string,
-    selectedAccount: string,
+    accountSettings: AccountSettings,
     from?: Date,
     to?: Date,
-    transactionReference?: string,
     tan?: string,
   ): Promise<FinTsAccountTransactionDTO[]>;
 

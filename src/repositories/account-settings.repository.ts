@@ -107,6 +107,11 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
     if (entity.fintsPassword) {
       encryptedEntity.fintsPassword = this.crypto.encrypt(entity.fintsPassword);
     }
+    if (entity.fintsTanRequiredError) {
+      encryptedEntity.fintsTanRequiredError = this.crypto.encrypt(
+        entity.fintsTanRequiredError,
+      );
+    }
     return encryptedEntity;
   }
 
@@ -123,6 +128,11 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
     }
     if (entity.fintsPassword) {
       encryptedEntity.fintsPassword = this.crypto.decrypt(entity.fintsPassword);
+    }
+    if (entity.fintsTanRequiredError) {
+      encryptedEntity.fintsTanRequiredError = this.crypto.decrypt(
+        entity.fintsTanRequiredError,
+      );
     }
     return encryptedEntity;
   }
