@@ -82,6 +82,10 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
     return count;
   }
 
+  public async update(data: AccountSettings, options?: Options): Promise<void> {
+    await super.update(data, options);
+  }
+
   public async replaceById(
     id: number,
     data: DataObject<AccountSettings>,

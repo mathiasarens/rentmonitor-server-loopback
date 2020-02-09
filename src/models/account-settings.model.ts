@@ -1,4 +1,10 @@
-import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {
+  belongsTo,
+  DataObject,
+  Entity,
+  model,
+  property,
+} from '@loopback/repository';
 import {Client} from './client.model';
 
 @model({
@@ -70,7 +76,7 @@ export class AccountSettings extends Entity {
   })
   fintsTanRequiredError?: string;
 
-  constructor(data?: Partial<AccountSettings>) {
+  constructor(data?: DataObject<AccountSettings>) {
     super(data);
   }
 }

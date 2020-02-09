@@ -134,7 +134,9 @@ export class AccountSynchronisationService {
     accountSettings: AccountSettings,
   ) {
     accountSettings.fintsTanRequiredError = undefined;
-    await this.accountSettingsRepository.update(accountSettings);
+    await this.accountSettingsRepository.update(
+      new AccountSettings(accountSettings),
+    );
   }
 
   private async retrieveAndSaveNewAccountTransactions(

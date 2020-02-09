@@ -76,7 +76,9 @@ export class FintsServiceImpl implements FintsService {
     } catch (error) {
       if (error instanceof TanRequiredError) {
         accountSettings.fintsTanRequiredError = JSON.stringify(error);
-        await this.accountSettingsRepository.update(accountSettings);
+        await this.accountSettingsRepository.update(
+          new AccountSettings(accountSettings),
+        );
       }
       throw error;
     }
