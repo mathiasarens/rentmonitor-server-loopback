@@ -43,7 +43,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/account-settings.integration*.js"
+        "${workspaceFolder}/dist/__tests__/**/tenant.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"

@@ -1,38 +1,30 @@
-import {DataObject} from '@loopback/repository';
-import {Client, expect} from '@loopback/testlab';
-import {RentmonitorServerApplication} from '../..';
-import {PasswordHasherBindings} from '../../keys';
-import {User} from '../../models';
-import {ClientRepository, UserRepository} from '../../repositories';
-import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
-import {
-  givenEmptyDatabase,
-  setupApplication,
-} from '../helpers/acceptance-test.helpers';
+import { Client, expect } from '@loopback/testlab';
+import { RentmonitorServerApplication } from '../..';
+import { clearDatabase, getTestUser, login, setupApplication, setupClientInDb, setupUserInDb } from '../helpers/acceptance-test.helpers';
 
 describe('AccountSettingsController Acceptence Test', () => {
   let app: RentmonitorServerApplication;
   let http: Client;
 
   before('setupApplication', async () => {
-    ({app, client: http} = await setupApplication());
+    ({ app, client: http } = await setupApplication());
   });
-  beforeEach(clearDatabase);
+  beforeEach(async () => { await clearDatabase(app) });
 
   after(async () => {
     await app.stop();
   });
 
   it('should add new account-settings on post', async () => {
-    const clientId = await setupClientInDb('TestClient1');
+    const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('1');
-    await setupUserInDb(clientId, testUser);
+    await setupUserInDb(app, clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
     const fintsUrl = 'https://fints.gad.de/fints';
     const fintsUser = 'IDG498345';
     const fintsPassword = 'utF7$30§';
-    const token = await login(testUser);
+    const token = await login(http, testUser);
     const res = await createAccountSettingsViaHttp(token, {
       name: name,
       fintsBlz: fintsBlz,
@@ -52,10 +44,10 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return 422 on create with clientId', async () => {
-    const clientId = await setupClientInDb('TestClient1');
+    const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('2');
-    await setupUserInDb(clientId, testUser);
-    const token = await login(testUser);
+    await setupUserInDb(app, clientId, testUser);
+    const token = await login(http, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
     const fintsUrl = 'https://fints.gad.de/fints';
@@ -85,10 +77,10 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return newly created account-settings on get', async () => {
-    const clientId = await setupClientInDb('TestClient1');
+    const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('2');
-    await setupUserInDb(clientId, testUser);
-    const token = await login(testUser);
+    await setupUserInDb(app, clientId, testUser);
+    const token = await login(http, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
     const fintsUrl = 'https://fints.gad.de/fints';
@@ -124,14 +116,14 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should not allow to count account settings from other clients', async () => {
-    const clientId1 = await setupClientInDb('TestClient1');
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser1 = getTestUser('4');
-    await setupUserInDb(clientId1, testUser1);
-    const clientId2 = await setupClientInDb('TestClient2');
+    await setupUserInDb(app, clientId1, testUser1);
+    const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser('5');
-    await setupUserInDb(clientId2, testUser2);
-    const token1 = await login(testUser1);
-    const token2 = await login(testUser2);
+    await setupUserInDb(app, clientId2, testUser2);
+    const token1 = await login(http, testUser1);
+    const token2 = await login(http, testUser2);
 
     const name1 = 'Konto1';
     const fintsBlz1 = '41627645';
@@ -174,10 +166,10 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return empty result on get', async () => {
-    const clientId = await setupClientInDb('TestClient1');
+    const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('3');
-    await setupUserInDb(clientId, testUser);
-    const token = await login(testUser);
+    await setupUserInDb(app, clientId, testUser);
+    const token = await login(http, testUser);
 
     // when
     const res = await http
@@ -224,7 +216,7 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return not return data from another client on get by filtering for a different clientId', async () => {
-    const {token1, clientId2} = await setup2();
+    const { token1, clientId2 } = await setup2();
     // when
     const res = await http
       .get('/account-settings?filter[where][clientId]=' + clientId2)
@@ -236,7 +228,7 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return not return data from another client on get by filtering for a different id', async () => {
-    const {token1, accountSettingsResult2} = await setup2();
+    const { token1, accountSettingsResult2 } = await setup2();
 
     // when
     const res = await http
@@ -265,7 +257,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch('/account-settings')
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
-      .send({fintsUser: 'newUser', fintsPassword: 'newPassword'})
+      .send({ fintsUser: 'newUser', fintsPassword: 'newPassword' })
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -309,7 +301,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch('/account-settings')
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
-      .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
+      .send({ clientId: clientId1, fintsUrl: 'http://fints-url.com' })
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
@@ -351,7 +343,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch('/account-settings?where[clientId]=' + clientId1)
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
-      .send({fintsUrl: 'http://fints-url.com'})
+      .send({ fintsUrl: 'http://fints-url.com' })
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -379,7 +371,7 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should not allow to find account settings for another client by id', async () => {
-    const {accountSettingsResult1, token2} = await setup2();
+    const { accountSettingsResult1, token2 } = await setup2();
 
     // when
     await http
@@ -425,7 +417,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch(`/account-settings/${accountSettingsResult2.body.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
+      .send({ clientId: clientId1, fintsUrl: 'http://fints-url.com' })
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
@@ -623,15 +615,15 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return http status 209 on successful post to /account-settings/fints-accounts', async () => {
-    const clientId = await setupClientInDb('TestClient1');
+    const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('1');
-    await setupUserInDb(clientId, testUser);
+    await setupUserInDb(app, clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
     const fintsUrl = 'https://fints.gad.de/fints';
     const fintsUser = 'IDG498345';
     const fintsPassword = 'utF7$30§';
-    const token = await login(testUser);
+    const token = await login(http, testUser);
     const res = await http
       .post('/account-settings/fints-accounts')
       .set('Authorization', 'Bearer ' + token)
@@ -652,15 +644,15 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return http status 210 if tan required on post to /account-settings/fints-accounts', async () => {
-    const clientId = await setupClientInDb('TestClient1');
+    const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('1');
-    await setupUserInDb(clientId, testUser);
+    await setupUserInDb(app, clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
     const fintsUrl = 'https://fints.gad.de/fints';
     const fintsUser = 'TanRequired';
     const fintsPassword = 'utF7$30§';
-    const token = await login(testUser);
+    const token = await login(http, testUser);
     const res = await http
       .post('/account-settings/fints-accounts')
       .set('Authorization', 'Bearer ' + token)
@@ -679,16 +671,6 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  async function clearDatabase() {
-    await givenEmptyDatabase(app);
-  }
-
-  async function setupClientInDb(name: string): Promise<number> {
-    const clientRepository = await app.getRepository(ClientRepository);
-    const clientFromDb = await clientRepository.create({name: name});
-    return clientFromDb.id;
-  }
-
   function createAccountSettingsViaHttp(token: string, data: {}) {
     return http
       .post('/account-settings')
@@ -697,51 +679,15 @@ describe('AccountSettingsController Acceptence Test', () => {
       .set('Content-Type', 'application/json');
   }
 
-  async function setupUserInDb(clientId: number, user: User) {
-    const passwordHasher: PasswordHasher = await app.get(
-      PasswordHasherBindings.PASSWORD_HASHER,
-    );
-    const encryptedPassword = await passwordHasher.hashPassword(user.password);
-    const userRepository: UserRepository = await app.getRepository(
-      UserRepository,
-    );
-    const newUser: DataObject<User> = Object.assign({}, user, {
-      password: encryptedPassword,
-      clientId: clientId,
-    });
-    const newUserFromDb = await userRepository.create(newUser);
-    return newUserFromDb;
-  }
-
-  async function login(user: User): Promise<string> {
-    const res = await http
-      .post('/users/login')
-      .send({email: user.email, password: user.password})
-      .expect(200);
-
-    const token = res.body.token;
-    return token;
-  }
-
-  function getTestUser(testId: string): User {
-    const testUser = Object.assign({}, new User(), {
-      email: 'test@loopback' + testId + '.io',
-      password: 'p4ssw0rd',
-      firstName: 'Example',
-      lastName: 'User ' + testId,
-    });
-    return testUser;
-  }
-
   async function setup2() {
-    const clientId1 = await setupClientInDb('TestClient1');
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser1 = getTestUser('1');
-    await setupUserInDb(clientId1, testUser1);
-    const clientId2 = await setupClientInDb('TestClient2');
+    await setupUserInDb(app, clientId1, testUser1);
+    const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser('2');
-    await setupUserInDb(clientId2, testUser2);
-    const token1 = await login(testUser1);
-    const token2 = await login(testUser2);
+    await setupUserInDb(app, clientId2, testUser2);
+    const token1 = await login(http, testUser1);
+    const token2 = await login(http, testUser2);
 
     const name1 = 'Konto1';
     const fintsBlz1 = '41627645';

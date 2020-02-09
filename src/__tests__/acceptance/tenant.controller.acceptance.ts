@@ -1,29 +1,31 @@
-import {Client, expect} from '@loopback/testlab';
-import {RentmonitorServerApplication} from '../..';
-import {ClientRepository, TenantRepository} from '../../repositories';
-import {
-  givenEmptyDatabase,
-  setupApplication,
-} from '../helpers/acceptance-test.helpers';
+import { Client, expect } from '@loopback/testlab';
+import { RentmonitorServerApplication } from '../..';
+import { TenantsUrl } from '../../controllers';
+import { TenantRepository } from '../../repositories';
+import { clearDatabase, getTestUser, login, setupApplication, setupClientInDb, setupUserInDb } from '../helpers/acceptance-test.helpers';
 
 describe('TenantController', () => {
   let app: RentmonitorServerApplication;
   let http: Client;
 
   before('setupApplication', async () => {
-    ({app, client: http} = await setupApplication());
+    ({ app, client: http } = await setupApplication());
   });
 
-  beforeEach(clearDatabase);
+  beforeEach(async () => { await clearDatabase(app) });
 
   after(async () => {
     await app.stop();
   });
 
   it('should add new tenant on post', async () => {
-    const clientId = await setupClientInDb();
+    const clientId = await setupClientInDb(app, 'TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(app, clientId, testUser);
+    const token = await login(http, testUser);
+
     const tenantName = 'TestTenant1';
-    const res = await createTenantViaHttp(clientId, tenantName)
+    const res = await createTenantViaHttp(token, { name: tenantName })
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.id).to.be.a.Number();
@@ -31,35 +33,66 @@ describe('TenantController', () => {
   });
 
   it('should add tenant with same name twice', async () => {
-    const clientId = await setupClientInDb();
+    const clientId = await setupClientInDb(app, 'TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(app, clientId, testUser);
+    const token = await login(http, testUser);
+
     const tenantName = 'TestTenant1';
-    await createTenantViaHttp(clientId, tenantName);
-    const res = await createTenantViaHttp(clientId, tenantName)
+    await createTenantViaHttp(token, { name: tenantName });
+    const res = await createTenantViaHttp(token, { name: tenantName })
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.id).to.be.a.Number();
     expect(res.body.name).to.eql(tenantName);
     const debitorRepository = await app.getRepository(TenantRepository);
     const debitorsFromDb = await debitorRepository.find({
-      where: {clientId: clientId},
+      where: { clientId: clientId },
     });
     expect(debitorsFromDb).length(2);
   });
 
-  async function clearDatabase() {
-    await givenEmptyDatabase(app);
-  }
+  it('should add tenant with clientId from logged in user', async () => {
+    const clientId = await setupClientInDb(app, 'TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(app, clientId, testUser);
+    const token = await login(http, testUser);
 
-  async function setupClientInDb(): Promise<number> {
-    const clientRepository = await app.getRepository(ClientRepository);
-    const clientFromDb = await clientRepository.create({name: 'TestClient1'});
-    return clientFromDb.id;
-  }
+    const tenantName = 'TestTenant1';
+    const res = await createTenantViaHttp(token, { name: tenantName })
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+    expect(res.body.id).to.be.a.Number();
+    expect(res.body.clientId).to.eql(clientId)
+    expect(res.body.name).to.eql(tenantName);
+  });
 
-  function createTenantViaHttp(clientId: number, name: string) {
+  it('should count tenants for users clientId only', async () => {
+    const clientId = await setupClientInDb(app, 'TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(app, clientId, testUser);
+    const token = await login(http, testUser);
+
+    const tenantName = 'TestTenant1';
+    await createTenantViaHttp(token, { name: tenantName })
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    const res = await http
+      .get(`${TenantsUrl}/count?where[clientId]=${clientId + 1}`)
+      .set('Authorization', 'Bearer ' + token)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+    expect(res.body.count).to.eql(1);
+  });
+
+  // non test methods --------------------------------------------------------------------
+
+  function createTenantViaHttp(token: string, data: {}) {
     return http
-      .post('/tenants')
-      .send({clientId: clientId, name: name})
+      .post(TenantsUrl)
+      .set('Authorization', 'Bearer ' + token)
+      .send(data)
       .set('Content-Type', 'application/json');
   }
 });
