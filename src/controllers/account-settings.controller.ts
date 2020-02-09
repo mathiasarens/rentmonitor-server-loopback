@@ -1,37 +1,15 @@
-import {authenticate, AuthenticationBindings} from '@loopback/authentication';
-import {inject} from '@loopback/core';
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  del,
-  get,
-  getFilterSchemaFor,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  HttpErrors,
-  param,
-  patch,
-  post,
-  put,
-  requestBody,
-  Response,
-  RestBindings,
-} from '@loopback/rest';
-import {UserProfile} from '@loopback/security';
-import {TanRequiredError} from 'fints-psd2-lib';
-import {AccountSettings} from '../models';
-import {AccountSettingsRepository} from '../repositories';
-import {
-  FinTsAccountDTO,
-  FintsService,
-} from '../services/accountsynchronisation/fints.service';
-import {FintsServiceBindings} from '../services/accountsynchronisation/fints.service.impl';
-import {TanRequiredResult} from './results/tan-required-result';
+import { authenticate, AuthenticationBindings } from '@loopback/authentication';
+import { inject } from '@loopback/core';
+import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
+import { del, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, HttpErrors, param, patch, post, put, requestBody, Response, RestBindings } from '@loopback/rest';
+import { UserProfile } from '@loopback/security';
+import { TanRequiredError } from 'fints-psd2-lib';
+import { AccountSettings } from '../models';
+import { AccountSettingsRepository } from '../repositories';
+import { FinTsAccountDTO, FintsService } from '../services/accountsynchronisation/fints.service';
+import { FintsServiceBindings } from '../services/accountsynchronisation/fints.service.impl';
+import { filterClientId } from './helper/filter-helper';
+import { TanRequiredResult } from './results/tan-required-result';
 
 export class AccountSettingsController {
   constructor(
@@ -41,14 +19,14 @@ export class AccountSettingsController {
     private fintsService: FintsService,
     @inject(RestBindings.Http.RESPONSE)
     protected response: Response,
-  ) {}
+  ) { }
 
   @post('/account-settings', {
     responses: {
       '200': {
         description: 'AccountSettings model instance',
         content: {
-          'application/json': {schema: getModelSchemaRef(AccountSettings)},
+          'application/json': { schema: getModelSchemaRef(AccountSettings) },
         },
       },
     },
@@ -137,7 +115,7 @@ export class AccountSettingsController {
     responses: {
       '200': {
         description: 'AccountSettings model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -160,7 +138,7 @@ export class AccountSettingsController {
         description: 'Array of AccountSettings model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(AccountSettings)},
+            schema: { type: 'array', items: getModelSchemaRef(AccountSettings) },
           },
         },
       },
@@ -173,15 +151,8 @@ export class AccountSettingsController {
     @param.query.object('filter', getFilterSchemaFor(AccountSettings))
     filter?: Filter<AccountSettings>,
   ): Promise<AccountSettings[]> {
-    const filterWithClientId = filter
-      ? Object.assign({}, filter, {
-          where: {
-            and: [{clientId: currentUserProfile.clientId}, filter.where],
-          },
-        })
-      : {where: {clientId: currentUserProfile.clientId}};
     const accountSettingsFromDb: AccountSettings[] = await this.accountSettingsRepository.find(
-      filterWithClientId,
+      filterClientId(currentUserProfile.clientId, filter),
     );
     return Promise.resolve(this.filterPasswordList(accountSettingsFromDb));
   }
@@ -190,7 +161,7 @@ export class AccountSettingsController {
     responses: {
       '200': {
         description: 'AccountSettings PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -214,7 +185,7 @@ export class AccountSettingsController {
   ): Promise<Count> {
     return this.accountSettingsRepository.updateAll(
       accountSettings,
-      Object.assign({}, where, {clientId: currentUserProfile.clientId}),
+      Object.assign({}, where, { clientId: currentUserProfile.clientId }),
     );
   }
 
@@ -223,7 +194,7 @@ export class AccountSettingsController {
       '200': {
         description: 'AccountSettings model instance',
         content: {
-          'application/json': {schema: getModelSchemaRef(AccountSettings)},
+          'application/json': { schema: getModelSchemaRef(AccountSettings) },
         },
       },
     },
@@ -235,7 +206,7 @@ export class AccountSettingsController {
     @param.path.number('id') id: number,
   ): Promise<AccountSettings> {
     const result = await this.accountSettingsRepository.find({
-      where: {clientId: currentUserProfile.clientId, id: id},
+      where: { clientId: currentUserProfile.clientId, id: id },
     });
     return this.filterPasswordList(result)[0];
   }

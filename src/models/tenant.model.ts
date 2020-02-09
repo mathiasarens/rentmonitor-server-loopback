@@ -1,12 +1,6 @@
-import {
-  belongsTo,
-  Entity,
-  hasMany,
-  model,
-  property,
-} from '@loopback/repository';
-import {Contract} from '.';
-import {Client} from './client.model';
+import { belongsTo, Entity, hasMany, model, property } from '@loopback/repository';
+import { Contract } from '.';
+import { Client } from './client.model';
 @model({
   settings: {
     // foreignKeys: {
@@ -42,12 +36,12 @@ export class Tenant extends Entity {
   @property({
     type: 'string',
   })
-  email: string;
+  email?: string;
 
   @property({
     type: 'string',
   })
-  phone: string;
+  phone?: string;
 
   constructor(data?: Partial<Tenant>) {
     super(data);

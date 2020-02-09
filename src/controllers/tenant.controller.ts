@@ -5,6 +5,7 @@ import { del, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, par
 import { UserProfile } from '@loopback/security';
 import { Tenant } from '../models';
 import { TenantRepository } from '../repositories';
+import { filterClientId } from './helper/filter-helper';
 
 export const TenantsUrl = '/tenants';
 
@@ -73,10 +74,13 @@ export class TenantController {
   })
   @authenticate('jwt')
   async find(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(Tenant))
     filter?: Filter<Tenant>,
   ): Promise<Tenant[]> {
-    return this.tenantRepository.find(filter);
+    const filterWithClientId = filterClientId(currentUserProfile.clientId, filter);
+    return this.tenantRepository.find(filterWithClientId);
   }
 
   @patch(TenantsUrl, {
