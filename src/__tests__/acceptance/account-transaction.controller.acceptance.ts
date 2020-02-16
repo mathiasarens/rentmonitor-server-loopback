@@ -133,7 +133,7 @@ describe('AccountTransactionController Acceptence Test', () => {
     expect(res2.body[0].amount).to.be.eql(amount2);
   });
 
-  it('should return not return data from another client on get by filtering for a different clientId', async () => {
+  it('should not return data from another client on get by filtering for a different clientId but for the same clientId', async () => {
     const {token1, clientId2} = await setup2();
     // when
     const res = await http
@@ -142,7 +142,8 @@ describe('AccountTransactionController Acceptence Test', () => {
       .expect(200)
       .expect('Content-Type', 'application/json');
 
-    expect(res.body.length).to.eql(0);
+    expect(res.body.length).to.eql(1);
+    expect(res.body[0].name).to.eql('Tenant1');
   });
 
   it('should not return data from another client on get by filtering for a different id', async () => {

@@ -1,14 +1,30 @@
-import { DataObject } from '@loopback/repository';
-import { Client, createRestAppClient, givenHttpServerConfig } from '@loopback/testlab';
-import { Connection, Dialog, DialogConfig, TanRequiredError } from 'fints-psd2-lib';
-import { RentmonitorServerApplication } from '../..';
-import { PasswordHasherBindings, TokenServiceBindings } from '../../keys';
-import { AccountSettings, User } from '../../models';
-import { AccountSettingsRepository, AccountTransactionRepository, BookingRepository, ClientRepository, ContractRepository, TenantRepository, UserRepository } from '../../repositories';
-import { FinTsAccountDTO, FinTsAccountTransactionDTO, FintsService } from '../../services/accountsynchronisation/fints.service';
-import { FintsServiceBindings } from '../../services/accountsynchronisation/fints.service.impl';
-import { PasswordHasher } from '../../services/authentication/hash.password.bcryptjs';
-import { JWTService } from '../../services/authentication/jwt.service';
+import {DataObject} from '@loopback/repository';
+import {
+  Client,
+  createRestAppClient,
+  givenHttpServerConfig,
+} from '@loopback/testlab';
+import {Connection, Dialog, DialogConfig, TanRequiredError} from 'node-fints';
+import {RentmonitorServerApplication} from '../..';
+import {PasswordHasherBindings, TokenServiceBindings} from '../../keys';
+import {AccountSettings, User} from '../../models';
+import {
+  AccountSettingsRepository,
+  AccountTransactionRepository,
+  BookingRepository,
+  ClientRepository,
+  ContractRepository,
+  TenantRepository,
+  UserRepository,
+} from '../../repositories';
+import {
+  FinTsAccountDTO,
+  FinTsAccountTransactionDTO,
+  FintsService,
+} from '../../services/accountsynchronisation/fints.service';
+import {FintsServiceBindings} from '../../services/accountsynchronisation/fints.service.impl';
+import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
+import {JWTService} from '../../services/authentication/jwt.service';
 
 const JWT_TOKEN_SECRET = 'test';
 
@@ -43,7 +59,7 @@ export async function setupApplication(): Promise<AppWithClient> {
     TokenServiceBindings.TOKEN_EXPIRES_IN.key,
   );
 
-  return { app, client, jwtService };
+  return {app, client, jwtService};
 }
 
 class FintsServiceDummy implements FintsService {
@@ -110,7 +126,7 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
 export async function login(http: Client, user: User): Promise<string> {
   const res = await http
     .post('/users/login')
-    .send({ email: user.email, password: user.password })
+    .send({email: user.email, password: user.password})
     .expect(200);
 
   const token = res.body.token;
@@ -127,17 +143,26 @@ export function getTestUser(testId: string): User {
   return testUser;
 }
 
-export async function setupClientInDb(app: RentmonitorServerApplication, name: string): Promise<number> {
+export async function setupClientInDb(
+  app: RentmonitorServerApplication,
+  name: string,
+): Promise<number> {
   const clientRepository = await app.getRepository(ClientRepository);
-  const clientFromDb = await clientRepository.create({ name: name });
+  const clientFromDb = await clientRepository.create({name: name});
   return clientFromDb.id;
 }
 
-export async function clearDatabase(app: RentmonitorServerApplication): Promise<void> {
+export async function clearDatabase(
+  app: RentmonitorServerApplication,
+): Promise<void> {
   await givenEmptyDatabase(app);
 }
 
-export async function setupUserInDb(app: RentmonitorServerApplication, clientId: number, user: User) {
+export async function setupUserInDb(
+  app: RentmonitorServerApplication,
+  clientId: number,
+  user: User,
+) {
   const passwordHasher: PasswordHasher = await app.get(
     PasswordHasherBindings.PASSWORD_HASHER,
   );

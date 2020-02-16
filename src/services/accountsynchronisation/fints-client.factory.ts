@@ -1,4 +1,4 @@
-import {PinTanClient} from 'fints-psd2-lib';
+import {PinTanClient} from 'node-fints';
 
 export interface FintsClientFactory {
   create(

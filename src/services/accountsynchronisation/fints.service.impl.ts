@@ -5,7 +5,7 @@ import {
   SEPAAccount,
   TanRequiredError,
   Transaction,
-} from 'fints-psd2-lib';
+} from 'node-fints';
 import {AccountSettings} from '../../models';
 import {AccountSettingsRepository} from '../../repositories';
 import {FintsClientFactory} from './fints-client.factory';

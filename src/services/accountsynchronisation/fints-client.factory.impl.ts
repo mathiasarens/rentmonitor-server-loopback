@@ -1,5 +1,5 @@
 import {BindingKey} from '@loopback/core';
-import {PinTanClient} from 'fints-psd2-lib';
+import {PinTanClient} from 'node-fints';
 import {FintsClientFactory} from './fints-client.factory';
 
 export class FintsClientFactoryImpl implements FintsClientFactory {

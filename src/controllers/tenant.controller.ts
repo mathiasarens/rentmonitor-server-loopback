@@ -1,11 +1,28 @@
-import { authenticate, AuthenticationBindings } from '@loopback/authentication';
-import { inject } from '@loopback/core';
-import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
-import { del, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, param, patch, post, put, requestBody } from '@loopback/rest';
-import { UserProfile } from '@loopback/security';
-import { Tenant } from '../models';
-import { TenantRepository } from '../repositories';
-import { filterClientId } from './helper/filter-helper';
+import {authenticate, AuthenticationBindings} from '@loopback/authentication';
+import {inject} from '@loopback/core';
+import {
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
+} from '@loopback/repository';
+import {
+  del,
+  get,
+  getFilterSchemaFor,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+} from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
+import {Tenant} from '../models';
+import {TenantRepository} from '../repositories';
+import {filterClientId, filterWhere} from './helper/filter-helper';
 
 export const TenantsUrl = '/tenants';
 
@@ -13,28 +30,31 @@ export class TenantController {
   constructor(
     @repository(TenantRepository)
     public tenantRepository: TenantRepository,
-  ) { }
+  ) {}
 
   @post(TenantsUrl, {
     responses: {
       '200': {
         description: 'Tenant model instance',
-        content: { 'application/json': { schema: { 'x-ts-type': Tenant } } },
+        content: {'application/json': {schema: {'x-ts-type': Tenant}}},
       },
     },
   })
   @authenticate('jwt')
-  async create(@requestBody({
-    content: {
-      'application/json': {
-        schema: getModelSchemaRef(Tenant, {
-          exclude: ['id', 'clientId'],
-        }),
+  async create(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Tenant, {
+            exclude: ['id', 'clientId'],
+          }),
+        },
       },
-    },
-  }) tenant: Omit<Tenant, 'id'>,
+    })
+    tenant: Omit<Tenant, 'id'>,
     @inject(AuthenticationBindings.CURRENT_USER)
-    currentUserProfile: UserProfile): Promise<Tenant> {
+    currentUserProfile: UserProfile,
+  ): Promise<Tenant> {
     tenant.clientId = currentUserProfile.clientId;
     return this.tenantRepository.create(tenant);
   }
@@ -43,7 +63,7 @@ export class TenantController {
     responses: {
       '200': {
         description: 'Tenant model count',
-        content: { 'application/json': { schema: CountSchema } },
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
@@ -66,7 +86,7 @@ export class TenantController {
         description: 'Array of Tenant model instances',
         content: {
           'application/json': {
-            schema: { type: 'array', items: { 'x-ts-type': Tenant } },
+            schema: {type: 'array', items: {'x-ts-type': Tenant}},
           },
         },
       },
@@ -79,7 +99,10 @@ export class TenantController {
     @param.query.object('filter', getFilterSchemaFor(Tenant))
     filter?: Filter<Tenant>,
   ): Promise<Tenant[]> {
-    const filterWithClientId = filterClientId(currentUserProfile.clientId, filter);
+    const filterWithClientId = filterClientId(
+      currentUserProfile.clientId,
+      filter,
+    );
     return this.tenantRepository.find(filterWithClientId);
   }
 
@@ -87,30 +110,52 @@ export class TenantController {
     responses: {
       '200': {
         description: 'Tenant PATCH success count',
-        content: { 'application/json': { schema: CountSchema } },
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   @authenticate('jwt')
   async updateAll(
-    @requestBody() tenant: Tenant,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Tenant, {
+            partial: true,
+            exclude: ['clientId'],
+          }),
+        },
+      },
+    })
+    tenant: Tenant,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.query.object('where', getWhereSchemaFor(Tenant))
     where?: Where<Tenant>,
   ): Promise<Count> {
-    return this.tenantRepository.updateAll(tenant, where);
+    return this.tenantRepository.updateAll(
+      tenant,
+      filterWhere(currentUserProfile.clientId, where),
+    );
   }
 
   @get(TenantsUrl + '/{id}', {
     responses: {
       '200': {
         description: 'Tenant model instance',
-        content: { 'application/json': { schema: { 'x-ts-type': Tenant } } },
+        content: {'application/json': {schema: {'x-ts-type': Tenant}}},
       },
     },
   })
   @authenticate('jwt')
-  async findById(@param.path.number('id') id: number): Promise<Tenant> {
-    return this.tenantRepository.findById(id);
+  async findById(
+    @param.path.number('id') id: number,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+  ): Promise<Tenant> {
+    const result = await this.tenantRepository.find({
+      where: {id: id, clientId: currentUserProfile.clientId},
+    });
+    return result[0];
   }
 
   @patch(TenantsUrl + '/{id}', {
@@ -123,9 +168,24 @@ export class TenantController {
   @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
-    @requestBody() tenant: Tenant,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Tenant, {
+            partial: true,
+            exclude: ['clientId'],
+          }),
+        },
+      },
+    })
+    tenant: Tenant,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.tenantRepository.updateById(id, tenant);
+    await this.tenantRepository.updateAll(tenant, {
+      id: id,
+      clientId: currentUserProfile.clientId,
+    });
   }
 
   @put(TenantsUrl + '/{id}', {
@@ -138,9 +198,20 @@ export class TenantController {
   @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
-    @requestBody() tenant: Tenant,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Tenant),
+        },
+      },
+    })
+    tenant: Tenant,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.tenantRepository.replaceById(id, tenant);
+    if (currentUserProfile.clientId === tenant.clientId) {
+      await this.tenantRepository.replaceById(id, tenant);
+    }
   }
 
   @del(TenantsUrl + '/{id}', {
@@ -151,7 +222,14 @@ export class TenantController {
     },
   })
   @authenticate('jwt')
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.tenantRepository.deleteById(id);
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    await this.tenantRepository.deleteAll({
+      id: id,
+      clientId: currentUserProfile.clientId,
+    });
   }
 }

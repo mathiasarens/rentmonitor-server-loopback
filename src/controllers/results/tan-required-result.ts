@@ -1,4 +1,4 @@
-import {TanRequiredError} from 'fints-psd2-lib';
+import {TanRequiredError} from 'node-fints';
 
 export class TanRequiredResult {
   challengeText: string;

@@ -8,7 +8,7 @@ import {
   RestBindings,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
-import {TanRequiredError} from 'fints-psd2-lib';
+import {TanRequiredError} from 'node-fints';
 import {
   AccountSynchronisationResult,
   AccountSynchronisationService,

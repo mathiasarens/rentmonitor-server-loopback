@@ -1,25 +1,29 @@
-import { Filter } from "@loopback/repository";
+import {Filter, Where} from '@loopback/repository';
 
-export function filterClientId(currentClientId: number, filter?: Filter): Filter {
+export function filterClientId(
+  currentClientId: number,
+  filter?: Filter,
+): Filter {
   let filterWithClientId;
   if (filter) {
     if (filter.where) {
-      const whereWithoutClientId = Object.keys(filter.where)
-        .filter(key => key !== "clientId")
-        .reduce((acc, cur) => ({ ...acc, cur }), {})
-      const whereWithClientId = Object.assign({}, whereWithoutClientId, {
-        clientId: currentClientId
-      })
+      const whereWithClientId = Object.assign({}, filter.where, {
+        clientId: currentClientId,
+      });
       filterWithClientId = Object.assign({}, filter, {
         where: whereWithClientId,
-      })
+      });
     } else {
       filterWithClientId = Object.assign({}, filter, {
-        where: { clientId: currentClientId },
-      })
+        where: {clientId: currentClientId},
+      });
     }
   } else {
-    filterWithClientId = { where: { clientId: currentClientId } }
+    filterWithClientId = {where: {clientId: currentClientId}};
   }
   return filterWithClientId;
-};
+}
+
+export function filterWhere(currentClientId: number, where?: Where): Where {
+  return Object.assign({}, where, {clientId: currentClientId});
+}

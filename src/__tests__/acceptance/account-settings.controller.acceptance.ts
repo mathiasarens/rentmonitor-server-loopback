@@ -1,15 +1,24 @@
-import { Client, expect } from '@loopback/testlab';
-import { RentmonitorServerApplication } from '../..';
-import { clearDatabase, getTestUser, login, setupApplication, setupClientInDb, setupUserInDb } from '../helpers/acceptance-test.helpers';
+import {Client, expect} from '@loopback/testlab';
+import {RentmonitorServerApplication} from '../..';
+import {
+  clearDatabase,
+  getTestUser,
+  login,
+  setupApplication,
+  setupClientInDb,
+  setupUserInDb,
+} from '../helpers/acceptance-test.helpers';
 
 describe('AccountSettingsController Acceptence Test', () => {
   let app: RentmonitorServerApplication;
   let http: Client;
 
   before('setupApplication', async () => {
-    ({ app, client: http } = await setupApplication());
+    ({app, client: http} = await setupApplication());
   });
-  beforeEach(async () => { await clearDatabase(app) });
+  beforeEach(async () => {
+    await clearDatabase(app);
+  });
 
   after(async () => {
     await app.stop();
@@ -215,8 +224,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     expect(res2.body[0].fintsPassword).to.be.empty();
   });
 
-  it('should return not return data from another client on get by filtering for a different clientId', async () => {
-    const { token1, clientId2 } = await setup2();
+  it('should return data own client on get by filtering for a different clientId', async () => {
+    const {token1, clientId2} = await setup2();
     // when
     const res = await http
       .get('/account-settings?filter[where][clientId]=' + clientId2)
@@ -224,11 +233,12 @@ describe('AccountSettingsController Acceptence Test', () => {
       .expect(200)
       .expect('Content-Type', 'application/json');
 
-    expect(res.body.length).to.eql(0);
+    expect(res.body.length).to.eql(1);
+    expect(res.body[0].name).to.eql('Konto1');
   });
 
-  it('should return not return data from another client on get by filtering for a different id', async () => {
-    const { token1, accountSettingsResult2 } = await setup2();
+  it('should not return data from another client on get by filtering for a different id', async () => {
+    const {token1, accountSettingsResult2} = await setup2();
 
     // when
     const res = await http
@@ -257,7 +267,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch('/account-settings')
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
-      .send({ fintsUser: 'newUser', fintsPassword: 'newPassword' })
+      .send({fintsUser: 'newUser', fintsPassword: 'newPassword'})
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -301,7 +311,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch('/account-settings')
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
-      .send({ clientId: clientId1, fintsUrl: 'http://fints-url.com' })
+      .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
@@ -343,7 +353,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch('/account-settings?where[clientId]=' + clientId1)
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
-      .send({ fintsUrl: 'http://fints-url.com' })
+      .send({fintsUrl: 'http://fints-url.com'})
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -371,7 +381,7 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should not allow to find account settings for another client by id', async () => {
-    const { accountSettingsResult1, token2 } = await setup2();
+    const {accountSettingsResult1, token2} = await setup2();
 
     // when
     await http
@@ -417,7 +427,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .patch(`/account-settings/${accountSettingsResult2.body.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({ clientId: clientId1, fintsUrl: 'http://fints-url.com' })
+      .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 

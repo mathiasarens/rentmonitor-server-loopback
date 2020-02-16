@@ -2,7 +2,7 @@ import {
   createStubInstance,
   StubbedInstanceWithSinonAccessor,
 } from '@loopback/testlab';
-import {PinTanClient} from 'fints-psd2-lib';
+import {PinTanClient} from 'node-fints';
 import {AccountSettingsRepository} from '../../../../repositories';
 import {FintsClientFactory} from '../../../../services/accountsynchronisation/fints-client.factory';
 import {FintsServiceImpl} from '../../../../services/accountsynchronisation/fints.service.impl';

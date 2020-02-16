@@ -18,6 +18,7 @@ import {
 import {UserProfile} from '@loopback/security';
 import {AccountTransaction} from '../models';
 import {AccountTransactionRepository} from '../repositories';
+import {filterClientId} from './helper/filter-helper';
 
 export const AccountTransactionUrl = '/account-transactions';
 
@@ -70,14 +71,9 @@ export class AccountTransactionController {
     @param.query.object('filter', getFilterSchemaFor(AccountTransaction))
     filter?: Filter<AccountTransaction>,
   ): Promise<AccountTransaction[]> {
-    const filterWithClientId = filter
-      ? Object.assign({}, filter, {
-          where: {
-            and: [{clientId: currentUserProfile.clientId}, filter.where],
-          },
-        })
-      : {where: {clientId: currentUserProfile.clientId}};
-    return this.accountTransactionRepository.find(filterWithClientId);
+    return this.accountTransactionRepository.find(
+      filterClientId(currentUserProfile.clientId, filter),
+    );
   }
 
   @get(AccountTransactionUrl + '/{id}', {
