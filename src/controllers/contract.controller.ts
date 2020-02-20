@@ -1,10 +1,27 @@
-import { authenticate, AuthenticationBindings } from '@loopback/authentication';
-import { inject } from '@loopback/core';
-import { Count, CountSchema, Filter, repository, Where } from '@loopback/repository';
-import { del, get, getFilterSchemaFor, getModelSchemaRef, getWhereSchemaFor, param, patch, post, put, requestBody } from '@loopback/rest';
-import { UserProfile } from '@loopback/security';
-import { Contract } from '../models';
-import { ContractRepository } from '../repositories';
+import {authenticate, AuthenticationBindings} from '@loopback/authentication';
+import {inject} from '@loopback/core';
+import {
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
+} from '@loopback/repository';
+import {
+  del,
+  get,
+  getFilterSchemaFor,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+} from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
+import {Contract} from '../models';
+import {ContractRepository} from '../repositories';
 
 export const ContractsUrl = '/contracts';
 
@@ -12,13 +29,13 @@ export class ContractController {
   constructor(
     @repository(ContractRepository)
     public contractRepository: ContractRepository,
-  ) { }
+  ) {}
 
   @post(`${ContractsUrl}`, {
     responses: {
       '200': {
         description: 'Contract model instance',
-        content: { 'application/json': { schema: getModelSchemaRef(Contract) } },
+        content: {'application/json': {schema: getModelSchemaRef(Contract)}},
       },
     },
   })
@@ -46,7 +63,7 @@ export class ContractController {
     responses: {
       '200': {
         description: 'Contract model count',
-        content: { 'application/json': { schema: CountSchema } },
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
@@ -54,7 +71,8 @@ export class ContractController {
   async count(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUserProfile: UserProfile,
-    @param.query.object('where', getWhereSchemaFor(Contract)) where?: Where<Contract>,
+    @param.query.object('where', getWhereSchemaFor(Contract))
+    where?: Where<Contract>,
   ): Promise<Count> {
     const whereWithClientId = Object.assign({}, where, {
       clientId: currentUserProfile.clientId,
@@ -70,7 +88,7 @@ export class ContractController {
           'application/json': {
             schema: {
               type: 'array',
-              items: getModelSchemaRef(Contract, { includeRelations: true }),
+              items: getModelSchemaRef(Contract, {includeRelations: true}),
             },
           },
         },
@@ -78,7 +96,8 @@ export class ContractController {
     },
   })
   async find(
-    @param.query.object('filter', getFilterSchemaFor(Contract)) filter?: Filter<Contract>,
+    @param.query.object('filter', getFilterSchemaFor(Contract))
+    filter?: Filter<Contract>,
   ): Promise<Contract[]> {
     return this.contractRepository.find(filter);
   }
@@ -87,7 +106,7 @@ export class ContractController {
     responses: {
       '200': {
         description: 'Contract PATCH success count',
-        content: { 'application/json': { schema: CountSchema } },
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
@@ -95,12 +114,13 @@ export class ContractController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Contract, { partial: true }),
+          schema: getModelSchemaRef(Contract, {partial: true}),
         },
       },
     })
     contract: Contract,
-    @param.query.object('where', getWhereSchemaFor(Contract)) where?: Where<Contract>,
+    @param.query.object('where', getWhereSchemaFor(Contract))
+    where?: Where<Contract>,
   ): Promise<Count> {
     return this.contractRepository.updateAll(contract, where);
   }
@@ -111,7 +131,7 @@ export class ContractController {
         description: 'Contract model instance',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Contract, { includeRelations: true }),
+            schema: getModelSchemaRef(Contract, {includeRelations: true}),
           },
         },
       },
@@ -119,7 +139,8 @@ export class ContractController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.query.object('filter', getFilterSchemaFor(Contract)) filter?: Filter<Contract>
+    @param.query.object('filter', getFilterSchemaFor(Contract))
+    filter?: Filter<Contract>,
   ): Promise<Contract> {
     return this.contractRepository.findById(id, filter);
   }
@@ -136,7 +157,7 @@ export class ContractController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Contract, { partial: true }),
+          schema: getModelSchemaRef(Contract, {partial: true}),
         },
       },
     })
