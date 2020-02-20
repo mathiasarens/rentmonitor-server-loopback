@@ -1,11 +1,11 @@
 import { Client, expect } from '@loopback/testlab';
 import { RentmonitorServerApplication } from '../..';
-import { TenantsUrl } from '../../controllers';
+import { ContractsUrl } from '../../controllers';
 import { Tenant } from '../../models';
 import { TenantRepository } from '../../repositories';
 import { clearDatabase, getTestUser, login, setupApplication, setupClientInDb, setupUserInDb } from '../helpers/acceptance-test.helpers';
 
-describe('TenantController', () => {
+describe('ContractController', () => {
   let app: RentmonitorServerApplication;
   let http: Client;
 
@@ -21,75 +21,67 @@ describe('TenantController', () => {
     await app.stop();
   });
 
-  it('should add new tenant on post', async () => {
+  it('should add new contract on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
+    const tenant1 = await setupTenantInDb(
+      new Tenant({ clientId: clientId, name: 'Tenant1' }),
+    );
     const token = await login(http, testUser);
+    const startDate = new Date();
 
-    const tenantName = 'TestTenant1';
-    const res = await createTenantViaHttp(token, { name: tenantName })
-      .expect(200)
-      .expect('Content-Type', 'application/json');
-    expect(res.body.id).to.be.a.Number();
-    expect(res.body.name).to.eql(tenantName);
-  });
-
-  it('should add tenant with same name twice', async () => {
-    const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
-    await setupUserInDb(app, clientId, testUser);
-    const token = await login(http, testUser);
-
-    const tenantName = 'TestTenant1';
-    await createTenantViaHttp(token, { name: tenantName });
-    const res = await createTenantViaHttp(token, { name: tenantName })
-      .expect(200)
-      .expect('Content-Type', 'application/json');
-    expect(res.body.id).to.be.a.Number();
-    expect(res.body.name).to.eql(tenantName);
-    const debitorRepository = await app.getRepository(TenantRepository);
-    const debitorsFromDb = await debitorRepository.find({
-      where: { clientId: clientId },
-    });
-    expect(debitorsFromDb).length(2);
-  });
-
-  it('should add tenant with clientId from logged in user', async () => {
-    const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
-    await setupUserInDb(app, clientId, testUser);
-    const token = await login(http, testUser);
-
-    const tenantName = 'TestTenant1';
-    const res = await createTenantViaHttp(token, { name: tenantName })
+    const res = await createContractViaHttp(token, { tenantId: tenant1.id, start: startDate })
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.id).to.be.a.Number();
     expect(res.body.clientId).to.eql(clientId);
-    expect(res.body.name).to.eql(tenantName);
+    expect(res.body.tenantId).to.eql(tenant1.id);
+    expect(res.body.start).to.eql(startDate.toISOString());
   });
 
-  it('should count tenants for users clientId only', async () => {
+  it('should add contract with clientId from logged in user', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
+    const tenant1 = await setupTenantInDb(
+      new Tenant({ clientId: clientId, name: 'Tenant1' }),
+    );
     const token = await login(http, testUser);
+    const startDate = new Date();
 
-    const tenantName = 'TestTenant1';
-    await createTenantViaHttp(token, { name: tenantName })
+    const res = await createContractViaHttp(token, { clientId: 1, tenantId: tenant1.id, start: startDate })
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+    expect(res.body.id).to.be.a.Number();
+    expect(res.body.clientId).to.eql(clientId);
+    expect(res.body.tenantId).to.eql(tenant1.id);
+    expect(res.body.start).to.eql(startDate.toISOString());
+  });
+
+  it('should count contracts for users clientId only', async () => {
+    const clientId = await setupClientInDb(app, 'TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(app, clientId, testUser);
+    const tenant1 = await setupTenantInDb(
+      new Tenant({ clientId: clientId, name: 'Tenant1' }),
+    );
+    const token = await login(http, testUser);
+    const startDate = new Date();
+
+    await createContractViaHttp(token, { tenantId: tenant1.id, start: startDate })
       .expect(200)
       .expect('Content-Type', 'application/json');
 
     const res = await http
-      .get(`${TenantsUrl}/count?where[clientId]=${clientId + 1}`)
+      .get(`${ContractsUrl}/count?where[clientId]=${clientId + 1}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(1);
   });
 
-  it('should find tenants for users clientId only if user overwrites clientId', async () => {
+  it.skip('should find tenants for users clientId only if user overwrites clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -99,7 +91,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     const res = await http
-      .get(`${TenantsUrl}?filter[where][clientId]=${clientId2}`)
+      .get(`${ContractsUrl}?filter[where][clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
@@ -107,7 +99,7 @@ describe('TenantController', () => {
     expect(res.body[0].name).to.eql('Tenant1');
   });
 
-  it('should find tenants for users clientId only if user uses a where filter without clientId', async () => {
+  it.skip('should find tenants for users clientId only if user uses a where filter without clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -117,7 +109,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     const res = await http
-      .get(`${TenantsUrl}?filter[where][name]=Tenant1`)
+      .get(`${ContractsUrl}?filter[where][name]=Tenant1`)
       .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
@@ -125,7 +117,7 @@ describe('TenantController', () => {
     expect(res.body[0].name).to.eql('Tenant1');
   });
 
-  it('should find tenants for users clientId only if user uses no filter', async () => {
+  it.skip('should find tenants for users clientId only if user uses no filter', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -135,7 +127,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     const res = await http
-      .get(`${TenantsUrl}`)
+      .get(`${ContractsUrl}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
@@ -145,7 +137,7 @@ describe('TenantController', () => {
 
   // patch
 
-  it('should update tenants for users clientId only if no clientId is given', async () => {
+  it.skip('should update tenants for users clientId only if no clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -155,7 +147,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     const res = await http
-      .patch(`${TenantsUrl}`)
+      .patch(`${ContractsUrl}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({ email: 'tenant1@tenants.de' })
@@ -180,7 +172,7 @@ describe('TenantController', () => {
     expect(clientId2Tenants[0].email).to.be.null();
   });
 
-  it('should update tenants for users clientId only if different clientId is given', async () => {
+  it.skip('should update tenants for users clientId only if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -190,7 +182,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     const res = await http
-      .patch(`${TenantsUrl}?where[clientId]=${clientId2}`)
+      .patch(`${ContractsUrl}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({ email: 'tenant1@tenants.de' })
@@ -215,7 +207,7 @@ describe('TenantController', () => {
     expect(clientId2Tenants[0].email).to.be.null();
   });
 
-  it('should not update tenants clientId to a different clientId', async () => {
+  it.skip('should not update tenants clientId to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -225,7 +217,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     await http
-      .patch(`${TenantsUrl}`)
+      .patch(`${ContractsUrl}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({ clientId: clientId2 })
@@ -251,7 +243,7 @@ describe('TenantController', () => {
 
   // findById
 
-  it('should find tenants by id for users clientId only if api user uses no filter', async () => {
+  it.skip('should find tenants by id for users clientId only if api user uses no filter', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -263,14 +255,14 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     const res = await http
-      .get(`${TenantsUrl}/${tenant1.id}`)
+      .get(`${ContractsUrl}/${tenant1.id}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.name).to.eql('Tenant1');
   });
 
-  it('should not find tenants by id for users clientId only if api user uses no filter', async () => {
+  it.skip('should not find tenants by id for users clientId only if api user uses no filter', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -282,12 +274,12 @@ describe('TenantController', () => {
     );
 
     await http
-      .get(`${TenantsUrl}/${tenant2.id}`)
+      .get(`${ContractsUrl}/${tenant2.id}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(204);
   });
 
-  it('should not find tenants by id for users clientId only if api user filters for other clientId', async () => {
+  it.skip('should not find tenants by id for users clientId only if api user filters for other clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -299,14 +291,14 @@ describe('TenantController', () => {
     );
 
     await http
-      .get(`${TenantsUrl}/${tenant2.id}?where[clientId]=${clientId2}`)
+      .get(`${ContractsUrl}/${tenant2.id}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(204);
   });
 
   // patch by id
 
-  it('should update tenant by id for users clientId only if no clientId is given', async () => {
+  it.skip('should update tenant by id for users clientId only if no clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -318,7 +310,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     await http
-      .patch(`${TenantsUrl}/${tenant1.id}`)
+      .patch(`${ContractsUrl}/${tenant1.id}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({ email: 'tenant1@tenants.de' })
@@ -341,7 +333,7 @@ describe('TenantController', () => {
     expect(clientId2Tenants[0].email).to.be.null();
   });
 
-  it('should update tenant by id for users clientId only if different clientId is given', async () => {
+  it.skip('should update tenant by id for users clientId only if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -353,7 +345,7 @@ describe('TenantController', () => {
     );
 
     await http
-      .patch(`${TenantsUrl}/${tenant2.id}?where[clientId]=${clientId2}`)
+      .patch(`${ContractsUrl}/${tenant2.id}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({ email: 'tenant1@tenants.de' })
@@ -376,7 +368,7 @@ describe('TenantController', () => {
     expect(clientId2Tenants[0].email).to.be.null();
   });
 
-  it('should not update tenant by id if own clientId is set to a different clientId', async () => {
+  it.skip('should not update tenant by id if own clientId is set to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -388,7 +380,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     await http
-      .patch(`${TenantsUrl}/${tenant1.id}`)
+      .patch(`${ContractsUrl}/${tenant1.id}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({ clientId: clientId2 })
@@ -414,7 +406,7 @@ describe('TenantController', () => {
 
   // put
 
-  it('should replace tenant1 by id', async () => {
+  it.skip('should replace tenant1 by id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -426,7 +418,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     await http
-      .put(`${TenantsUrl}/${tenant1.id}`)
+      .put(`${ContractsUrl}/${tenant1.id}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({
@@ -459,7 +451,7 @@ describe('TenantController', () => {
     expect(clientId2Tenants[0].phone).to.be.null();
   });
 
-  it('should not replace client id of tenant1 to clientId2', async () => {
+  it.skip('should not replace client id of tenant1 to clientId2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -471,7 +463,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     await http
-      .put(`${TenantsUrl}/${tenant1.id}`)
+      .put(`${ContractsUrl}/${tenant1.id}`)
       .set('Authorization', 'Bearer ' + token)
       .set('Content-Type', 'application/json')
       .send({
@@ -506,7 +498,7 @@ describe('TenantController', () => {
 
   // delete
 
-  it('should delete tenant1', async () => {
+  it.skip('should delete tenant1', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -518,7 +510,7 @@ describe('TenantController', () => {
     await setupTenantInDb(new Tenant({ clientId: clientId2, name: 'Tenant2' }));
 
     await http
-      .delete(`${TenantsUrl}/${tenant1.id}`)
+      .delete(`${ContractsUrl}/${tenant1.id}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(204);
 
@@ -540,7 +532,7 @@ describe('TenantController', () => {
     expect(clientId2Tenants[0].phone).to.be.null();
   });
 
-  it('should not delete tenant2 if filtered to client2 ', async () => {
+  it.skip('should not delete tenant2 if filtered to client2 ', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -554,7 +546,7 @@ describe('TenantController', () => {
     );
 
     await http
-      .delete(`${TenantsUrl}/${tenant2.id}`)
+      .delete(`${ContractsUrl}/${tenant2.id}`)
       .set('Authorization', 'Bearer ' + token)
       .expect(204);
 
@@ -581,9 +573,9 @@ describe('TenantController', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function createTenantViaHttp(token: string, data: {}) {
+  function createContractViaHttp(token: string, data: {}) {
     return http
-      .post(TenantsUrl)
+      .post(ContractsUrl)
       .set('Authorization', 'Bearer ' + token)
       .send(data)
       .set('Content-Type', 'application/json');
