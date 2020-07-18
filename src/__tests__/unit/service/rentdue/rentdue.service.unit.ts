@@ -12,7 +12,7 @@ describe('RentDueCalculationService Unit Tests', () => {
 
   after(async () => {});
 
-  it('should create a due booking for current month after the due date', async function() {
+  it('should create a due booking for current month after the due date', async function () {
     // given
     const clientId = 1;
     const tenantId = 2;
@@ -43,7 +43,7 @@ describe('RentDueCalculationService Unit Tests', () => {
     expect(bookings[0].type).to.eql(BookingType.RENT_DUE);
   });
 
-  it('should not create a due booking for current month on the due date', async function() {
+  it('should not create a due booking for current month on the due date', async function () {
     // given
     const clientId = 1;
     const tenantId = 2;
@@ -67,7 +67,7 @@ describe('RentDueCalculationService Unit Tests', () => {
     expect(bookings).length(0);
   });
 
-  it('should create due bookings from start month', async function() {
+  it('should create due bookings from start month', async function () {
     // given
     const clientId = 1;
     const tenantId = 2;
@@ -114,7 +114,7 @@ describe('RentDueCalculationService Unit Tests', () => {
     expect(bookings[14].type).to.eql(BookingType.RENT_DUE);
   });
 
-  it('should not create a due booking for current month if the due date is not reached', async function() {
+  it('should not create a due booking for current month if the due date is not reached', async function () {
     // given
     const clientId = 1;
     const tenantId = 2;

@@ -92,7 +92,7 @@ export class UserController {
   async findById(
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUserProfile: UserProfile,
-    @param.path.string('userId') userId: string,
+    @param.path.number('userId') userId: number,
   ): Promise<User | null> {
     return this.userRepository.findOne({
       where: {id: userId, clientId: currentUserProfile.clientId},

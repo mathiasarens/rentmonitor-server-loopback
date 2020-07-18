@@ -53,7 +53,7 @@ export class ContractRepository extends DefaultCrudRepository<
       },
     });
     const activeContracts = contracts.filter(
-      e => e.end == null || e.end >= now,
+      (e) => e.end == null || e.end >= now,
     );
     return activeContracts;
   }

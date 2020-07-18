@@ -17,7 +17,7 @@ describe.skip('FinTs Integration', () => {
 
   after(async () => {});
 
-  it('should get account transactions', async function() {
+  it('should get account transactions', async function () {
     // when
     const finTsAccountTransactions = await fints.fetchStatements(
       new AccountSettings({

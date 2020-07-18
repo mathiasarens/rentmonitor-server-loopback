@@ -19,7 +19,7 @@ describe('Tenant Repository Integration Tests', () => {
 
   after(async () => {});
 
-  it('should create tenant', async function() {
+  it('should create tenant', async function () {
     const dbClient: Client = await givenClient({name: 'Rentmonitor Test'});
     await tenantRepository.create({
       clientId: dbClient.id,

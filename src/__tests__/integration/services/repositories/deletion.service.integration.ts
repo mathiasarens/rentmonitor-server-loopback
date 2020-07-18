@@ -156,7 +156,7 @@ describe('Deletion Service Integration', () => {
 
   after(async () => {});
 
-  it('should delete client 1', async function() {
+  it('should delete client 1', async function () {
     expect(await clientRepository.exists(client1.id)).to.be.true();
     expect(await clientRepository.exists(client2.id)).to.be.true();
     expect(await tenantRepository.exists(tenant11.id)).to.be.true();
@@ -214,7 +214,7 @@ describe('Deletion Service Integration', () => {
     ).to.be.true();
   });
 
-  it('should delete all tables', async function() {
+  it('should delete all tables', async function () {
     expect(await clientRepository.find()).length(2);
     expect(await tenantRepository.find()).length(2);
     expect(await contractRepository.find()).length(2);

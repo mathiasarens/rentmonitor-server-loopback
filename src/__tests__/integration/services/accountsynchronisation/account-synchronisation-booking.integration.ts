@@ -62,7 +62,7 @@ describe('Account Synchronisation Booking Integration Tests', () => {
 
   after(async () => {});
 
-  it('should save new bookings if contract active', async function() {
+  it('should save new bookings if contract active', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: client1.id});
     const accountTransaction1 = await accountTransactionRepository.create({
@@ -122,7 +122,7 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     expect(savedAccountTransactions[0].bookingId).to.eql(result[0][0].id);
   });
 
-  it('should not save new booking if contract is inactive', async function() {
+  it('should not save new booking if contract is inactive', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: client1.id});
     const accountTransaction1 = await accountTransactionRepository.create({

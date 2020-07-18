@@ -8,23 +8,16 @@ import {Client} from '.';
 
 @model({
   settings: {
-    // foreignKeys: {
-    //   fkUserClientId: {
-    //     name: 'fk_user_clientId',
-    //     entity: 'Client',
-    //     entityKey: 'id',
-    //     foreignKey: 'clientid',
-    //   },
-    // },
+    hiddenProperties: ['password'],
   },
 })
 export class User extends Entity {
   @property({
-    type: 'string',
+    type: 'number',
     id: true,
     generated: true,
   })
-  id: string;
+  id: number;
 
   @belongsTo(() => Client)
   clientId: number;

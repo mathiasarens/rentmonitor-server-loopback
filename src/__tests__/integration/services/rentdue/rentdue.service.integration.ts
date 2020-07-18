@@ -72,7 +72,7 @@ describe('RentDue Service Integration Tests', () => {
 
   after(async () => {});
 
-  it('should create due booking for current month', async function() {
+  it('should create due booking for current month', async function () {
     // given
     await bookingRepository.create({
       clientId: client.id,

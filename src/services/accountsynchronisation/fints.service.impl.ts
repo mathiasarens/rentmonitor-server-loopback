@@ -64,8 +64,8 @@ export class FintsServiceImpl implements FintsService {
       } else {
         statements = await fintsClient.statements(account, from, endDate);
       }
-      statements.forEach(statement => {
-        statement.transactions.forEach(transactionRecord => {
+      statements.forEach((statement) => {
+        statement.transactions.forEach((transactionRecord) => {
           accountTransactions.push(
             this.parseFinTsTransactionRecord(transactionRecord),
           );
@@ -100,7 +100,7 @@ export class FintsServiceImpl implements FintsService {
     const accounts = await fintsClient.accounts();
 
     return accounts.map(
-      account =>
+      (account) =>
         new FinTsAccountDTO(
           JSON.stringify(account),
           account.accountName,

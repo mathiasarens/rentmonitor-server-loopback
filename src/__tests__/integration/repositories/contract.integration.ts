@@ -31,7 +31,7 @@ describe('Contract Repository Integration Tests', () => {
 
   after(async () => {});
 
-  it('should create contract', async function() {
+  it('should create contract', async function () {
     const dbClient: Client = await givenClient({name: 'Rentmonitor Test'});
     const dbTenant: Tenant = await givenTenant({
       clientId: dbClient.id,

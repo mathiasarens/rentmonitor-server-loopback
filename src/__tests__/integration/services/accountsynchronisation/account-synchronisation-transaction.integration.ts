@@ -50,7 +50,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   after(async () => {});
 
-  it('should save new transactions on an empty database', async function() {
+  it('should save new transactions on an empty database', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const accountTransactions = [
@@ -83,7 +83,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(1);
   });
 
-  it('should save new transactions which are newer than an existing transaction', async function() {
+  it('should save new transactions which are newer than an existing transaction', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const newAccountTransactions = [
@@ -138,7 +138,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(2);
   });
 
-  it('should save new transactions which are almost equal to an existing transaction except for one field', async function() {
+  it('should save new transactions which are almost equal to an existing transaction except for one field', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const newAccountTransactions = [
@@ -232,7 +232,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(6);
   });
 
-  it('should save 2 new transactions but not override an duplicate one', async function() {
+  it('should save 2 new transactions but not override an duplicate one', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const newAccountTransactions = [
@@ -296,7 +296,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(2);
   });
 
-  it('should save a new transactions but not override two duplicates', async function() {
+  it('should save a new transactions but not override two duplicates', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const newAccountTransactions = [
@@ -371,7 +371,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(1);
   });
 
-  it('should save new duplicate transactions in empty database', async function() {
+  it('should save new duplicate transactions in empty database', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const newAccountTransactions = [
@@ -424,7 +424,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(3);
   });
 
-  it('should save new transactions if new transactions are inbetween old transactions', async function() {
+  it('should save new transactions if new transactions are inbetween old transactions', async function () {
     // given
     const accountSettings = new AccountSettings({id: 1, clientId: 2});
     const newAccountTransactions = [

@@ -4,7 +4,6 @@ import {Entity, model, property} from '@loopback/repository';
 export class Client extends Entity {
   @property({
     id: true,
-    type: 'number',
     generated: true,
   })
   id: number;

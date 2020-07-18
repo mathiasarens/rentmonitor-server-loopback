@@ -158,7 +158,7 @@ export class AccountSynchronisationService {
       rawAccountTransactions,
     );
     const accountTransactions: AccountTransaction[] = rawAccountTransactions.map(
-      at => this.convertToAccountTransaction(accountSettings, at),
+      (at) => this.convertToAccountTransaction(accountSettings, at),
     );
     const newAccountTransactions = await this.accountSynchronisationSaveService.saveNewAccountTransactions(
       accountSettings,
@@ -190,7 +190,7 @@ export class AccountSynchronisationService {
     rawAccountTransactions: FinTsAccountTransactionDTO[],
   ) {
     const accountTransactionsToSave: AccountTransactionLog[] = rawAccountTransactions.map(
-      at =>
+      (at) =>
         new AccountTransactionLog({
           clientId: accountSettings.clientId,
           accountSettingsId: accountSettings.id,

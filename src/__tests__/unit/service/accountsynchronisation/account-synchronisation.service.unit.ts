@@ -1,5 +1,6 @@
 import {
   createStubInstance,
+  expect,
   sinon,
   StubbedInstanceWithSinonAccessor,
 } from '@loopback/testlab';
@@ -15,7 +16,10 @@ import {
 } from '../../../../repositories';
 import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
 import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
-import {AccountSynchronisationService} from '../../../../services/accountsynchronisation/account-synchronisation.service';
+import {
+  AccountSynchronisationResult,
+  AccountSynchronisationService,
+} from '../../../../services/accountsynchronisation/account-synchronisation.service';
 import {
   FinTsAccountTransactionDTO,
   FintsService,
@@ -58,7 +62,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
 
   after(async () => {});
 
-  it('should synchronize fints transactions and create bookings', async function() {
+  it('should synchronize fints transactions and create bookings', async function () {
     // given
     const clientId = 1;
     const accountSettingsId = 3234421;
@@ -101,9 +105,14 @@ describe('AccountSynchronisationService Unit Tests', () => {
       accountTransactions,
     );
 
+    accountSynchronisationBookingServiceStub.createAndSaveBookings.resolves([
+      [],
+      [],
+    ]);
+
     const now = new Date(2019, 3, 11);
     // when
-    await accountTransactionService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
+    const result: AccountSynchronisationResult[] = await accountTransactionService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
       now,
       clientId,
     );
@@ -141,5 +150,9 @@ describe('AccountSynchronisationService Unit Tests', () => {
       accountTransactions,
       now,
     );
+
+    expect(result.length).to.eql(1);
+    expect(result[0].newBookings).to.eql(0);
+    expect(result[0].unmatchedTransactions).to.eql(0);
   });
 });
