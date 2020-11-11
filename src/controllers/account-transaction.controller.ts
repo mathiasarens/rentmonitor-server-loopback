@@ -4,8 +4,10 @@ import {
   Count,
   CountSchema,
   Filter,
+  FilterBuilder,
   repository,
   Where,
+  WhereBuilder,
 } from '@loopback/repository';
 import {
   del,
@@ -18,7 +20,6 @@ import {
 import {UserProfile} from '@loopback/security';
 import {AccountTransaction} from '../models';
 import {AccountTransactionRepository} from '../repositories';
-import {filterClientId} from './helper/filter-helper';
 
 export const AccountTransactionUrl = '/account-transactions';
 
@@ -43,9 +44,11 @@ export class AccountTransactionController {
     @param.query.object('where', getWhereSchemaFor(AccountTransaction))
     where?: Where<AccountTransaction>,
   ): Promise<Count> {
-    const whereWithClientId = Object.assign({}, where, {
-      clientId: currentUserProfile.clientId,
-    });
+    const whereWithClientId = new WhereBuilder(where)
+      .impose({
+        clientId: currentUserProfile.clientId,
+      })
+      .build();
     return this.accountTransactionRepository.count(whereWithClientId);
   }
 
@@ -72,7 +75,13 @@ export class AccountTransactionController {
     filter?: Filter<AccountTransaction>,
   ): Promise<AccountTransaction[]> {
     return this.accountTransactionRepository.find(
-      filterClientId(currentUserProfile.clientId, filter),
+      new FilterBuilder(filter)
+        .where(
+          new WhereBuilder(filter?.where)
+            .impose({clientId: currentUserProfile.clientId})
+            .build(),
+        )
+        .build(),
     );
   }
 

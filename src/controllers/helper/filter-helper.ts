@@ -1,4 +1,4 @@
-import {Filter, Where} from '@loopback/repository';
+import {Filter, Where, WhereBuilder} from '@loopback/repository';
 
 export function filterClientId(
   currentClientId: number,
@@ -25,5 +25,5 @@ export function filterClientId(
 }
 
 export function filterWhere(currentClientId: number, where?: Where): Where {
-  return Object.assign({}, where, {clientId: currentClientId});
+  return new WhereBuilder(where).impose({clientId: currentClientId}).build();
 }

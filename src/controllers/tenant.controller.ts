@@ -4,8 +4,10 @@ import {
   Count,
   CountSchema,
   Filter,
+  FilterBuilder,
   repository,
   Where,
+  WhereBuilder,
 } from '@loopback/repository';
 import {
   del,
@@ -22,7 +24,7 @@ import {
 import {UserProfile} from '@loopback/security';
 import {Tenant} from '../models';
 import {TenantRepository} from '../repositories';
-import {filterClientId, filterWhere} from './helper/filter-helper';
+import {filterWhere} from './helper/filter-helper';
 
 export const TenantsUrl = '/tenants';
 
@@ -74,9 +76,11 @@ export class TenantController {
     @param.query.object('where', getWhereSchemaFor(Tenant))
     where?: Where<Tenant>,
   ): Promise<Count> {
-    const whereWithClientId = Object.assign({}, where, {
-      clientId: currentUserProfile.clientId,
-    });
+    const whereWithClientId = new WhereBuilder(where)
+      .impose({
+        clientId: currentUserProfile.clientId,
+      })
+      .build();
     return this.tenantRepository.count(whereWithClientId);
   }
 
@@ -99,11 +103,11 @@ export class TenantController {
     @param.query.object('filter', getFilterSchemaFor(Tenant))
     filter?: Filter<Tenant>,
   ): Promise<Tenant[]> {
-    const filterWithClientId = filterClientId(
-      currentUserProfile.clientId,
-      filter,
+    return this.tenantRepository.find(
+      new FilterBuilder(filter)
+        .where({clientId: currentUserProfile.clientId})
+        .build(),
     );
-    return this.tenantRepository.find(filterWithClientId);
   }
 
   @patch(TenantsUrl, {

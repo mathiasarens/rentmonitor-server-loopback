@@ -61,7 +61,7 @@ export class UserController {
     try {
       // create the new user
       const savedUser = await this.userRepository.create(user);
-      delete savedUser.password;
+      savedUser.password = '******';
 
       return savedUser;
     } catch (error) {

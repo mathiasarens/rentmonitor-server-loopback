@@ -142,8 +142,7 @@ describe('AccountTransactionController Acceptence Test', () => {
       .expect(200)
       .expect('Content-Type', 'application/json');
 
-    expect(res.body.length).to.eql(1);
-    expect(res.body[0].name).to.eql('Tenant1');
+    expect(res.body.length).to.eql(0);
   });
 
   it('should not return data from another client on get by filtering for a different id', async () => {

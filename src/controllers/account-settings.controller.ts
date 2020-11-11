@@ -4,8 +4,10 @@ import {
   Count,
   CountSchema,
   Filter,
+  FilterBuilder,
   repository,
   Where,
+  WhereBuilder,
 } from '@loopback/repository';
 import {
   del,
@@ -31,7 +33,6 @@ import {
   FintsService,
 } from '../services/accountsynchronisation/fints.service';
 import {FintsServiceBindings} from '../services/accountsynchronisation/fints.service.impl';
-import {filterClientId} from './helper/filter-helper';
 import {TanRequiredResult} from './results/tan-required-result';
 
 export class AccountSettingsController {
@@ -149,9 +150,9 @@ export class AccountSettingsController {
     @param.query.object('where', getWhereSchemaFor(AccountSettings))
     where?: Where<AccountSettings>,
   ): Promise<Count> {
-    const whereWithClientId = Object.assign({}, where, {
-      clientId: currentUserProfile.clientId,
-    });
+    const whereWithClientId = new WhereBuilder(where)
+      .impose({clientId: currentUserProfile.clientId})
+      .build();
     return this.accountSettingsRepository.count(whereWithClientId);
   }
 
@@ -175,7 +176,13 @@ export class AccountSettingsController {
     filter?: Filter<AccountSettings>,
   ): Promise<AccountSettings[]> {
     const accountSettingsFromDb: AccountSettings[] = await this.accountSettingsRepository.find(
-      filterClientId(currentUserProfile.clientId, filter),
+      new FilterBuilder(filter)
+        .where(
+          new WhereBuilder(filter?.where)
+            .impose({clientId: currentUserProfile.clientId})
+            .build(),
+        )
+        .build(),
     );
     return Promise.resolve(this.filterPasswordList(accountSettingsFromDb));
   }
@@ -208,7 +215,9 @@ export class AccountSettingsController {
   ): Promise<Count> {
     return this.accountSettingsRepository.updateAll(
       accountSettings,
-      Object.assign({}, where, {clientId: currentUserProfile.clientId}),
+      new WhereBuilder(where)
+        .impose({clientId: currentUserProfile.clientId})
+        .build(),
     );
   }
 
@@ -258,10 +267,15 @@ export class AccountSettingsController {
     })
     accountSettings: AccountSettings,
   ): Promise<void> {
-    await this.accountSettingsRepository.updateAll(accountSettings, {
-      id: id,
-      clientId: currentUserProfile.clientId,
-    });
+    await this.accountSettingsRepository.updateAll(
+      accountSettings,
+      new WhereBuilder()
+        .impose({
+          id: id,
+          clientId: currentUserProfile.clientId,
+        })
+        .build(),
+    );
   }
 
   @put('/account-settings/{id}', {

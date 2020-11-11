@@ -93,7 +93,7 @@ describe('TenantController', () => {
       .set('Authorization', 'Bearer ' + token)
       .expect(200)
       .expect('Content-Type', 'application/json');
-    expect(res.body.count).to.eql(1);
+    expect(res.body.count).to.eql(0);
   });
 
   it('should find tenants for users clientId only if user overwrites clientId', async () => {
@@ -192,18 +192,18 @@ describe('TenantController', () => {
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
-    const token = await login(http, testUser1);
+    const token1 = await login(http, testUser1);
     await setupTenantInDb(new Tenant({clientId: clientId1, name: 'Tenant1'}));
     await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
 
     const res = await http
       .patch(`${TenantsUrl}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
       .send({email: 'tenant1@tenants.de'})
       .expect(200)
       .expect('Content-Type', 'application/json');
-    expect(res.body.count).to.eql(1);
+    expect(res.body.count).to.eql(0);
 
     const tenantRepository: TenantRepository = await app.getRepository(
       TenantRepository,
@@ -213,7 +213,7 @@ describe('TenantController', () => {
       where: {clientId: clientId1},
     });
     expect(clientId1Tenants.length).to.eql(1);
-    expect(clientId1Tenants[0].email).to.eql('tenant1@tenants.de');
+    expect(clientId1Tenants[0].email).to.be.null();
 
     const clientId2Tenants = await tenantRepository.find({
       where: {clientId: clientId2},

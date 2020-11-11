@@ -171,7 +171,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .expect(200)
       .expect('Content-Type', 'application/json');
 
-    expect(res.body.count).to.eql(1);
+    expect(res.body.count).to.eql(0);
   });
 
   it('should return empty result on get', async () => {
@@ -224,7 +224,7 @@ describe('AccountSettingsController Acceptence Test', () => {
     expect(res2.body[0].fintsPassword).to.be.empty();
   });
 
-  it('should return data own client on get by filtering for a different clientId', async () => {
+  it('should return no data on get if user filtered for a different clientId', async () => {
     const {token1, clientId2} = await setup2();
     // when
     const res = await http
@@ -233,8 +233,7 @@ describe('AccountSettingsController Acceptence Test', () => {
       .expect(200)
       .expect('Content-Type', 'application/json');
 
-    expect(res.body.length).to.eql(1);
-    expect(res.body[0].name).to.eql('Konto1');
+    expect(res.body.length).to.eql(0);
   });
 
   it('should not return data from another client on get by filtering for a different id', async () => {
@@ -346,16 +345,18 @@ describe('AccountSettingsController Acceptence Test', () => {
       fintsUrl1,
       token2,
       fintsName2,
+      fintsUrl2,
     } = await setup2();
 
     // when
-    await http
+    const res = await http
       .patch('/account-settings?where[clientId]=' + clientId1)
       .set('Authorization', 'Bearer ' + token2)
       .set('Content-Type', 'application/json')
       .send({fintsUrl: 'http://fints-url.com'})
       .expect(200)
       .expect('Content-Type', 'application/json');
+    expect(res.body.count).to.eql(0);
 
     const res1 = await http
       .get('/account-settings')
@@ -376,7 +377,7 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     expect(res2.body.length).to.eql(1);
     expect(res2.body[0].name).to.eql(fintsName2);
-    expect(res2.body[0].fintsUrl).to.eql('http://fints-url.com');
+    expect(res2.body[0].fintsUrl).to.eql(fintsUrl2);
     expect(res2.body[0].fintsPassword).to.be.empty();
   });
 

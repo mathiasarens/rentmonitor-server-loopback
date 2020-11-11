@@ -142,6 +142,6 @@ export class AccountSettingsRepository extends DefaultCrudRepository<
   }
 
   private decryptList(accountSettings: AccountSettings[]): AccountSettings[] {
-    return accountSettings.map((a) => this.decrypt(a));
+    return accountSettings.map(a => this.decrypt(a));
   }
 }
