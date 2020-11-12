@@ -4,8 +4,10 @@ import {
   Count,
   CountSchema,
   Filter,
+  FilterBuilder,
   repository,
   Where,
+  WhereBuilder,
 } from '@loopback/repository';
 import {
   del,
@@ -74,9 +76,11 @@ export class ContractController {
     @param.query.object('where', getWhereSchemaFor(Contract))
     where?: Where<Contract>,
   ): Promise<Count> {
-    const whereWithClientId = Object.assign({}, where, {
-      clientId: currentUserProfile.clientId,
-    });
+    const whereWithClientId = new WhereBuilder(where)
+      .impose({
+        clientId: currentUserProfile.clientId,
+      })
+      .build();
     return this.contractRepository.count(whereWithClientId);
   }
 
@@ -95,11 +99,22 @@ export class ContractController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(Contract))
     filter?: Filter<Contract>,
   ): Promise<Contract[]> {
-    return this.contractRepository.find(filter);
+    return this.contractRepository.find(
+      new FilterBuilder(filter)
+        .where(
+          new WhereBuilder(filter?.where)
+            .impose({clientId: currentUserProfile.clientId})
+            .build(),
+        )
+        .build(),
+    );
   }
 
   @patch(`${ContractsUrl}`, {
@@ -110,6 +125,7 @@ export class ContractController {
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
@@ -119,10 +135,19 @@ export class ContractController {
       },
     })
     contract: Contract,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.query.object('where', getWhereSchemaFor(Contract))
     where?: Where<Contract>,
   ): Promise<Count> {
-    return this.contractRepository.updateAll(contract, where);
+    return this.contractRepository.updateAll(
+      contract,
+      new WhereBuilder(where)
+        .impose({
+          clientId: currentUserProfile.clientId,
+        })
+        .build(),
+    );
   }
 
   @get(`${ContractsUrl}/{id}`, {
