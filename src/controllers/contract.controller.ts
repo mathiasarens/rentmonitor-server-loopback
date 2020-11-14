@@ -184,18 +184,27 @@ export class ContractController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Contract, {partial: true}),
+          schema: getModelSchemaRef(Contract, {
+            partial: true,
+            exclude: ['clientId'],
+          }),
         },
       },
     })
     contract: Contract,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.contractRepository.updateById(id, contract);
+    await this.contractRepository.updateAll(contract, {
+      id: id,
+      clientId: currentUserProfile.clientId,
+    });
   }
 
   @put(`${ContractsUrl}/{id}`, {
@@ -205,11 +214,16 @@ export class ContractController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() contract: Contract,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.contractRepository.replaceById(id, contract);
+    if (currentUserProfile.clientId === contract.clientId) {
+      await this.contractRepository.replaceById(id, contract);
+    }
   }
 
   @del(`${ContractsUrl}/{id}`, {
@@ -219,7 +233,15 @@ export class ContractController {
       },
     },
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.contractRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    await this.contractRepository.deleteAll({
+      id: id,
+      clientId: currentUserProfile.clientId,
+    });
   }
 }
