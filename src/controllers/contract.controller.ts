@@ -130,7 +130,10 @@ export class ContractController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Contract, {partial: true}),
+          schema: getModelSchemaRef(Contract, {
+            partial: true,
+            exclude: ['clientId'],
+          }),
         },
       },
     })
@@ -162,12 +165,16 @@ export class ContractController {
       },
     },
   })
+  @authenticate('jwt')
   async findById(
     @param.path.number('id') id: number,
-    @param.query.object('filter', getFilterSchemaFor(Contract))
-    filter?: Filter<Contract>,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<Contract> {
-    return this.contractRepository.findById(id, filter);
+    const result = await this.contractRepository.find({
+      where: {id: id, clientId: currentUserProfile.clientId},
+    });
+    return result[0];
   }
 
   @patch(`${ContractsUrl}/{id}`, {
