@@ -2,20 +2,20 @@ import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Client, Tenant} from '.';
 @model({
   settings: {
-    // foreignKeys: {
-    //   fkContractClientId: {
-    //     name: 'fk_contract_clientId',
-    //     entity: 'Client',
-    //     entityKey: 'id',
-    //     foreignKey: 'clientid',
-    //   },
-    //   fkContractTenantId: {
-    //     name: 'fk_contract_tenantId',
-    //     entity: 'Tenant',
-    //     entityKey: 'id',
-    //     foreignKey: 'tenantid',
-    //   },
-    // },
+    foreignKeys: {
+      fkContractClientId: {
+        name: 'fk_contract_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientid',
+      },
+      fkContractTenantId: {
+        name: 'fk_contract_tenantId',
+        entity: 'Tenant',
+        entityKey: 'id',
+        foreignKey: 'tenantid',
+      },
+    },
   },
 })
 export class Contract extends Entity {

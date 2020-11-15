@@ -3,7 +3,24 @@ import {AccountSettings} from './account-settings.model';
 import {Booking} from './booking.model';
 import {Client} from './client.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fkAccountTransactionClientId: {
+        name: 'fk_accountTransaction_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientid',
+      },
+      fkAccountTransactionAccountSettingsId: {
+        name: 'fk_accountTraction_accountSettingsId',
+        entity: 'AccountSettings',
+        entityKey: 'id',
+        foreignKey: 'accountsettingsid',
+      },
+    },
+  },
+})
 export class AccountTransaction extends Entity {
   @property({
     type: 'number',

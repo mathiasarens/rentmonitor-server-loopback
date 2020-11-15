@@ -3,7 +3,36 @@ import {Contract} from '.';
 import {AccountTransaction} from './account-transaction.model';
 import {Client} from './client.model';
 import {Tenant} from './tenant.model';
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fkBookingClientId: {
+        name: 'fk_booking_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientid',
+      },
+      fkBookingTenantId: {
+        name: 'fk_booking_tenantId',
+        entity: 'Tenant',
+        entityKey: 'id',
+        foreignKey: 'tenantid',
+      },
+      fkBookingContractId: {
+        name: 'fk_booking_contractId',
+        entity: 'Contract',
+        entityKey: 'id',
+        foreignKey: 'contractid',
+      },
+      fkBookingAccountTransactionId: {
+        name: 'fk_booking_accountTransactionId',
+        entity: 'AccountTransaction',
+        entityKey: 'id',
+        foreignKey: 'accountransactionid',
+      },
+    },
+  },
+})
 export class Booking extends Entity {
   @property({
     type: 'number',
