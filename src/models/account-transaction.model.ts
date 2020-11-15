@@ -13,7 +13,7 @@ import {Client} from './client.model';
         foreignKey: 'clientid',
       },
       fkAccountTransactionAccountSettingsId: {
-        name: 'fk_accountTraction_accountSettingsId',
+        name: 'fk_accountTransaction_accountSettingsId',
         entity: 'AccountSettings',
         entityKey: 'id',
         foreignKey: 'accountsettingsid',

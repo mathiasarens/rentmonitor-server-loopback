@@ -28,7 +28,7 @@ import {Tenant} from './tenant.model';
         name: 'fk_booking_accountTransactionId',
         entity: 'AccountTransaction',
         entityKey: 'id',
-        foreignKey: 'accountransactionid',
+        foreignKey: 'accounttransactionid',
       },
     },
   },
