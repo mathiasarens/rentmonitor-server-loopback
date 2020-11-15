@@ -471,7 +471,7 @@ describe('ContractController', () => {
         start: startDate,
       }),
     );
-    const contract2 = await setupContractInDb(
+    await setupContractInDb(
       new Contract({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -516,7 +516,7 @@ describe('ContractController', () => {
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
-    const contract1 = await setupContractInDb(
+    await setupContractInDb(
       new Contract({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -532,11 +532,11 @@ describe('ContractController', () => {
     );
 
     await http
-      .patch(`${ContractsUrl}/${tenant2.id}?where[clientId]=${clientId2}`)
+      .patch(`${ContractsUrl}/${contract2.id}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
       .send({amount: 10})
-      .expect(404);
+      .expect(204);
 
     const contractRepository: ContractRepository = await app.getRepository(
       ContractRepository,
@@ -575,7 +575,7 @@ describe('ContractController', () => {
         start: startDate,
       }),
     );
-    const contract2 = await setupContractInDb(
+    await setupContractInDb(
       new Contract({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -584,7 +584,7 @@ describe('ContractController', () => {
     );
 
     await http
-      .patch(`${ContractsUrl}/${tenant1.id}`)
+      .patch(`${ContractsUrl}/${contract1.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
@@ -631,7 +631,7 @@ describe('ContractController', () => {
         amount: 10,
       }),
     );
-    const contract2 = await setupContractInDb(
+    await setupContractInDb(
       new Contract({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -644,12 +644,14 @@ describe('ContractController', () => {
       .put(`${ContractsUrl}/${contract1.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({
-        id: contract1.id,
-        clientId: contract1.clientId,
-        startDate: startDate,
-        amount: 20,
-      })
+      .send(
+        new Contract({
+          id: contract1.id,
+          clientId: contract1.clientId,
+          start: startDate,
+          amount: 20,
+        }),
+      )
       .expect(204);
 
     const contractRepository: ContractRepository = await app.getRepository(
@@ -669,124 +671,170 @@ describe('ContractController', () => {
     expect(clientId2Contracts[0].amount).to.eql(15);
   });
 
-  it('should not replace client id of tenant1 to clientId2', async () => {
+  it('should not replace client id of contract1 to clientId2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
-    const token = await login(http, testUser1);
-    const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
-    );
-    await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
-
-    await http
-      .put(`${ContractsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
-      .set('Content-Type', 'application/json')
-      .send({
-        id: tenant1.id,
-        clientId: clientId2,
-        name: tenant1.name,
-        email: 'tenant1@tenants.de',
-        phone: '0123/4567890',
-      })
-      .expect(204);
-
-    const tenantRepository: TenantRepository = await app.getRepository(
-      TenantRepository,
-    );
-
-    const clientId1Tenants = await tenantRepository.find({
-      where: {clientId: clientId1},
-    });
-    expect(clientId1Tenants.length).to.eql(1);
-    expect(clientId1Tenants[0].name).to.eql(tenant1.name);
-    expect(clientId1Tenants[0].email).to.be.null();
-    expect(clientId1Tenants[0].phone).to.be.null();
-
-    const clientId2Tenants = await tenantRepository.find({
-      where: {clientId: clientId2},
-    });
-    expect(clientId2Tenants.length).to.eql(1);
-    expect(clientId2Tenants[0].name).to.eql('Tenant2');
-    expect(clientId2Tenants[0].email).to.be.null();
-    expect(clientId2Tenants[0].phone).to.be.null();
-  });
-
-  // delete
-
-  it.skip('should delete tenant1', async () => {
-    const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
-    const token = await login(http, testUser1);
-    const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
-    );
-    await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
-
-    await http
-      .delete(`${ContractsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
-      .expect(204);
-
-    const tenantRepository: TenantRepository = await app.getRepository(
-      TenantRepository,
-    );
-
-    const clientId1Tenants = await tenantRepository.find({
-      where: {clientId: clientId1},
-    });
-    expect(clientId1Tenants.length).to.eql(0);
-
-    const clientId2Tenants = await tenantRepository.find({
-      where: {clientId: clientId2},
-    });
-    expect(clientId2Tenants.length).to.eql(1);
-    expect(clientId2Tenants[0].name).to.eql('Tenant2');
-    expect(clientId2Tenants[0].email).to.be.null();
-    expect(clientId2Tenants[0].phone).to.be.null();
-  });
-
-  it.skip('should not delete tenant2 if filtered to client2 ', async () => {
-    const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
-    const token = await login(http, testUser1);
+    const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-
-    await http
-      .delete(`${ContractsUrl}/${tenant2.id}`)
-      .set('Authorization', 'Bearer ' + token)
-      .expect(204);
-
-    const tenantRepository: TenantRepository = await app.getRepository(
-      TenantRepository,
+    const startDate = new Date();
+    const contract1 = await setupContractInDb(
+      new Contract({
+        clientId: clientId1,
+        tenantId: tenant1.id,
+        start: startDate,
+        amount: 10,
+      }),
+    );
+    await setupContractInDb(
+      new Contract({
+        clientId: clientId2,
+        tenantId: tenant2.id,
+        start: startDate,
+        amount: 15,
+      }),
     );
 
-    const clientId1Tenants = await tenantRepository.find({
+    await http
+      .put(`${ContractsUrl}/${contract1.id}`)
+      .set('Authorization', 'Bearer ' + token1)
+      .set('Content-Type', 'application/json')
+      .send({
+        id: tenant1.id,
+        clientId: clientId2,
+        start: startDate,
+        amount: 20,
+      })
+      .expect(204);
+
+    const contractRepository: ContractRepository = await app.getRepository(
+      ContractRepository,
+    );
+
+    const clientId1Contracts = await contractRepository.find({
       where: {clientId: clientId1},
     });
-    expect(clientId1Tenants.length).to.eql(1);
-    expect(clientId1Tenants[0].name).to.eql(tenant1.name);
-    expect(clientId1Tenants[0].email).to.be.null();
-    expect(clientId1Tenants[0].phone).to.be.null();
+    expect(clientId1Contracts.length).to.eql(1);
+    expect(clientId1Contracts[0].amount).to.eql(10);
 
-    const clientId2Tenants = await tenantRepository.find({
+    const clientId2Contracts = await contractRepository.find({
       where: {clientId: clientId2},
     });
-    expect(clientId2Tenants.length).to.eql(1);
-    expect(clientId2Tenants[0].name).to.eql('Tenant2');
-    expect(clientId2Tenants[0].email).to.be.null();
-    expect(clientId2Tenants[0].phone).to.be.null();
+    expect(clientId2Contracts.length).to.eql(1);
+    expect(clientId2Contracts[0].amount).to.eql(15);
+  });
+
+  // delete
+
+  it('should delete contract1', async () => {
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
+    const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser1 = getTestUser('1');
+    await setupUserInDb(app, clientId1, testUser1);
+    const token1 = await login(http, testUser1);
+    const tenant1 = await setupTenantInDb(
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+    );
+    const tenant2 = await setupTenantInDb(
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+    );
+    const startDate = new Date();
+    const contract1 = await setupContractInDb(
+      new Contract({
+        clientId: clientId1,
+        tenantId: tenant1.id,
+        start: startDate,
+        amount: 10,
+      }),
+    );
+    await setupContractInDb(
+      new Contract({
+        clientId: clientId2,
+        tenantId: tenant2.id,
+        start: startDate,
+        amount: 15,
+      }),
+    );
+
+    // test
+    await http
+      .delete(`${ContractsUrl}/${contract1.id}`)
+      .set('Authorization', 'Bearer ' + token1)
+      .expect(204);
+
+    const contractRepository: ContractRepository = await app.getRepository(
+      ContractRepository,
+    );
+
+    const clientId1Contracts = await contractRepository.find({
+      where: {clientId: clientId1},
+    });
+    expect(clientId1Contracts.length).to.eql(0);
+
+    const clientId2Contracts = await contractRepository.find({
+      where: {clientId: clientId2},
+    });
+    expect(clientId2Contracts.length).to.eql(1);
+    expect(clientId2Contracts[0].amount).to.eql(15);
+  });
+
+  it('should not delete contract2 if filtered to client2 ', async () => {
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
+    const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser1 = getTestUser('1');
+    await setupUserInDb(app, clientId1, testUser1);
+    const token1 = await login(http, testUser1);
+    const tenant1 = await setupTenantInDb(
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+    );
+    const tenant2 = await setupTenantInDb(
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+    );
+    const startDate = new Date();
+    await setupContractInDb(
+      new Contract({
+        clientId: clientId1,
+        tenantId: tenant1.id,
+        start: startDate,
+        amount: 10,
+      }),
+    );
+    const contract2 = await setupContractInDb(
+      new Contract({
+        clientId: clientId2,
+        tenantId: tenant2.id,
+        start: startDate,
+        amount: 15,
+      }),
+    );
+
+    // test
+    await http
+      .delete(`${ContractsUrl}/${contract2.id}`)
+      .set('Authorization', 'Bearer ' + token1)
+      .expect(204);
+
+    const contractRepository: ContractRepository = await app.getRepository(
+      ContractRepository,
+    );
+
+    const clientId1Contracts = await contractRepository.find({
+      where: {clientId: clientId1},
+    });
+    expect(clientId1Contracts.length).to.eql(1);
+    expect(clientId1Contracts[0].amount).to.eql(10);
+
+    const clientId2Contracts = await contractRepository.find({
+      where: {clientId: clientId2},
+    });
+    expect(clientId2Contracts.length).to.eql(1);
+    expect(clientId2Contracts[0].amount).to.eql(15);
   });
 
   // non test methods --------------------------------------------------------------------

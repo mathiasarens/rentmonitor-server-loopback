@@ -192,7 +192,7 @@ export class ContractController {
         'application/json': {
           schema: getModelSchemaRef(Contract, {
             partial: true,
-            exclude: ['clientId'],
+            exclude: ['id', 'clientId'],
           }),
         },
       },
