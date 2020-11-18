@@ -2,6 +2,7 @@ import {Getter} from '@loopback/repository';
 import {expect} from '@loopback/testlab';
 import {AccountSettings, AccountTransaction} from '../../../../models';
 import {
+  AccountSettingsRepository,
   AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
@@ -17,6 +18,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
   let tenantRepository: TenantRepository;
   let contractRepository: ContractRepository;
   let bookingRepository: BookingRepository;
+  let accountSettingsRepository: AccountSettingsRepository;
   let accountTransactionRepository: AccountTransactionRepository;
   let accountTransactionSaveService: AccountSynchronisationTransactionService;
 
@@ -37,6 +39,14 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
       tenantRepositoryGetter,
       Getter.fromValue(contractRepository),
     );
+
+    accountSettingsRepository = new AccountSettingsRepository(
+      testdb,
+      clientRepositoryGetter,
+      'password',
+      'salt',
+    );
+
     accountTransactionRepository = new AccountTransactionRepository(
       testdb,
       clientRepositoryGetter,
@@ -52,11 +62,15 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   it('should save new transactions on an empty database', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const client = await clientRepository.create({name: 'Client 2'});
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
+
     const accountTransactions = [
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 14),
         iban: 'IBAN1',
         bic: 'BIC1',
@@ -75,7 +89,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     // then
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: 2, accountSettingsId: 1},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );
@@ -85,11 +99,15 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   it('should save new transactions which are newer than an existing transaction', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const client = await clientRepository.create({name: 'Client 2'});
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
+
     const newAccountTransactions = [
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN1',
         bic: 'BIC1',
@@ -99,8 +117,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
       }),
 
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 14),
         iban: 'IBAN1',
         bic: 'BIC1',
@@ -111,8 +129,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     ];
 
     await accountTransactionRepository.create({
-      clientId: 2,
-      accountSettingsId: 1,
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2018, 0, 1),
       iban: 'IBAN1',
       bic: 'BIC1',
@@ -130,7 +148,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     // then
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: 2, accountSettingsId: 1},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );
@@ -140,11 +158,15 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   it('should save new transactions which are almost equal to an existing transaction except for one field', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const client = await clientRepository.create({name: 'Client 2'});
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
+
     const newAccountTransactions = [
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 14),
         iban: 'IBAN',
         bic: 'BIC',
@@ -153,8 +175,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'DIFFRENT-IBAN',
         bic: 'BIC',
@@ -163,8 +185,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'DIFFRENT-BIC',
@@ -173,8 +195,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -183,8 +205,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -193,8 +215,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -205,8 +227,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     ];
 
     await accountTransactionRepository.create({
-      clientId: 2,
-      accountSettingsId: 1,
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2018, 3, 13),
       iban: 'IBAN',
       bic: 'BIC',
@@ -224,7 +246,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     // then
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: 2, accountSettingsId: 1},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );
@@ -234,11 +256,14 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   it('should save 2 new transactions but not override an duplicate one', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const client = await clientRepository.create({name: 'Client 2'});
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
     const newAccountTransactions = [
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -247,8 +272,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -257,8 +282,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -269,8 +294,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     ];
 
     await accountTransactionRepository.create({
-      clientId: 2,
-      accountSettingsId: 1,
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2019, 3, 13),
       iban: 'IBAN',
       bic: 'BIC',
@@ -288,7 +313,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     // then
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: 2, accountSettingsId: 1},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );
@@ -298,11 +323,14 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   it('should save a new transactions but not override two duplicates', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const client = await clientRepository.create({name: 'Client 2'});
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
     const newAccountTransactions = [
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -311,8 +339,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -321,8 +349,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -333,8 +361,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     ];
 
     await accountTransactionRepository.create({
-      clientId: 2,
-      accountSettingsId: 1,
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2019, 3, 13),
       iban: 'IBAN',
       bic: 'BIC',
@@ -344,8 +372,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     });
 
     await accountTransactionRepository.create({
-      clientId: 2,
-      accountSettingsId: 1,
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2019, 3, 13),
       iban: 'IBAN',
       bic: 'BIC',
@@ -363,7 +391,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     // then
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: 2, accountSettingsId: 1},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );
@@ -373,11 +401,14 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   it('should save new duplicate transactions in empty database', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const client = await clientRepository.create({name: 'Client 2'});
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
     const newAccountTransactions = [
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -386,8 +417,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -396,8 +427,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 13),
         iban: 'IBAN',
         bic: 'BIC',
@@ -416,7 +447,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     // then
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: 2, accountSettingsId: 1},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );
@@ -426,11 +457,14 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
 
   it('should save new transactions if new transactions are inbetween old transactions', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: 2});
+    const client = await clientRepository.create({name: 'Client 2'});
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
     const newAccountTransactions = [
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 1),
         iban: 'IBAN',
         bic: 'BIC',
@@ -439,8 +473,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 3),
         iban: 'IBAN',
         bic: 'BIC',
@@ -449,8 +483,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
         amount: 1000,
       }),
       new AccountTransaction({
-        clientId: 2,
-        accountSettingsId: 1,
+        clientId: client.id,
+        accountSettingsId: accountSettings.id,
         date: new Date(2019, 3, 5),
         iban: 'IBAN',
         bic: 'BIC',
@@ -461,8 +495,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     ];
 
     await accountTransactionRepository.create({
-      clientId: 2,
-      accountSettingsId: 1,
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2018, 3, 2),
       iban: 'IBAN',
       bic: 'BIC',
@@ -472,8 +506,8 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     });
 
     await accountTransactionRepository.create({
-      clientId: 2,
-      accountSettingsId: 1,
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2018, 3, 4),
       iban: 'IBAN',
       bic: 'BIC',
@@ -491,7 +525,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     // then
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: 2, accountSettingsId: 1},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );

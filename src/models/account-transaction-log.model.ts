@@ -4,20 +4,20 @@ import {Client} from './client.model';
 
 @model({
   settings: {
-    foreignKeys: {
-      fkAccountTransactionLogClientId: {
-        name: 'fk_accountTransactionLog_clientId',
-        entity: 'Client',
-        entityKey: 'id',
-        foreignKey: 'clientid',
-      },
-      fkAccountTransactionLogAccountSettingsId: {
-        name: 'fk_accountTransactionLog_accountSettingsId',
-        entity: 'AccountSettings',
-        entityKey: 'id',
-        foreignKey: 'accountsettingsid',
-      },
-    },
+    // foreignKeys: {
+    //   fkAccountTransactionLogClientId: {
+    //     name: 'fk_accountTransactionLog_clientId',
+    //     entity: 'Client',
+    //     entityKey: 'id',
+    //     foreignKey: 'clientid',
+    //   },
+    //   fkAccountTransactionLogAccountSettingsId: {
+    //     name: 'fk_accountTransactionLog_accountSettingsId',
+    //     entity: 'AccountSettings',
+    //     entityKey: 'id',
+    //     foreignKey: 'accountsettingsid',
+    //   },
+    // },
   },
 })
 export class AccountTransactionLog extends Entity {

@@ -9,14 +9,14 @@ import {Contract} from '.';
 import {Client} from './client.model';
 @model({
   settings: {
-    foreignKeys: {
-      fkTenantClientId: {
-        name: 'fk_tenant_clientId',
-        entity: 'Client',
-        entityKey: 'id',
-        foreignKey: 'clientid',
-      },
-    },
+    // foreignKeys: {
+    //   fkTenantClientId: {
+    //     name: 'fk_tenant_clientId',
+    //     entity: 'Client',
+    //     entityKey: 'id',
+    //     foreignKey: 'clientid',
+    //   },
+    // },
   },
 })
 export class Tenant extends Entity {

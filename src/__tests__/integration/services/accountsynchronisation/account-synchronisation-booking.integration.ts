@@ -8,6 +8,7 @@ import {
   Tenant,
 } from '../../../../models';
 import {
+  AccountSettingsRepository,
   AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
@@ -23,10 +24,12 @@ describe('Account Synchronisation Booking Integration Tests', () => {
   let tenantRepository: TenantRepository;
   let contractRepository: ContractRepository;
   let bookingRepository: BookingRepository;
+  let accountSettingsRepository: AccountSettingsRepository;
   let accountTransactionRepository: AccountTransactionRepository;
   let accountSynchronisationBookingService: AccountSynchronisationBookingService;
   let client1: Client;
   let tenant1: Tenant;
+  let accountSettings1: AccountSettings;
 
   beforeEach('setup service and database', async () => {
     await givenEmptyDatabase();
@@ -45,6 +48,12 @@ describe('Account Synchronisation Booking Integration Tests', () => {
       tenantRepositoryGetter,
       Getter.fromValue(contractRepository),
     );
+    accountSettingsRepository = new AccountSettingsRepository(
+      testdb,
+      clientRepositoryGetter,
+      'password',
+      'salt',
+    );
     accountTransactionRepository = new AccountTransactionRepository(
       testdb,
       clientRepositoryGetter,
@@ -57,17 +66,22 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     );
 
     client1 = await clientRepository.create({name: 'Client1'});
-    tenant1 = await tenantRepository.create({name: 'Tenant1'});
+    tenant1 = await tenantRepository.create({
+      clientId: client1.id,
+      name: 'Tenant1',
+    });
+    accountSettings1 = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client1.id}),
+    );
   });
 
   after(async () => {});
 
   it('should save new bookings if contract active', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: client1.id});
     const accountTransaction1 = await accountTransactionRepository.create({
       clientId: client1.id,
-      accountSettingsId: accountSettings.id,
+      accountSettingsId: accountSettings1.id,
       date: new Date(2019, 3, 14),
       iban: 'IBAN1',
       bic: 'BIC1',
@@ -114,7 +128,7 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     // updated account transaction
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: client1.id, accountSettingsId: accountSettings.id},
+        where: {clientId: client1.id, accountSettingsId: accountSettings1.id},
         order: ['date ASC'],
       },
     );
@@ -124,10 +138,9 @@ describe('Account Synchronisation Booking Integration Tests', () => {
 
   it('should not save new booking if contract is inactive', async function () {
     // given
-    const accountSettings = new AccountSettings({id: 1, clientId: client1.id});
     const accountTransaction1 = await accountTransactionRepository.create({
       clientId: client1.id,
-      accountSettingsId: accountSettings.id,
+      accountSettingsId: accountSettings1.id,
       date: new Date(2019, 3, 14),
       iban: 'IBAN1',
       bic: 'BIC1',
@@ -167,7 +180,7 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     // updated account transaction
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: client1.id, accountSettingsId: accountSettings.id},
+        where: {clientId: client1.id, accountSettingsId: accountSettings1.id},
         order: ['date ASC'],
       },
     );

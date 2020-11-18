@@ -111,12 +111,12 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
   );
   const userRepository = await app.getRepository(UserRepository);
 
-  await accountTransactionRepository.deleteAll();
   await bookingRepository.deleteAll();
   await contractRepository.deleteAll();
   await tenantRepository.deleteAll();
 
   await accountSettingsRepository.deleteAll();
+  await accountTransactionRepository.deleteAll();
   await accountTransactionLogRepository.deleteAll();
 
   await userRepository.deleteAll();

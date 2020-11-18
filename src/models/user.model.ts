@@ -9,14 +9,14 @@ import {Client} from '.';
 @model({
   settings: {
     hiddenProperties: ['password'],
-    foreignKeys: {
-      fkUserClientId: {
-        name: 'fk_user_clientId',
-        entity: 'Client',
-        entityKey: 'id',
-        foreignKey: 'clientid',
-      },
-    },
+    // foreignKeys: {
+    //   fkUserClientId: {
+    //     name: 'fk_user_clientId',
+    //     entity: 'Client',
+    //     entityKey: 'id',
+    //     foreignKey: 'clientid',
+    //   },
+    // },
   },
 })
 export class User extends Entity {
