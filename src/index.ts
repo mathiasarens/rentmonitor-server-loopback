@@ -5,10 +5,6 @@ import {TokenServiceBindings} from './keys';
 export {RentmonitorServerApplication};
 
 export async function main(options: ApplicationConfig = {}) {
-  options.rest.cors = {
-    origin: true,
-  };
-
   const app = new RentmonitorServerApplication(options);
   app
     .bind('datasources.encryption.password')

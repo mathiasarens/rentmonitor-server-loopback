@@ -33,7 +33,9 @@ export async function setupApplication(): Promise<AppWithClient> {
   config.host = '127.0.0.1';
   const app = new RentmonitorServerApplication({
     //rest: givenHttpServerConfig(),
-    rest: config,
+    rest: {
+      config,
+    },
   });
   app.bind('datasources.encryption.password').to('password');
   app.bind('datasources.encryption.salt').to('salt');

@@ -78,6 +78,7 @@ describe('UserController Acceptence Test', () => {
 
     expect(response.status).to.eql(200);
     expect(response.body).to.be.null();
+    expect(response.headers['access-control-allow-origin']).to.eql('*');
   });
 
   it('should find user from the same client', async () => {
