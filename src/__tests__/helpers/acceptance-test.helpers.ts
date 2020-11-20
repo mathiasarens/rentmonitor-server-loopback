@@ -37,17 +37,21 @@ export async function setupApplication(): Promise<AppWithClient> {
       config,
     },
   });
-  app.bind('datasources.encryption.password').to('password');
-  app.bind('datasources.encryption.salt').to('salt');
+  app
+    .bind('datasources.encryption.password')
+    .to(process.env.RENTMONITOR_DB_ENCRYPTION_SECRET);
+  app
+    .bind('datasources.encryption.salt')
+    .to(process.env.RENTMONITOR_DB_ENCRYPTION_SALT);
   app.bind('datasources.config.rentmonitor').to({
     name: 'rentmonitor_test',
     connector: 'postgresql',
     url: '',
-    host: 'localhost',
-    port: 5432,
-    user: 'rentmonitor_test',
-    password: 'rentmonitor',
-    database: 'rentmonitor_test',
+    host: process.env.RENTMONITOR_TEST_DB_HOST,
+    port: process.env.RENTMONITOR_TEST_DB_PORT,
+    user: process.env.RENTMONITOR_TEST_DB_USER,
+    password: process.env.RENTMONITOR_TEST_DB_PASSWORD,
+    database: process.env.RENTMONITOR_TEST_DB_USER,
   });
   app.bind(TokenServiceBindings.TOKEN_SECRET).to(JWT_TOKEN_SECRET);
   app.bind(FintsServiceBindings.SERVICE).toClass(FintsServiceDummy);
