@@ -90,7 +90,7 @@ export class AccountSynchronisationBookingService {
 }
 
 export namespace AccountSynchronisationBookingServiceBindings {
-  export const SERVICE = BindingKey.create<
-    AccountSynchronisationBookingService
-  >('services.accountsynchronisationbooking.service');
+  export const SERVICE = BindingKey.create<AccountSynchronisationBookingService>(
+    'services.accountsynchronisationbooking.service',
+  );
 }

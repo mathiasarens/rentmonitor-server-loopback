@@ -1,15 +1,15 @@
-import { Client, expect } from '@loopback/testlab';
-import { RentmonitorServerApplication } from '../..';
-import { ContractsUrl } from '../../controllers';
-import { Contract, Tenant } from '../../models';
-import { ContractRepository, TenantRepository } from '../../repositories';
+import {Client, expect} from '@loopback/testlab';
+import {RentmonitorServerApplication} from '../..';
+import {ContractsUrl} from '../../controllers';
+import {Contract, Tenant} from '../../models';
+import {ContractRepository, TenantRepository} from '../../repositories';
 import {
   clearDatabase,
   getTestUser,
   login,
   setupApplication,
   setupClientInDb,
-  setupUserInDb
+  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('ContractController', () => {
@@ -17,7 +17,7 @@ describe('ContractController', () => {
   let http: Client;
 
   before('setupApplication', async () => {
-    ({ app, client: http } = await setupApplication());
+    ({app, client: http} = await setupApplication());
   });
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('ContractController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId, name: 'Tenant1' }),
+      new Tenant({clientId: clientId, name: 'Tenant1'}),
     );
     const token = await login(http, testUser);
     const startDate = new Date();
@@ -63,7 +63,7 @@ describe('ContractController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId, name: 'Tenant1' }),
+      new Tenant({clientId: clientId, name: 'Tenant1'}),
     );
     const token = await login(http, testUser);
     const startDate = new Date();
@@ -88,7 +88,7 @@ describe('ContractController', () => {
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const token1 = await login(http, testUser1);
     const startDate = new Date();
@@ -120,7 +120,7 @@ describe('ContractController', () => {
     const token1 = await login(http, testUser1);
     const startDate = new Date();
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     await setupContractInDb(
       new Contract({
@@ -146,10 +146,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -190,10 +190,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -216,7 +216,7 @@ describe('ContractController', () => {
       .patch(`${ContractsUrl}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({ amount: 10 })
+      .send({amount: 10})
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(1);
@@ -226,13 +226,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Contracts = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Contracts.length).to.eql(1);
     expect(clientId1Contracts[0].amount).to.eql(10);
 
     const clientId2Contracts = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Contracts.length).to.eql(1);
     expect(clientId2Contracts[0].amount).to.be.null();
@@ -245,10 +245,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -271,7 +271,7 @@ describe('ContractController', () => {
       .patch(`${ContractsUrl}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({ amount: 15 })
+      .send({amount: 15})
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(0);
@@ -282,13 +282,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Tenants = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Tenants.length).to.eql(1);
     expect(clientId1Tenants[0].amount).to.be.null();
 
     const clientId2Tenants = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Tenants.length).to.eql(1);
     expect(clientId2Tenants[0].amount).to.be.null();
@@ -301,10 +301,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -327,7 +327,7 @@ describe('ContractController', () => {
       .patch(`${ContractsUrl}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({ clientId: clientId2 })
+      .send({clientId: clientId2})
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
@@ -337,13 +337,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Tenants = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Tenants.length).to.eql(1);
     expect(clientId1Tenants[0].clientId).to.eql(clientId1);
 
     const clientId2Tenants = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Tenants.length).to.eql(1);
     expect(clientId2Tenants[0].clientId).to.eql(clientId2);
@@ -358,10 +358,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     const contract1 = await setupContractInDb(
@@ -394,10 +394,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -428,10 +428,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -464,10 +464,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     const contract1 = await setupContractInDb(
@@ -489,7 +489,7 @@ describe('ContractController', () => {
       .patch(`${ContractsUrl}/${contract1.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({ amount: 10 })
+      .send({amount: 10})
       .expect(204);
 
     const contractRepository: ContractRepository = await app.getRepository(
@@ -497,13 +497,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Contracts = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Contracts.length).to.eql(1);
     expect(clientId1Contracts[0].amount).to.eql(10);
 
     const clientId2Tenants = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Tenants.length).to.eql(1);
     expect(clientId2Tenants[0].amount).to.be.null();
@@ -516,10 +516,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -541,7 +541,7 @@ describe('ContractController', () => {
       .patch(`${ContractsUrl}/${contract2.id}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({ amount: 10 })
+      .send({amount: 10})
       .expect(204);
 
     const contractRepository: ContractRepository = await app.getRepository(
@@ -549,13 +549,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Tenants = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Tenants.length).to.eql(1);
     expect(clientId1Tenants[0].amount).to.be.null();
 
     const clientId2Tenants = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Tenants.length).to.eql(1);
     expect(clientId2Tenants[0].amount).to.be.null();
@@ -568,10 +568,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     const contract1 = await setupContractInDb(
@@ -593,7 +593,7 @@ describe('ContractController', () => {
       .patch(`${ContractsUrl}/${contract1.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({ clientId: clientId2 })
+      .send({clientId: clientId2})
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
@@ -602,13 +602,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Contracts = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Contracts.length).to.eql(1);
     expect(clientId1Contracts[0].clientId).to.eql(clientId1);
 
     const clientId2Contracts = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Contracts.length).to.eql(1);
     expect(clientId2Contracts[0].clientId).to.eql(clientId2);
@@ -623,10 +623,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     const contract1 = await setupContractInDb(
@@ -665,13 +665,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Contracts = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Contracts.length).to.eql(1);
     expect(clientId1Contracts[0].amount).to.eql(20);
 
     const clientId2Contracts = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Contracts.length).to.eql(1);
     expect(clientId2Contracts[0].amount).to.eql(15);
@@ -684,10 +684,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     const contract1 = await setupContractInDb(
@@ -724,13 +724,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Contracts = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Contracts.length).to.eql(1);
     expect(clientId1Contracts[0].amount).to.eql(10);
 
     const clientId2Contracts = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Contracts.length).to.eql(1);
     expect(clientId2Contracts[0].amount).to.eql(15);
@@ -745,10 +745,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     const contract1 = await setupContractInDb(
@@ -779,12 +779,12 @@ describe('ContractController', () => {
     );
 
     const clientId1Contracts = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Contracts.length).to.eql(0);
 
     const clientId2Contracts = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Contracts.length).to.eql(1);
     expect(clientId2Contracts[0].amount).to.eql(15);
@@ -797,10 +797,10 @@ describe('ContractController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+      new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const startDate = new Date();
     await setupContractInDb(
@@ -831,13 +831,13 @@ describe('ContractController', () => {
     );
 
     const clientId1Contracts = await contractRepository.find({
-      where: { clientId: clientId1 },
+      where: {clientId: clientId1},
     });
     expect(clientId1Contracts.length).to.eql(1);
     expect(clientId1Contracts[0].amount).to.eql(10);
 
     const clientId2Contracts = await contractRepository.find({
-      where: { clientId: clientId2 },
+      where: {clientId: clientId2},
     });
     expect(clientId2Contracts.length).to.eql(1);
     expect(clientId2Contracts[0].amount).to.eql(15);

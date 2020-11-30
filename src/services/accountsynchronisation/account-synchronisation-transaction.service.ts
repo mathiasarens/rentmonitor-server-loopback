@@ -143,7 +143,7 @@ export class AccountSynchronisationTransactionService {
 }
 
 export namespace AccountSynchronisationTransactionServiceBindings {
-  export const SERVICE = BindingKey.create<
-    AccountSynchronisationTransactionService
-  >('services.accountsynchronisationtransaction.service');
+  export const SERVICE = BindingKey.create<AccountSynchronisationTransactionService>(
+    'services.accountsynchronisationtransaction.service',
+  );
 }
