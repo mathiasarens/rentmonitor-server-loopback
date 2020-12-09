@@ -1,8 +1,8 @@
-import {belongsTo, Entity, model, property} from '@loopback/repository';
-import {Contract} from '.';
-import {AccountTransaction} from './account-transaction.model';
-import {Client} from './client.model';
-import {Tenant} from './tenant.model';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+import { Contract } from '.';
+import { AccountTransaction } from './account-transaction.model';
+import { Client } from './client.model';
+import { Tenant } from './tenant.model';
 @model({
   settings: {
     // foreignKeys: {
@@ -48,7 +48,7 @@ export class Booking extends Entity {
   tenantId: number;
 
   @belongsTo(() => Contract)
-  contractId: number;
+  contractId?: number;
 
   @belongsTo(() => AccountTransaction)
   accountTransactionId?: number;
@@ -67,7 +67,7 @@ export class Booking extends Entity {
   @property({
     type: 'number',
   })
-  amount?: number;
+  amount: number;
 
   @property({
     type: 'string',
