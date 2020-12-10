@@ -13,9 +13,10 @@ jobs:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
         environment:
-          POSTGRES_DB: rentmonitor_test
-          POSTGRES_PASSWORD: rentmonitor
-          POSTGRES_USER: rentmonitor_test
+          - POSTGRES_DB: rentmonitor_test
+          - POSTGRES_PASSWORD: rentmonitor
+          - POSTGRES_USER: rentmonitor_test
+
     steps:
       - checkout
       - restore_cache:
