@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:14
+      - image: circleci/node:14.15.1
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -18,11 +18,11 @@ jobs:
           POSTGRES_PASSWORD: rentmonitor
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
-            - npm-cache-{{ .Branch }}-
-            - npm-cache-
+#      - restore_cache:
+#          keys:
+#            - npm-cache-{{ .Branch }}-{{ checksum "package-lock.json" }}
+#            - npm-cache-{{ .Branch }}-
+#            - npm-cache-
       - run: npm install
       - save_cache:
           paths:
