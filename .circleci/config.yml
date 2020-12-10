@@ -8,7 +8,7 @@ jobs:
           password: $DOCKERHUB_PASSWORD
         environment:
           NODE_ENV: test
-      - image: circleci/postgres:9.6.2-alpine
+      - image: circleci/postgres:12.1-alpine
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
