@@ -1,8 +1,8 @@
 import { Client, expect } from '@loopback/testlab';
 import { RentmonitorServerApplication } from '../..';
 import { BookingsUrl } from '../../controllers';
-import { Contract, Tenant } from '../../models';
-import { ContractRepository, TenantRepository } from '../../repositories';
+import { Booking, Contract, Tenant } from '../../models';
+import { BookingRepository, ContractRepository, TenantRepository } from '../../repositories';
 import {
   clearDatabase,
   getTestUser,
@@ -115,7 +115,7 @@ describe('BookingController', () => {
 
   // count
 
-  it('should count contracts for users clientId only', async () => {
+  it('should count bookings for users\' clientId only / client with bookings', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
@@ -123,44 +123,52 @@ describe('BookingController', () => {
       new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const token1 = await login(http, testUser1);
-    const startDate = new Date();
-    await setupContractInDb(
-      new Contract({
-        clientId: clientId1,
-        tenantId: tenant1.id,
-        start: startDate,
-      }),
-    );
+    const expectedDate = new Date();
+    await setupBookingInDb(new Booking({ clientId: clientId1, tenantId: tenant1.id, date: expectedDate, amount: 1000 }));
 
     // test
     const res = await http
-      .get(`${BookingsUrl}/count?where[clientId]=${clientId1 + 1}`)
+      .get(`${BookingsUrl}/count`)
       .set('Authorization', 'Bearer ' + token1)
       .expect(200)
       .expect('Content-Type', 'application/json');
-    // expected result is the count from client 1 == 1 and not from client2 that does not exist
+    expect(res.body.count).to.eql(1);
+  });
+
+  it('should return zero count if user passed false clientId', async () => {
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
+    const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser1 = getTestUser('1');
+    await setupUserInDb(app, clientId1, testUser1);
+    const tenant2 = await setupTenantInDb(
+      new Tenant({ clientId: clientId2, name: 'Tenant1' }),
+    );
+    const token1 = await login(http, testUser1);
+    const expectedDate = new Date();
+    await setupBookingInDb(new Booking({ clientId: clientId2, tenantId: tenant2.id, date: expectedDate, amount: 1000 }));
+
+    // test
+    const res = await http
+      .get(`${BookingsUrl}/count?where[clientId]=${clientId2}`)
+      .set('Authorization', 'Bearer ' + token1)
+      .expect(200)
+      .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(0);
   });
 
   // get
 
-  it('should find contracts for users clientId only if user overwrites clientId', async () => {
+  it('should find return zero bookings if user passed false clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
-    const startDate = new Date();
+    const expectedDate = new Date();
     const tenant1 = await setupTenantInDb(
       new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
-    await setupContractInDb(
-      new Contract({
-        clientId: clientId1,
-        tenantId: tenant1.id,
-        start: startDate,
-      }),
-    );
+    await setupBookingInDb(new Booking({ clientId: clientId1, tenantId: tenant1.id, date: expectedDate, amount: 1000 }));
 
     // test
     const res = await http
@@ -171,7 +179,7 @@ describe('BookingController', () => {
     expect(res.body.length).to.eql(0);
   });
 
-  it('should find contracts for users clientId only if user uses a where filter without clientId', async () => {
+  it('should find bookings for users clientId only if user uses a where filter without clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -183,21 +191,11 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
-    const startDate = new Date();
-    await setupContractInDb(
-      new Contract({
-        clientId: clientId1,
-        tenantId: tenant1.id,
-        start: startDate,
-      }),
-    );
-    await setupContractInDb(
-      new Contract({
-        clientId: clientId2,
-        tenantId: tenant2.id,
-        start: startDate,
-      }),
-    );
+    const expectedDate = new Date();
+    const expectedAmount = 1000;
+    await setupBookingInDb(new Booking({ clientId: clientId1, tenantId: tenant1.id, date: expectedDate, amount: expectedAmount }));
+    await setupBookingInDb(new Booking({ clientId: clientId2, tenantId: tenant2.id, date: new Date(2020, 10, 12), amount: expectedAmount + 2 }));
+
 
     // test
     const res = await http
@@ -209,6 +207,8 @@ describe('BookingController', () => {
     // asserts
     expect(res.body.length).to.eql(1);
     expect(res.body[0].tenantId).to.eql(tenant1.id);
+    expect(res.body[0].date).to.eql(expectedDate.toISOString());
+    expect(res.body[0].amount).to.eql(expectedAmount);
   });
 
   // patch
@@ -893,5 +893,10 @@ describe('BookingController', () => {
   async function setupContractInDb(contract: Contract): Promise<Contract> {
     const contractRepository = await app.getRepository(ContractRepository);
     return contractRepository.save(contract);
+  }
+
+  async function setupBookingInDb(booking: Booking): Promise<Booking> {
+    const bookingRepository = await app.getRepository(BookingRepository);
+    return bookingRepository.save(booking);
   }
 });

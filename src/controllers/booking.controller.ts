@@ -1,28 +1,25 @@
+import { authenticate, AuthenticationBindings } from '@loopback/authentication';
+import { inject } from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
+  FilterBuilder,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
+  WhereBuilder
 } from '@loopback/repository';
 import {
   del, get,
   getModelSchemaRef, param,
-
-
   patch, post,
-
-
-
-
   put,
-
   requestBody
 } from '@loopback/rest';
+import { UserProfile } from '@loopback/security';
 import { Booking } from '../models';
 import { BookingRepository } from '../repositories';
-
 export const BookingsUrl = '/bookings';
 
 export class BookingController {
@@ -39,6 +36,7 @@ export class BookingController {
       },
     },
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -51,7 +49,10 @@ export class BookingController {
       },
     })
     booking: Omit<Booking, 'id'>,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<Booking> {
+    booking.clientId = currentUserProfile.clientId;
     return this.bookingRepository.create(booking);
   }
 
@@ -63,10 +64,18 @@ export class BookingController {
       },
     },
   })
+  @authenticate('jwt')
   async count(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.where(Booking) where?: Where<Booking>,
   ): Promise<Count> {
-    return this.bookingRepository.count(where);
+    const whereWithClientId = new WhereBuilder(where)
+      .impose({
+        clientId: currentUserProfile.clientId,
+      })
+      .build();
+    return this.bookingRepository.count(whereWithClientId);
   }
 
   @get(BookingsUrl, {
@@ -84,10 +93,19 @@ export class BookingController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.filter(Booking) filter?: Filter<Booking>,
   ): Promise<Booking[]> {
-    return this.bookingRepository.find(filter);
+    return this.bookingRepository.find(new FilterBuilder(filter)
+      .where(
+        new WhereBuilder(filter?.where)
+          .impose({ clientId: currentUserProfile.clientId })
+          .build(),
+      )
+      .build());
   }
 
   @patch(BookingsUrl, {
