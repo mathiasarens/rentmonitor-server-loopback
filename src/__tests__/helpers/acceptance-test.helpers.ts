@@ -1,4 +1,5 @@
 import { DataObject } from '@loopback/repository';
+import { RestServer } from '@loopback/rest';
 import {
   Client,
   createRestAppClient,
@@ -62,7 +63,8 @@ export async function setupApplication(): Promise<AppWithClient> {
     JWT_TOKEN_SECRET,
     TokenServiceBindings.TOKEN_EXPIRES_IN.key,
   );
-  console.log('Server should have started');
+  const restServer = await app.getServer(RestServer);
+  console.log(`Server started on  ${await restServer.get('rest.host')}:${await restServer.get('rest.port')}`);
   return { app, client, jwtService };
 }
 
