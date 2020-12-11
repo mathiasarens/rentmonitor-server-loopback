@@ -1,13 +1,13 @@
-import {DataObject} from '@loopback/repository';
+import { DataObject } from '@loopback/repository';
 import {
   Client,
   createRestAppClient,
-  givenHttpServerConfig,
+  givenHttpServerConfig
 } from '@loopback/testlab';
-import {Connection, Dialog, DialogConfig, TanRequiredError} from 'node-fints';
-import {RentmonitorServerApplication} from '../..';
-import {PasswordHasherBindings, TokenServiceBindings} from '../../keys';
-import {AccountSettings, User} from '../../models';
+import { Connection, Dialog, DialogConfig, TanRequiredError } from 'node-fints';
+import { RentmonitorServerApplication } from '../..';
+import { PasswordHasherBindings, TokenServiceBindings } from '../../keys';
+import { AccountSettings, User } from '../../models';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
@@ -15,24 +15,22 @@ import {
   ClientRepository,
   ContractRepository,
   TenantRepository,
-  UserRepository,
+  UserRepository
 } from '../../repositories';
 import {
   FinTsAccountDTO,
   FinTsAccountTransactionDTO,
-  FintsService,
+  FintsService
 } from '../../services/accountsynchronisation/fints.service';
-import {FintsServiceBindings} from '../../services/accountsynchronisation/fints.service.impl';
-import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
-import {JWTService} from '../../services/authentication/jwt.service';
+import { FintsServiceBindings } from '../../services/accountsynchronisation/fints.service.impl';
+import { PasswordHasher } from '../../services/authentication/hash.password.bcryptjs';
+import { JWTService } from '../../services/authentication/jwt.service';
 
 const JWT_TOKEN_SECRET = 'test';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
-  config.host = '127.0.0.1';
   const app = new RentmonitorServerApplication({
-    //rest: givenHttpServerConfig(),
     rest: {
       config,
     },
@@ -64,8 +62,8 @@ export async function setupApplication(): Promise<AppWithClient> {
     JWT_TOKEN_SECRET,
     TokenServiceBindings.TOKEN_EXPIRES_IN.key,
   );
-
-  return {app, client, jwtService};
+  console.log('Server should have started');
+  return { app, client, jwtService };
 }
 
 class FintsServiceDummy implements FintsService {
@@ -132,7 +130,7 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
 export async function login(http: Client, user: User): Promise<string> {
   const res = await http
     .post('/users/login')
-    .send({email: user.email, password: user.password})
+    .send({ email: user.email, password: user.password })
     .expect(200);
 
   const token = res.body.token;
@@ -154,7 +152,7 @@ export async function setupClientInDb(
   name: string,
 ): Promise<number> {
   const clientRepository = await app.getRepository(ClientRepository);
-  const clientFromDb = await clientRepository.create({name: name});
+  const clientFromDb = await clientRepository.create({ name: name });
   return clientFromDb.id;
 }
 
