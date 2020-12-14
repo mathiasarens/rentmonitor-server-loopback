@@ -38,6 +38,3 @@ jobs:
       - run:
           name: Run tests
           command: npm run test
-          environment:
-              HOST: '127.0.0.1'
-              PORT: '3000'
