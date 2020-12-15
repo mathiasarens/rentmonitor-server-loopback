@@ -81,4 +81,6 @@ export class Booking extends Entity {
 
 export enum BookingType {
   RENT_DUE = 'RENT_DUE',
+  RENT_PAID_ALGO = 'RENT_PAID_ALGO',
+  RENT_PAID_MANUAL = 'RENT_PAID_MANUAL',
 }

@@ -31,6 +31,7 @@ const JWT_TOKEN_SECRET = 'test';
 
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
+  config.host = '127.0.0.1';
   const app = new RentmonitorServerApplication({
     rest: {
       config,
@@ -56,19 +57,21 @@ export async function setupApplication(): Promise<AppWithClient> {
   app.bind(FintsServiceBindings.SERVICE).toClass(FintsServiceDummy);
   await app.boot();
   await app.start();
+  const restServer = await app.getServer(RestServer);
+  console.log(
+    `Server started on ${await restServer.get(
+      'rest.host',
+    )}:${await restServer.get('rest.port')}`,
+  );
 
+  // rest client
   const client = createRestAppClient(app);
 
   const jwtService = new JWTService(
     JWT_TOKEN_SECRET,
     TokenServiceBindings.TOKEN_EXPIRES_IN.key,
   );
-  const restServer = await app.getServer(RestServer);
-  console.log(
-    `Server started on  ${await restServer.get(
-      'rest.host',
-    )}:${await restServer.get('rest.port')}`,
-  );
+
   return {app, client, jwtService};
 }
 

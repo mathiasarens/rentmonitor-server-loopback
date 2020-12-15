@@ -48,7 +48,6 @@ describe('Contract Repository Integration Tests', () => {
       rentDueEveryMonth: 3,
       rentDueDayOfMonth: 15,
       amount: 5000,
-      accountSynchronisationName: 'accountSynchronisation',
     });
 
     const contractFromDb = await contractRepository.find();
@@ -64,8 +63,5 @@ describe('Contract Repository Integration Tests', () => {
     expect(contractFromDb[0].rentDueEveryMonth).to.equal(3);
     expect(contractFromDb[0].rentDueDayOfMonth).to.equal(15);
     expect(contractFromDb[0].amount).to.equal(5000);
-    expect(contractFromDb[0].accountSynchronisationName).to.equal(
-      'accountSynchronisation',
-    );
   });
 });

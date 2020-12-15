@@ -49,6 +49,11 @@ export class Tenant extends Entity {
   })
   phone?: string;
 
+  @property({
+    type: 'string',
+  })
+  accountSynchronisationName: string;
+
   constructor(data?: Partial<Tenant>) {
     super(data);
   }

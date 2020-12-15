@@ -1,16 +1,16 @@
 import {BindingKey} from '@loopback/context';
 import {repository} from '@loopback/repository';
-import {AccountTransaction, Booking, BookingType, Contract} from '../../models';
+import {AccountTransaction, Booking, BookingType, Tenant} from '../../models';
 import {
   AccountTransactionRepository,
   BookingRepository,
-  ContractRepository,
+  TenantRepository,
 } from '../../repositories';
 
 export class AccountSynchronisationBookingService {
   constructor(
-    @repository(ContractRepository)
-    private contractRepository: ContractRepository,
+    @repository(TenantRepository)
+    private tenantRepository: TenantRepository,
     @repository(BookingRepository)
     private bookingRepository: BookingRepository,
     @repository(AccountTransactionRepository)
@@ -22,33 +22,30 @@ export class AccountSynchronisationBookingService {
     accountTransactions: AccountTransaction[],
     now: Date,
   ): Promise<[Booking[], AccountTransaction[]]> {
-    const activeContracts: Contract[] = await this.contractRepository.findActiveContracts(
-      clientId,
-      now,
-    );
+    const tenants: Tenant[] = await this.tenantRepository.find();
     return this.createAndSaveBookingsByContracts(
       accountTransactions,
-      activeContracts,
+      tenants,
       now,
     );
   }
 
   private async createAndSaveBookingsByContracts(
     accountTransactions: AccountTransaction[],
-    activeContracts: Contract[],
+    tenants: Tenant[],
     now: Date,
   ): Promise<[Booking[], AccountTransaction[]]> {
     const unmachtedAccountTransactions: AccountTransaction[] = [];
     const bookings: Booking[] = [];
     for (const accountTransaction of accountTransactions) {
       let matched = false;
-      for (const contract of activeContracts) {
+      for (const tenant of tenants) {
         if (
-          this.matchAccountTransactionAndContract(accountTransaction, contract)
+          this.matchAccountTransactionAndContract(accountTransaction, tenant)
         ) {
-          const booking = this.createBookingFromAccountTransactionAndContract(
+          const booking = this.createBookingFromAccountTransactionAndTenant(
             accountTransaction,
-            contract,
+            tenant,
           );
           const bookingFromDb = await this.bookingRepository.create(booking);
           accountTransaction.bookingId = bookingFromDb.id;
@@ -67,23 +64,22 @@ export class AccountSynchronisationBookingService {
 
   private matchAccountTransactionAndContract(
     accountTransaction: AccountTransaction,
-    contract: Contract,
+    tenant: Tenant,
   ): boolean {
-    return contract.accountSynchronisationName === accountTransaction.name;
+    return tenant.accountSynchronisationName === accountTransaction.name;
   }
 
-  private createBookingFromAccountTransactionAndContract(
+  private createBookingFromAccountTransactionAndTenant(
     accountTransaction: AccountTransaction,
-    contract: Contract,
+    tenant: Tenant,
   ): Booking {
     return new Booking({
-      clientId: contract.clientId,
-      tenantId: contract.tenantId,
-      contractId: contract.id,
+      clientId: tenant.clientId,
+      tenantId: tenant.id,
       date: accountTransaction.date,
       comment: accountTransaction.text,
       amount: accountTransaction.amount,
-      type: BookingType.RENT_DUE,
+      type: BookingType.RENT_PAID_ALGO,
       accountTransactionId: accountTransaction.id,
     });
   }

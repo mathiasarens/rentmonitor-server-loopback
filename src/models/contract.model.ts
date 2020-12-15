@@ -57,11 +57,6 @@ export class Contract extends Entity {
   })
   amount: number;
 
-  @property({
-    type: 'string',
-  })
-  accountSynchronisationName: string;
-
   private isActive(now: Date) {
     return now > this.start && now < this.end!;
   }
