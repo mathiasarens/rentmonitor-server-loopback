@@ -35,11 +35,18 @@ describe('TenantController', () => {
     const token = await login(http, testUser);
 
     const tenantName = 'TestTenant1';
-    const res = await createTenantViaHttp(token, {name: tenantName})
+    const expectedAccountSynchronisationName = 'Name1ForAccountSynchronisation';
+    const res = await createTenantViaHttp(token, {
+      name: tenantName,
+      accountSynchronisationName: expectedAccountSynchronisationName,
+    })
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.id).to.be.a.Number();
     expect(res.body.name).to.eql(tenantName);
+    expect(res.body.accountSynchronisationName).to.eql(
+      expectedAccountSynchronisationName,
+    );
   });
 
   it('should add tenant with same name twice', async () => {
@@ -102,7 +109,13 @@ describe('TenantController', () => {
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
     const token = await login(http, testUser1);
-    await setupTenantInDb(new Tenant({clientId: clientId1, name: 'Tenant1'}));
+    await setupTenantInDb(
+      new Tenant({
+        clientId: clientId1,
+        name: 'Tenant1',
+        accountSynchronisationName: 'Tenant1-Account',
+      }),
+    );
     await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
 
     const res = await http
@@ -112,6 +125,7 @@ describe('TenantController', () => {
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(1);
     expect(res.body[0].name).to.eql('Tenant1');
+    expect(res.body[0].accountSynchronisationName).to.eql('Tenant1-Account');
   });
 
   it('should find tenants for users clientId only if user uses a where filter without clientId', async () => {
