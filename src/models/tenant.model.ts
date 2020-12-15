@@ -3,10 +3,10 @@ import {
   Entity,
   hasMany,
   model,
-  property,
+  property
 } from '@loopback/repository';
-import {Contract} from '.';
-import {Client} from './client.model';
+import { Contract } from '.';
+import { Client } from './client.model';
 @model({
   settings: {
     // foreignKeys: {
@@ -52,7 +52,7 @@ export class Tenant extends Entity {
   @property({
     type: 'string',
   })
-  accountSynchronisationName: string;
+  accountSynchronisationName?: string;
 
   constructor(data?: Partial<Tenant>) {
     super(data);
