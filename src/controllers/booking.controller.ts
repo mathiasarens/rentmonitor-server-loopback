@@ -1,38 +1,40 @@
-import { authenticate, AuthenticationBindings } from '@loopback/authentication';
-import { inject } from '@loopback/core';
+import {authenticate, AuthenticationBindings} from '@loopback/authentication';
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
   FilterBuilder,
-  FilterExcludingWhere,
   repository,
   Where,
-  WhereBuilder
+  WhereBuilder,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param,
-  patch, post,
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  patch,
+  post,
   put,
-  requestBody
+  requestBody,
 } from '@loopback/rest';
-import { UserProfile } from '@loopback/security';
-import { Booking } from '../models';
-import { BookingRepository } from '../repositories';
+import {UserProfile} from '@loopback/security';
+import {Booking} from '../models';
+import {BookingRepository} from '../repositories';
 export const BookingsUrl = '/bookings';
 
 export class BookingController {
   constructor(
     @repository(BookingRepository)
     public bookingRepository: BookingRepository,
-  ) { }
+  ) {}
 
   @post(BookingsUrl, {
     responses: {
       '200': {
         description: 'Booking model instance',
-        content: { 'application/json': { schema: getModelSchemaRef(Booking) } },
+        content: {'application/json': {schema: getModelSchemaRef(Booking)}},
       },
     },
   })
@@ -60,7 +62,7 @@ export class BookingController {
     responses: {
       '200': {
         description: 'Booking model count',
-        content: { 'application/json': { schema: CountSchema } },
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
@@ -86,7 +88,7 @@ export class BookingController {
           'application/json': {
             schema: {
               type: 'array',
-              items: getModelSchemaRef(Booking, { includeRelations: true }),
+              items: getModelSchemaRef(Booking, {includeRelations: true}),
             },
           },
         },
@@ -99,35 +101,50 @@ export class BookingController {
     currentUserProfile: UserProfile,
     @param.filter(Booking) filter?: Filter<Booking>,
   ): Promise<Booking[]> {
-    return this.bookingRepository.find(new FilterBuilder(filter)
-      .where(
-        new WhereBuilder(filter?.where)
-          .impose({ clientId: currentUserProfile.clientId })
-          .build(),
-      )
-      .build());
+    return this.bookingRepository.find(
+      new FilterBuilder(filter)
+        .where(
+          new WhereBuilder(filter?.where)
+            .impose({clientId: currentUserProfile.clientId})
+            .build(),
+        )
+        .build(),
+    );
   }
 
   @patch(BookingsUrl, {
     responses: {
       '200': {
         description: 'Booking PATCH success count',
-        content: { 'application/json': { schema: CountSchema } },
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Booking, { partial: true }),
+          schema: getModelSchemaRef(Booking, {
+            partial: true,
+            exclude: ['clientId'],
+          }),
         },
       },
     })
     booking: Booking,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.where(Booking) where?: Where<Booking>,
   ): Promise<Count> {
-    return this.bookingRepository.updateAll(booking, where);
+    return this.bookingRepository.updateAll(
+      booking,
+      new WhereBuilder(where)
+        .impose({
+          clientId: currentUserProfile.clientId,
+        })
+        .build(),
+    );
   }
 
   @get(BookingsUrl + '/{id}', {
@@ -136,17 +153,22 @@ export class BookingController {
         description: 'Booking model instance',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(Booking, { includeRelations: true }),
+            schema: getModelSchemaRef(Booking, {includeRelations: true}),
           },
         },
       },
     },
   })
+  @authenticate('jwt')
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Booking, { exclude: 'where' }) filter?: FilterExcludingWhere<Booking>
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<Booking> {
-    return this.bookingRepository.findById(id, filter);
+    const result = await this.bookingRepository.find({
+      where: {id: id, clientId: currentUserProfile.clientId},
+    });
+    return result[0];
   }
 
   @patch(BookingsUrl + '/{id}', {
@@ -156,18 +178,27 @@ export class BookingController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Booking, { partial: true }),
+          schema: getModelSchemaRef(Booking, {
+            partial: true,
+            exclude: ['id', 'clientId'],
+          }),
         },
       },
     })
     booking: Booking,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.bookingRepository.updateById(id, booking);
+    await this.bookingRepository.updateAll(booking, {
+      id: id,
+      clientId: currentUserProfile.clientId,
+    });
   }
 
   @put(BookingsUrl + '/{id}', {
@@ -177,11 +208,16 @@ export class BookingController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() booking: Booking,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.bookingRepository.replaceById(id, booking);
+    if (currentUserProfile.clientId === booking.clientId) {
+      await this.bookingRepository.replaceById(id, booking);
+    }
   }
 
   @del(BookingsUrl + '/{id}', {
@@ -191,7 +227,15 @@ export class BookingController {
       },
     },
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.bookingRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    await this.bookingRepository.deleteAll({
+      id: id,
+      clientId: currentUserProfile.clientId,
+    });
   }
 }

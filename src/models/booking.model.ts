@@ -1,8 +1,8 @@
-import { belongsTo, Entity, model, property } from '@loopback/repository';
-import { Contract } from '.';
-import { AccountTransaction } from './account-transaction.model';
-import { Client } from './client.model';
-import { Tenant } from './tenant.model';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {Contract} from '.';
+import {AccountTransaction} from './account-transaction.model';
+import {Client} from './client.model';
+import {Tenant} from './tenant.model';
 @model({
   settings: {
     // foreignKeys: {
