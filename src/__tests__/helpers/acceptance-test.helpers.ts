@@ -1,5 +1,4 @@
 import {DataObject} from '@loopback/repository';
-import {RestServer} from '@loopback/rest';
 import {
   Client,
   createRestAppClient,
@@ -55,12 +54,12 @@ export async function setupApplication(): Promise<AppWithClient> {
   app.bind(FintsServiceBindings.SERVICE).toClass(FintsServiceDummy);
   await app.boot();
   await app.start();
-  const restServer = await app.getServer(RestServer);
-  console.log(
-    `Server started on ${await restServer.get(
-      'rest.host',
-    )}:${await restServer.get('rest.port')}`,
-  );
+  // const restServer = await app.getServer(RestServer);
+  // console.log(
+  //   `Server started on ${await restServer.get(
+  //     'rest.host',
+  //   )}:${await restServer.get('rest.port')}`,
+  // );
 
   // rest client
   const client = createRestAppClient(app);
