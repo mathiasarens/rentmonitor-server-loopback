@@ -41,11 +41,13 @@ export class Tenant extends Entity {
 
   @property({
     type: 'string',
+    required: false,
   })
   email?: string;
 
   @property({
     type: 'string',
+    required: false,
   })
   phone?: string;
 

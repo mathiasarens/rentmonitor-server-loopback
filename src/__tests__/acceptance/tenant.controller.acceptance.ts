@@ -489,7 +489,13 @@ describe('TenantController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({
+        clientId: clientId1,
+        name: 'Tenant1',
+        email: 'tenant1@tenants.de',
+        phone: '0123/4567890',
+        accountSynchronisationName: 'Tenant1',
+      }),
     );
     await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
 
@@ -503,7 +509,7 @@ describe('TenantController', () => {
         name: tenant1.name,
         email: null,
         phone: null,
-        accountSynchronisationName: 'Tenant1',
+        accountSynchronisationName: null,
       })
       .expect(422);
 
