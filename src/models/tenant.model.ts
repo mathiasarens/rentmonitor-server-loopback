@@ -31,7 +31,7 @@ export class Tenant extends Entity {
   clientId: number;
 
   @hasMany(() => Contract)
-  contracts?: Contract[];
+  contracts: Contract[];
 
   @property({
     type: 'string',
