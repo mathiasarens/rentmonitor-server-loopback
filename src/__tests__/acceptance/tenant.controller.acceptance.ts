@@ -435,7 +435,7 @@ describe('TenantController', () => {
 
   // put
 
-  it('should replace tenant1 by id', async () => {
+  it('should replace full tenant by id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -456,6 +456,7 @@ describe('TenantController', () => {
         name: tenant1.name,
         email: 'tenant1@tenants.de',
         phone: '0123/4567890',
+        accountSynchronisationName: 'Tenant1',
       })
       .expect(204);
 
@@ -470,6 +471,51 @@ describe('TenantController', () => {
     expect(clientId1Tenants[0].name).to.eql(tenant1.name);
     expect(clientId1Tenants[0].email).to.eql('tenant1@tenants.de');
     expect(clientId1Tenants[0].phone).to.eql('0123/4567890');
+    expect(clientId1Tenants[0].accountSynchronisationName).to.eql('Tenant1');
+
+    const clientId2Tenants = await tenantRepository.find({
+      where: {clientId: clientId2},
+    });
+    expect(clientId2Tenants.length).to.eql(1);
+    expect(clientId2Tenants[0].name).to.eql('Tenant2');
+    expect(clientId2Tenants[0].email).to.be.null();
+    expect(clientId2Tenants[0].phone).to.be.null();
+  });
+
+  it('should replace minimal tenant by id', async () => {
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
+    const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser1 = getTestUser('1');
+    await setupUserInDb(app, clientId1, testUser1);
+    const token = await login(http, testUser1);
+    const tenant1 = await setupTenantInDb(
+      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+    );
+    await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
+
+    await http
+      .put(`${TenantsUrl}/${tenant1.id}`)
+      .set('Authorization', 'Bearer ' + token)
+      .set('Content-Type', 'application/json')
+      .send({
+        id: tenant1.id,
+        clientId: tenant1.clientId,
+        name: tenant1.name,
+      })
+      .expect(204);
+
+    const tenantRepository: TenantRepository = await app.getRepository(
+      TenantRepository,
+    );
+
+    const clientId1Tenants = await tenantRepository.find({
+      where: {clientId: clientId1},
+    });
+    expect(clientId1Tenants.length).to.eql(1);
+    expect(clientId1Tenants[0].name).to.eql(tenant1.name);
+    expect(clientId1Tenants[0].email).to.eql(null);
+    expect(clientId1Tenants[0].phone).to.eql(null);
+    expect(clientId1Tenants[0].accountSynchronisationName).to.eql(null);
 
     const clientId2Tenants = await tenantRepository.find({
       where: {clientId: clientId2},
