@@ -511,7 +511,7 @@ describe('TenantController', () => {
         phone: null,
         accountSynchronisationName: null,
       })
-      .expect(422);
+      .expect(204);
 
     const tenantRepository: TenantRepository = await app.getRepository(
       TenantRepository,
@@ -522,9 +522,9 @@ describe('TenantController', () => {
     });
     expect(clientId1Tenants.length).to.eql(1);
     expect(clientId1Tenants[0].name).to.eql(tenant1.name);
-    expect(clientId1Tenants[0].email).to.eql('tenant1@tenants.de');
-    expect(clientId1Tenants[0].phone).to.eql('0123/4567890');
-    expect(clientId1Tenants[0].accountSynchronisationName).to.eql('Tenant1');
+    expect(clientId1Tenants[0].email).to.be.null;
+    expect(clientId1Tenants[0].phone).to.be.null;
+    expect(clientId1Tenants[0].accountSynchronisationName).to.be.null;
 
     const clientId2Tenants = await tenantRepository.find({
       where: {clientId: clientId2},
