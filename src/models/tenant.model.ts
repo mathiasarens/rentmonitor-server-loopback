@@ -41,18 +41,19 @@ export class Tenant extends Entity {
 
   @property({
     type: 'string',
-    required: false,
+    jsonSchema: {nullable: true},
   })
   email?: string;
 
   @property({
     type: 'string',
-    required: false,
+    jsonSchema: {nullable: true},
   })
   phone?: string;
 
   @property({
     type: 'string',
+    jsonSchema: {nullable: true},
   })
   accountSynchronisationName?: string;
 
