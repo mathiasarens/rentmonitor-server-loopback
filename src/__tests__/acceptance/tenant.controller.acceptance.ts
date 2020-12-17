@@ -522,9 +522,9 @@ describe('TenantController', () => {
     });
     expect(clientId1Tenants.length).to.eql(1);
     expect(clientId1Tenants[0].name).to.eql(tenant1.name);
-    expect(clientId1Tenants[0].email).to.be.null;
-    expect(clientId1Tenants[0].phone).to.be.null;
-    expect(clientId1Tenants[0].accountSynchronisationName).to.be.null;
+    expect(clientId1Tenants[0].email).to.be.null();
+    expect(clientId1Tenants[0].phone).to.be.null();
+    expect(clientId1Tenants[0].accountSynchronisationName).to.be.null();
 
     const clientId2Tenants = await tenantRepository.find({
       where: {clientId: clientId2},
