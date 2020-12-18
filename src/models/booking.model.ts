@@ -66,6 +66,7 @@ export class Booking extends Entity {
 
   @property({
     type: 'number',
+    required: true,
   })
   amount: number;
 
