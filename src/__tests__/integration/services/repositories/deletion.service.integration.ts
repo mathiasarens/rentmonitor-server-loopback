@@ -113,11 +113,13 @@ describe('Deletion Service Integration', () => {
       tenantId: tenant11.id,
       contractId: contract111.id,
       date: new Date(),
+      amount: 1000,
     });
     booking2111 = await bookingRepository.create({
       clientId: client2.id,
       tenantId: tenant21.id,
       date: new Date(),
+      amount: 1500,
     });
 
     accountSettings11 = await accountSettingsRepository.create({
