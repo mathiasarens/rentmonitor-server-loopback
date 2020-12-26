@@ -1,11 +1,11 @@
-import {Client, expect} from '@loopback/testlab';
-import {RentmonitorServerApplication} from '../..';
-import {BookingsUrl} from '../../controllers';
-import {Booking, Contract, Tenant} from '../../models';
+import { Client, expect } from '@loopback/testlab';
+import { RentmonitorServerApplication } from '../..';
+import { BookingsUrl } from '../../controllers';
+import { Booking, Contract, Tenant } from '../../models';
 import {
   BookingRepository,
   ContractRepository,
-  TenantRepository,
+  TenantRepository
 } from '../../repositories';
 import {
   clearDatabase,
@@ -13,7 +13,7 @@ import {
   login,
   setupApplication,
   setupClientInDb,
-  setupUserInDb,
+  setupUserInDb
 } from '../helpers/acceptance-test.helpers';
 
 describe('BookingController', () => {
@@ -21,7 +21,7 @@ describe('BookingController', () => {
   let http: Client;
 
   before('setupApplication', async () => {
-    ({app, client: http} = await setupApplication());
+    ({ app, client: http } = await setupApplication());
   });
 
   beforeEach(async () => {
@@ -39,7 +39,7 @@ describe('BookingController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId, name: 'Tenant1' }),
     );
     const token = await login(http, testUser);
     const expectedDate = new Date();
@@ -64,7 +64,7 @@ describe('BookingController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId, name: 'Tenant1' }),
     );
     const token = await login(http, testUser);
     const expectedDate = new Date();
@@ -90,7 +90,7 @@ describe('BookingController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId, name: 'Tenant1' }),
     );
     const contract1 = await setupContractInDb(
       new Contract({
@@ -133,7 +133,7 @@ describe('BookingController', () => {
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
@@ -161,7 +161,7 @@ describe('BookingController', () => {
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant1' }),
     );
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
@@ -193,10 +193,10 @@ describe('BookingController', () => {
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     await setupBookingInDb(
       new Booking({
@@ -231,10 +231,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
@@ -280,10 +280,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
@@ -309,7 +309,7 @@ describe('BookingController', () => {
       .patch(`${BookingsUrl}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({amount: expectedAmount})
+      .send({ amount: expectedAmount })
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(1);
@@ -317,13 +317,13 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].amount).to.eql(expectedAmount + 200);
@@ -336,10 +336,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
@@ -365,7 +365,7 @@ describe('BookingController', () => {
       .patch(`${BookingsUrl}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({amount: expectedAmount})
+      .send({ amount: expectedAmount })
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(0);
@@ -374,13 +374,13 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount - 300);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].amount).to.eql(expectedAmount + 200);
@@ -393,10 +393,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
@@ -422,7 +422,7 @@ describe('BookingController', () => {
       .patch(`${BookingsUrl}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({clientId: clientId2})
+      .send({ clientId: clientId2 })
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
@@ -430,14 +430,14 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].clientId).to.eql(clientId1);
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount - 300);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
@@ -453,10 +453,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
@@ -494,10 +494,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
@@ -532,10 +532,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
@@ -571,10 +571,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
@@ -600,14 +600,14 @@ describe('BookingController', () => {
       .patch(`${BookingsUrl}/${booking1.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({amount: expectedAmount})
+      .send({ amount: expectedAmount })
       .expect(204);
 
     // asserts
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].clientId).to.eql(clientId1);
@@ -615,7 +615,7 @@ describe('BookingController', () => {
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
@@ -630,10 +630,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
@@ -659,14 +659,14 @@ describe('BookingController', () => {
       .patch(`${BookingsUrl}/${booking2.id}?where[clientId]=${clientId2}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({amount: expectedAmount})
+      .send({ amount: expectedAmount })
       .expect(204);
 
     // asserts
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].clientId).to.eql(clientId1);
@@ -674,7 +674,7 @@ describe('BookingController', () => {
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount - 300);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
@@ -689,10 +689,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
@@ -718,7 +718,7 @@ describe('BookingController', () => {
       .patch(`${BookingsUrl}/${booking1.id}`)
       .set('Authorization', 'Bearer ' + token1)
       .set('Content-Type', 'application/json')
-      .send({clientId: clientId2})
+      .send({ clientId: clientId2 })
       .expect(422)
       .expect('Content-Type', 'application/json; charset=utf-8');
 
@@ -726,7 +726,7 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].clientId).to.eql(clientId1);
@@ -734,7 +734,7 @@ describe('BookingController', () => {
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount - 300);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
@@ -751,10 +751,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
@@ -794,7 +794,7 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].clientId).to.eql(clientId1);
@@ -802,7 +802,79 @@ describe('BookingController', () => {
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
+    });
+    expect(clientId2Bookings.length).to.eql(1);
+    expect(clientId2Bookings[0].clientId).to.eql(clientId2);
+    expect(clientId2Bookings[0].date).to.eql(expectedDate2);
+    expect(clientId2Bookings[0].amount).to.eql(expectedAmount + 200);
+  });
+
+  it('should allow null values for optional fields', async () => {
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
+    const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser1 = getTestUser('1');
+    await setupUserInDb(app, clientId1, testUser1);
+    const token1 = await login(http, testUser1);
+    const tenant1 = await setupTenantInDb(
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
+    );
+    const tenant2 = await setupTenantInDb(
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
+    );
+    const expectedDate = new Date();
+    const expectedDate2 = new Date(2020, 10, 12);
+    const expectedAmount = 1000;
+    const booking1 = await setupBookingInDb(
+      new Booking({
+        clientId: clientId1,
+        tenantId: tenant1.id,
+        date: expectedDate,
+        amount: expectedAmount - 300,
+      }),
+    );
+    await setupBookingInDb(
+      new Booking({
+        clientId: clientId2,
+        tenantId: tenant2.id,
+        date: expectedDate2,
+        amount: expectedAmount + 200,
+      }),
+    );
+
+    await http
+      .put(`${BookingsUrl}/${booking1.id}`)
+      .set('Authorization', 'Bearer ' + token1)
+      .set('Content-Type', 'application/json')
+      .send(
+        {
+          id: booking1.id,
+          clientId: booking1.clientId,
+          date: expectedDate,
+          amount: expectedAmount,
+          comment: null,
+          type: null
+        },
+      )
+      .expect(204);
+
+    // asserts
+    const bookingRepository = await app.getRepository(BookingRepository);
+
+    const clientId1Bookings = await bookingRepository.find({
+      where: { clientId: clientId1 },
+    });
+    expect(clientId1Bookings.length).to.eql(1);
+    expect(clientId1Bookings[0].clientId).to.eql(clientId1);
+    expect(clientId1Bookings[0].date).to.eql(expectedDate);
+    expect(clientId1Bookings[0].amount).to.eql(expectedAmount);
+    expect(clientId1Bookings[0].contractId).to.eql(null);
+    expect(clientId1Bookings[0].accountTransactionId).to.eql(null);
+    expect(clientId1Bookings[0].comment).to.eql(null);
+    expect(clientId1Bookings[0].type).to.eql(null);
+
+    const clientId2Bookings = await bookingRepository.find({
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
@@ -817,10 +889,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
@@ -858,7 +930,7 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].clientId).to.eql(clientId1);
@@ -866,7 +938,7 @@ describe('BookingController', () => {
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount - 300);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
@@ -883,10 +955,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
@@ -918,12 +990,12 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(0);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
@@ -938,10 +1010,10 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
-      new Tenant({clientId: clientId1, name: 'Tenant1'}),
+      new Tenant({ clientId: clientId1, name: 'Tenant1' }),
     );
     const tenant2 = await setupTenantInDb(
-      new Tenant({clientId: clientId2, name: 'Tenant2'}),
+      new Tenant({ clientId: clientId2, name: 'Tenant2' }),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
@@ -973,7 +1045,7 @@ describe('BookingController', () => {
     const bookingRepository = await app.getRepository(BookingRepository);
 
     const clientId1Bookings = await bookingRepository.find({
-      where: {clientId: clientId1},
+      where: { clientId: clientId1 },
     });
     expect(clientId1Bookings.length).to.eql(1);
     expect(clientId1Bookings[0].clientId).to.eql(clientId1);
@@ -981,7 +1053,7 @@ describe('BookingController', () => {
     expect(clientId1Bookings[0].amount).to.eql(expectedAmount - 300);
 
     const clientId2Bookings = await bookingRepository.find({
-      where: {clientId: clientId2},
+      where: { clientId: clientId2 },
     });
     expect(clientId2Bookings.length).to.eql(1);
     expect(clientId2Bookings[0].clientId).to.eql(clientId2);
