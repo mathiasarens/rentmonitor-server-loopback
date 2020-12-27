@@ -20,7 +20,7 @@ import {FintsServiceBindings} from './fints.service.impl';
 
 export class AccountSynchronisationResult {
   constructor(
-    public accountId: number,
+    public accountSettingsId: number,
     public accountName: string,
     public newBookings: number,
     public unmatchedTransactions: number,
@@ -94,13 +94,13 @@ export class AccountSynchronisationService {
   public async retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForASingleAccount(
     now: Date,
     clientId: number,
-    accountId: number,
+    accountSettingsId: number,
     from?: Date,
     to?: Date,
     tan?: string,
   ): Promise<AccountSynchronisationResult> {
     const accountSettings = await this.accountSettingsRepository.findOne({
-      where: {clientId: clientId, id: accountId},
+      where: {clientId: clientId, id: accountSettingsId},
     });
     if (accountSettings) {
       const newTransactions = await this.retrieveAndSaveNewAccountTransactions(
@@ -126,7 +126,7 @@ export class AccountSynchronisationService {
         unmatchedAccountTransactions.length,
       );
     } else {
-      throw new Error('Account Id not found: ' + accountId);
+      throw new Error('Account Id not found: ' + accountSettingsId);
     }
   }
 

@@ -17,7 +17,7 @@ import {
 import {TanRequiredResult} from './results/tan-required-result';
 
 class AccountSynchronisationRequestSingleAccount {
-  accountId: number;
+  accountSettingsId: number;
   from?: string;
   to?: string;
   tan?: string;
@@ -63,7 +63,7 @@ export class AccountSynchronisationController {
             properties: {
               from: {type: 'string'},
               to: {type: 'string'},
-              accountId: {type: 'number'},
+              accountSettingsId: {type: 'number'},
               tan: {type: 'string'},
             },
           },
@@ -78,7 +78,7 @@ export class AccountSynchronisationController {
       const accountSynchronisationResult = await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForASingleAccount(
         new Date(),
         currentUserProfile.clientId,
-        accountSynchronisationRequest.accountId,
+        accountSynchronisationRequest.accountSettingsId,
         new Date(accountSynchronisationRequest.from!),
         new Date(accountSynchronisationRequest.to!),
         accountSynchronisationRequest.tan,
@@ -118,7 +118,6 @@ export class AccountSynchronisationController {
             properties: {
               from: {type: 'string'},
               to: {type: 'string'},
-              accountId: {type: 'number'},
               transactionReference: {type: 'string'},
               tan: {type: 'string'},
             },
