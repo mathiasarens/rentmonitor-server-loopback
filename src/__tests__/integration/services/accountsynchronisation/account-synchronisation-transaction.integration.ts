@@ -50,7 +50,6 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     accountTransactionRepository = new AccountTransactionRepository(
       testdb,
       clientRepositoryGetter,
-      Getter.fromValue(bookingRepository),
     );
 
     accountTransactionSaveService = new AccountSynchronisationTransactionService(

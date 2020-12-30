@@ -77,7 +77,6 @@ describe('Deletion Service Integration', () => {
     accountTransactionRepository = new AccountTransactionRepository(
       testdb,
       clientRepositoryGetter,
-      Getter.fromValue(bookingRepository),
     );
 
     deletionService = new DeletionService(

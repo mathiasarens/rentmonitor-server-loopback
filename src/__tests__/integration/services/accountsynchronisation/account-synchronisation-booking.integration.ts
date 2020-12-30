@@ -57,7 +57,6 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     accountTransactionRepository = new AccountTransactionRepository(
       testdb,
       clientRepositoryGetter,
-      Getter.fromValue(bookingRepository),
     );
     accountSynchronisationBookingService = new AccountSynchronisationBookingService(
       tenantRepository,
@@ -126,6 +125,5 @@ describe('Account Synchronisation Booking Integration Tests', () => {
       },
     );
     expect(savedAccountTransactions).length(1);
-    expect(savedAccountTransactions[0].bookingId).to.eql(result[0][0].id);
   });
 });

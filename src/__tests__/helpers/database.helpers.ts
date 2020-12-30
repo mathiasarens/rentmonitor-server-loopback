@@ -44,7 +44,6 @@ export async function givenEmptyDatabase() {
   const accountTransactionRepository = new AccountTransactionRepository(
     testdb,
     clientRepositoryGetter,
-    Getter.fromValue(bookingRepository),
   );
   await accountTransactionRepository.deleteAll();
   await bookingRepository.deleteAll();
