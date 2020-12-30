@@ -1,6 +1,5 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {AccountSettings} from './account-settings.model';
-import {Booking} from './booking.model';
 import {Client} from './client.model';
 
 @model({
@@ -65,9 +64,6 @@ export class AccountTransaction extends Entity {
     type: 'number',
   })
   amount?: number;
-
-  @belongsTo(() => Booking)
-  bookingId: number;
 
   constructor(data?: Partial<AccountTransaction>) {
     super(data);

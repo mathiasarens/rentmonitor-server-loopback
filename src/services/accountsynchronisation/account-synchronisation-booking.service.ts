@@ -48,8 +48,6 @@ export class AccountSynchronisationBookingService {
             tenant,
           );
           const bookingFromDb = await this.bookingRepository.create(booking);
-          accountTransaction.bookingId = bookingFromDb.id;
-          await this.accountTransactionRepository.update(accountTransaction);
           bookings.push(bookingFromDb);
           matched = true;
           break;
