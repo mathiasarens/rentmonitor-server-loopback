@@ -1,11 +1,7 @@
 import {BindingKey} from '@loopback/context';
 import {repository} from '@loopback/repository';
 import {AccountTransaction, Booking, BookingType, Tenant} from '../../models';
-import {
-  AccountTransactionRepository,
-  BookingRepository,
-  TenantRepository,
-} from '../../repositories';
+import {BookingRepository, TenantRepository} from '../../repositories';
 
 export class AccountSynchronisationBookingService {
   constructor(
@@ -13,8 +9,6 @@ export class AccountSynchronisationBookingService {
     private tenantRepository: TenantRepository,
     @repository(BookingRepository)
     private bookingRepository: BookingRepository,
-    @repository(AccountTransactionRepository)
-    private accountTransactionRepository: AccountTransactionRepository,
   ) {}
 
   public async createAndSaveBookings(

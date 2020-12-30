@@ -1,12 +1,6 @@
 import {Getter} from '@loopback/repository';
 import {expect} from '@loopback/testlab';
-import {
-  AccountSettings,
-  AccountTransaction,
-  BookingType,
-  Client,
-  Tenant,
-} from '../../../../models';
+import {AccountSettings, AccountTransaction} from '../../../../models';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
@@ -16,20 +10,21 @@ import {
   TenantRepository,
 } from '../../../../repositories';
 import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
+import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
+import {TransactionSynchronisationService} from '../../../../services/accountsynchronisation/transaction-synchronisation.service';
 import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
 import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
-describe('Account Synchronisation Booking Integration Tests', () => {
+describe('Transaction Synchronisation Service Integration Tests', () => {
   let clientRepository: ClientRepository;
   let tenantRepository: TenantRepository;
   let contractRepository: ContractRepository;
   let bookingRepository: BookingRepository;
   let accountSettingsRepository: AccountSettingsRepository;
   let accountTransactionRepository: AccountTransactionRepository;
+  let accountTransactionSaveService: AccountSynchronisationTransactionService;
+  let transactionSynchronisationService: TransactionSynchronisationService;
   let accountSynchronisationBookingService: AccountSynchronisationBookingService;
-  let client1: Client;
-  let tenant1: Tenant;
-  let accountSettings1: AccountSettings;
 
   beforeEach('setup service and database', async () => {
     await givenEmptyDatabase();
@@ -48,81 +43,74 @@ describe('Account Synchronisation Booking Integration Tests', () => {
       tenantRepositoryGetter,
       Getter.fromValue(contractRepository),
     );
+
     accountSettingsRepository = new AccountSettingsRepository(
       testdb,
       clientRepositoryGetter,
       'password',
       'salt',
     );
+
     accountTransactionRepository = new AccountTransactionRepository(
       testdb,
       clientRepositoryGetter,
     );
+
+    accountTransactionSaveService = new AccountSynchronisationTransactionService(
+      accountTransactionRepository,
+    );
+
     accountSynchronisationBookingService = new AccountSynchronisationBookingService(
       tenantRepository,
       bookingRepository,
     );
 
-    client1 = await clientRepository.create({name: 'Client1'});
-    tenant1 = await tenantRepository.create({
-      clientId: client1.id,
-      name: 'Tenant1',
-      accountSynchronisationName: 'Tenant1 Account Name',
-    });
-    accountSettings1 = await accountSettingsRepository.create(
-      new AccountSettings({clientId: client1.id}),
+    transactionSynchronisationService = new TransactionSynchronisationService(
+      accountTransactionRepository,
+      accountSynchronisationBookingService,
     );
   });
 
   after(async () => {});
 
-  it('should save new bookings if contract active', async function () {
+  it('should create new bookins from existing transactions', async function () {
     // given
-    const accountTransaction1 = await accountTransactionRepository.create({
-      clientId: client1.id,
-      accountSettingsId: accountSettings1.id,
+    const client = await clientRepository.create({
+      name: 'Client Transaction Sychronization Tests',
+    });
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
+
+    const unsavedAccountTransaction1 = new AccountTransaction({
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
       date: new Date(2019, 3, 14),
       iban: 'IBAN1',
       bic: 'BIC1',
-      name: 'Tenant1 Account Name',
+      name: 'NAME1',
       text: 'text1',
       amount: 1000,
     });
-
-    const accountTransactions = [accountTransaction1];
+    const savedAccountTransaction1 = await accountTransactionRepository.create(
+      unsavedAccountTransaction1,
+    );
+    const accountTransactions = [savedAccountTransaction1];
 
     // when
-    const result = await accountSynchronisationBookingService.createAndSaveBookings(
-      client1.id,
+    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
+      accountSettings,
       accountTransactions,
-      new Date(2019, 0, 1),
     );
 
     // then
-    expect(result[0]).length(1);
-    expect(result[1]).length(0);
-    expect(result[0][0].accountTransactionId).to.eql(accountTransaction1.id);
-
-    // booking
-    const bookings = await bookingRepository.find({
-      where: {clientId: client1.id},
-    });
-    expect(bookings).length(1);
-    expect(bookings[0].clientId).to.eql(client1.id);
-    expect(bookings[0].tenantId).to.eql(tenant1.id);
-    expect(bookings[0].accountTransactionId).to.eql(accountTransaction1.id);
-    expect(bookings[0].date).to.eql(accountTransaction1.date);
-    expect(bookings[0].comment).to.eql(accountTransaction1.text);
-    expect(bookings[0].amount).to.eql(accountTransaction1.amount);
-    expect(bookings[0].type).to.eql(BookingType.RENT_PAID_ALGO);
-
-    // updated account transaction
     const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
       {
-        where: {clientId: client1.id, accountSettingsId: accountSettings1.id},
+        where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
       },
     );
     expect(savedAccountTransactions).length(1);
+    expect(newTransactionsList).length(1);
   });
 });
