@@ -62,7 +62,7 @@ export class AccountSynchronisationService {
         const [
           newBookings,
           unmatchedAccountTransactions,
-        ] = await this.accountSynchronisationBookingService.createAndSaveBookings(
+        ] = await this.accountSynchronisationBookingService.createAndSaveNewBookings(
           clientId,
           newTransactions,
           now,
@@ -113,7 +113,7 @@ export class AccountSynchronisationService {
       const [
         newBookings,
         unmatchedAccountTransactions,
-      ] = await this.accountSynchronisationBookingService.createAndSaveBookings(
+      ] = await this.accountSynchronisationBookingService.createAndSaveNewBookings(
         clientId,
         newTransactions,
         now,

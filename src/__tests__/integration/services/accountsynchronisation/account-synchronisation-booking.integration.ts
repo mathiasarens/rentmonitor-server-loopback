@@ -92,7 +92,7 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     const accountTransactions = [accountTransaction1];
 
     // when
-    const result = await accountSynchronisationBookingService.createAndSaveBookings(
+    const result = await accountSynchronisationBookingService.createAndSaveNewBookings(
       client1.id,
       accountTransactions,
       new Date(2019, 0, 1),

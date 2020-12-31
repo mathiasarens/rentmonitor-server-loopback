@@ -105,7 +105,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
       accountTransactions,
     );
 
-    accountSynchronisationBookingServiceStub.createAndSaveBookings.resolves([
+    accountSynchronisationBookingServiceStub.createAndSaveNewBookings.resolves([
       [],
       [],
     ]);
@@ -145,7 +145,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
     );
 
     sinon.assert.calledWithExactly(
-      accountSynchronisationBookingServiceStub.createAndSaveBookings,
+      accountSynchronisationBookingServiceStub.createAndSaveNewBookings,
       clientId,
       accountTransactions,
       now,

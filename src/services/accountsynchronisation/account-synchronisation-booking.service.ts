@@ -11,20 +11,22 @@ export class AccountSynchronisationBookingService {
     private bookingRepository: BookingRepository,
   ) {}
 
-  public async createAndSaveBookings(
+  public async createAndSaveNewBookings(
     clientId: number,
-    accountTransactions: AccountTransaction[],
+    newAccountTransactions: AccountTransaction[],
     now: Date,
   ): Promise<[Booking[], AccountTransaction[]]> {
     const tenants: Tenant[] = await this.tenantRepository.find();
     return this.createAndSaveBookingsByContracts(
-      accountTransactions,
+      clientId,
+      newAccountTransactions,
       tenants,
       now,
     );
   }
 
   private async createAndSaveBookingsByContracts(
+    clientId: number,
     accountTransactions: AccountTransaction[],
     tenants: Tenant[],
     now: Date,
@@ -32,19 +34,26 @@ export class AccountSynchronisationBookingService {
     const unmachtedAccountTransactions: AccountTransaction[] = [];
     const bookings: Booking[] = [];
     for (const accountTransaction of accountTransactions) {
+      // filter account transactions that were linked to a booking already
+      const bookingExists = await this.isBookingLinkedToAccountTransaction(
+        clientId,
+        accountTransaction,
+      );
       let matched = false;
-      for (const tenant of tenants) {
-        if (
-          this.matchAccountTransactionAndContract(accountTransaction, tenant)
-        ) {
-          const booking = this.createBookingFromAccountTransactionAndTenant(
-            accountTransaction,
-            tenant,
-          );
-          const bookingFromDb = await this.bookingRepository.create(booking);
-          bookings.push(bookingFromDb);
-          matched = true;
-          break;
+      if (!bookingExists) {
+        for (const tenant of tenants) {
+          if (
+            this.matchAccountTransactionAndContract(accountTransaction, tenant)
+          ) {
+            const booking = this.createBookingFromAccountTransactionAndTenant(
+              accountTransaction,
+              tenant,
+            );
+            const bookingFromDb = await this.bookingRepository.create(booking);
+            bookings.push(bookingFromDb);
+            matched = true;
+            break;
+          }
         }
       }
       if (!matched) {
@@ -52,6 +61,19 @@ export class AccountSynchronisationBookingService {
       }
     }
     return [bookings, unmachtedAccountTransactions];
+  }
+
+  private async isBookingLinkedToAccountTransaction(
+    clientId: number,
+    accountTransaction: AccountTransaction,
+  ): Promise<boolean> {
+    const bookingListForAccountTransaction = await this.bookingRepository.find({
+      where: {
+        clientId: clientId,
+        accountTransactionId: accountTransaction.id,
+      },
+    });
+    return bookingListForAccountTransaction.length > 0;
   }
 
   private matchAccountTransactionAndContract(

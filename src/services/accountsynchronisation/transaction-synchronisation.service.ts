@@ -1,4 +1,4 @@
-import {inject} from '@loopback/core';
+import {BindingKey, inject} from '@loopback/core';
 import {repository, WhereBuilder} from '@loopback/repository';
 import {AccountTransaction} from '../../models';
 import {AccountTransactionRepository} from '../../repositories';
@@ -22,7 +22,7 @@ export class TransactionSynchronisationService {
     private accountSynchronisationBookingService: AccountSynchronisationBookingService,
   ) {}
 
-  public async createBookingsForUnmatchedAccountTransactions(
+  public async createAndSaveBookingsForUnmatchedAccountTransactions(
     now: Date,
     clientId: number,
     from?: Date,
@@ -37,7 +37,7 @@ export class TransactionSynchronisationService {
     const [
       newBookings,
       unmatchedAccountTransactions,
-    ] = await this.accountSynchronisationBookingService.createAndSaveBookings(
+    ] = await this.accountSynchronisationBookingService.createAndSaveNewBookings(
       clientId,
       existingAccountTransactions,
       now,
@@ -66,4 +66,10 @@ export class TransactionSynchronisationService {
       where: whereBuilder.build(),
     });
   }
+}
+
+export namespace TransactionSynchronisationServiceBindings {
+  export const SERVICE = BindingKey.create<TransactionSynchronisationService>(
+    'services.transactionsynchronisation.service',
+  );
 }
