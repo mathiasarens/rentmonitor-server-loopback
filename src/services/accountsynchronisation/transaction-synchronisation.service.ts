@@ -1,10 +1,10 @@
-import {BindingKey, inject} from '@loopback/core';
-import {repository, WhereBuilder} from '@loopback/repository';
-import {AccountTransaction} from '../../models';
-import {AccountTransactionRepository} from '../../repositories';
+import { BindingKey, inject } from '@loopback/core';
+import { repository, WhereBuilder } from '@loopback/repository';
+import { AccountTransaction } from '../../models';
+import { AccountTransactionRepository } from '../../repositories';
 import {
   AccountSynchronisationBookingService,
-  AccountSynchronisationBookingServiceBindings,
+  AccountSynchronisationBookingServiceBindings
 } from './account-synchronisation-booking.service';
 
 export class TransactionSynchronisationResult {
@@ -12,7 +12,7 @@ export class TransactionSynchronisationResult {
     public newBookings: number,
     public unmatchedTransactions: number,
     public error?: string,
-  ) {}
+  ) { }
 }
 export class TransactionSynchronisationService {
   constructor(
@@ -20,7 +20,7 @@ export class TransactionSynchronisationService {
     private accountTransactionRepository: AccountTransactionRepository,
     @inject(AccountSynchronisationBookingServiceBindings.SERVICE)
     private accountSynchronisationBookingService: AccountSynchronisationBookingService,
-  ) {}
+  ) { }
 
   public async createAndSaveBookingsForUnmatchedAccountTransactions(
     now: Date,
@@ -57,12 +57,12 @@ export class TransactionSynchronisationService {
     const whereBuilder = new WhereBuilder();
     whereBuilder.eq('clientId', clientId);
     if (from) {
-      whereBuilder.and({gte: {date: from}});
+      whereBuilder.and({ gte: { date: from } });
       if (to) {
-        whereBuilder.and({lte: {date: to}});
+        whereBuilder.and({ lte: { date: to } });
       }
     }
-    return await this.accountTransactionRepository.find({
+    return this.accountTransactionRepository.find({
       where: whereBuilder.build(),
     });
   }

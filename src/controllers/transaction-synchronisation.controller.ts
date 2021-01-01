@@ -8,15 +8,18 @@ import {
   RestBindings,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
-import {TanRequiredError} from 'node-fints';
 import {AccountSynchronisationResult} from '../services/accountsynchronisation/account-synchronisation.service';
 import {
   TransactionSynchronisationResult,
   TransactionSynchronisationService,
   TransactionSynchronisationServiceBindings,
 } from '../services/accountsynchronisation/transaction-synchronisation.service';
-import {TanRequiredResult} from './results/tan-required-result';
 
+class TransactionSynchronisationRequest {
+  from?: Date;
+  to?: Date;
+  constructor() {}
+}
 export class TransactionSynchronisationController {
   constructor(
     @inject(TransactionSynchronisationServiceBindings.SERVICE)
@@ -25,45 +28,7 @@ export class TransactionSynchronisationController {
     protected response: Response,
   ) {}
 
-  @post('/account-synchronization/single', {
-    responses: {
-      '200': {
-        description: 'TransactionSynchronsiationResult',
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(TransactionSynchronisationResult),
-          },
-        },
-      },
-    },
-  })
-  @authenticate('jwt')
-  async synchronsiseExistingTransactions(
-    @inject(AuthenticationBindings.CURRENT_USER)
-    currentUserProfile: UserProfile,
-  ): Promise<AccountSynchronisationResult | TanRequiredResult> {
-    try {
-      const accountSynchronisationResult = await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForASingleAccount(
-        new Date(),
-        currentUserProfile.clientId,
-        accountSynchronisationRequest.accountSettingsId,
-        new Date(accountSynchronisationRequest.from!),
-        new Date(accountSynchronisationRequest.to!),
-        accountSynchronisationRequest.tan,
-      );
-      return accountSynchronisationResult;
-    } catch (error) {
-      if (error instanceof TanRequiredError) {
-        this.response.status(210);
-        return new TanRequiredResult(error);
-      } else {
-        console.error(error);
-        throw error;
-      }
-    }
-  }
-
-  @post('/account-synchronization/all', {
+  @post('/transaction-synchronisation', {
     responses: {
       '200': {
         description: 'AccountSynchronsiationResult',
@@ -76,7 +41,7 @@ export class TransactionSynchronisationController {
     },
   })
   @authenticate('jwt')
-  async synchronsiseAccounts(
+  async synchronsiseTransactions(
     @requestBody({
       description: 'data',
       content: {
@@ -86,25 +51,23 @@ export class TransactionSynchronisationController {
             properties: {
               from: {type: 'string'},
               to: {type: 'string'},
-              transactionReference: {type: 'string'},
-              tan: {type: 'string'},
             },
           },
         },
       },
     })
-    accountSynchronisationRequest: AccountSynchronisationRequestSingleAccount,
+    transactionSynchronisationRequest: TransactionSynchronisationRequest,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUserProfile: UserProfile,
-  ): Promise<AccountSynchronisationResult[]> {
+  ): Promise<TransactionSynchronisationResult> {
     try {
-      const accountSynchronisationResults = await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
+      const transactionSynchronisationResult = await this.transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
         new Date(),
         currentUserProfile.clientId,
-        new Date(accountSynchronisationRequest.from!),
-        new Date(accountSynchronisationRequest.to!),
+        new Date(transactionSynchronisationRequest.from!),
+        new Date(transactionSynchronisationRequest.to!),
       );
-      return accountSynchronisationResults;
+      return transactionSynchronisationResult;
     } catch (error) {
       console.error(error);
       throw error;
