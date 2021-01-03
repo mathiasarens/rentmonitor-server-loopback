@@ -40,6 +40,10 @@ import {
   FintsServiceBindings,
   FintsServiceImpl,
 } from './services/accountsynchronisation/fints.service.impl';
+import {
+  TransactionSynchronisationService,
+  TransactionSynchronisationServiceBindings,
+} from './services/accountsynchronisation/transaction-synchronisation.service';
 import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
 import {JWTService} from './services/authentication/jwt.service';
 import {MyUserService} from './services/authentication/user.service';
@@ -120,5 +124,9 @@ export class RentmonitorServerApplication extends BootMixin(
       AccountSynchronisationBookingService,
     );
     this.bind(FintsClientBindings.FACTORY).toClass(FintsClientFactoryImpl);
+
+    this.bind(TransactionSynchronisationServiceBindings.SERVICE).toClass(
+      TransactionSynchronisationService,
+    );
   }
 }

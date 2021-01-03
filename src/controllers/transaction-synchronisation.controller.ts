@@ -8,13 +8,12 @@ import {
   RestBindings,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
-import {AccountSynchronisationResult} from '../services/accountsynchronisation/account-synchronisation.service';
 import {
   TransactionSynchronisationResult,
   TransactionSynchronisationService,
   TransactionSynchronisationServiceBindings,
 } from '../services/accountsynchronisation/transaction-synchronisation.service';
-
+export const TransactionSynchronisationUrl = '/transaction-synchronisation';
 class TransactionSynchronisationRequest {
   from?: Date;
   to?: Date;
@@ -28,13 +27,13 @@ export class TransactionSynchronisationController {
     protected response: Response,
   ) {}
 
-  @post('/transaction-synchronisation', {
+  @post(TransactionSynchronisationUrl, {
     responses: {
       '200': {
         description: 'AccountSynchronsiationResult',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(AccountSynchronisationResult),
+            schema: getModelSchemaRef(TransactionSynchronisationResult),
           },
         },
       },
@@ -52,6 +51,7 @@ export class TransactionSynchronisationController {
               from: {type: 'string'},
               to: {type: 'string'},
             },
+            required: [],
           },
         },
       },
@@ -64,8 +64,12 @@ export class TransactionSynchronisationController {
       const transactionSynchronisationResult = await this.transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
         new Date(),
         currentUserProfile.clientId,
-        new Date(transactionSynchronisationRequest.from!),
-        new Date(transactionSynchronisationRequest.to!),
+        transactionSynchronisationRequest.from
+          ? new Date(transactionSynchronisationRequest.from!)
+          : undefined,
+        transactionSynchronisationRequest.to
+          ? new Date(transactionSynchronisationRequest.to!)
+          : undefined,
       );
       return transactionSynchronisationResult;
     } catch (error) {

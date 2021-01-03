@@ -1,10 +1,10 @@
-import { Getter } from '@loopback/repository';
-import { expect } from '@loopback/testlab';
+import {Getter} from '@loopback/repository';
+import {expect} from '@loopback/testlab';
 import {
   AccountSettings,
   AccountTransaction,
   Booking,
-  Tenant
+  Tenant,
 } from '../../../../models';
 import {
   AccountSettingsRepository,
@@ -12,12 +12,12 @@ import {
   BookingRepository,
   ClientRepository,
   ContractRepository,
-  TenantRepository
+  TenantRepository,
 } from '../../../../repositories';
-import { AccountSynchronisationBookingService } from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
-import { TransactionSynchronisationService } from '../../../../services/accountsynchronisation/transaction-synchronisation.service';
-import { testdb } from '../../../fixtures/datasources/rentmontior.datasource';
-import { givenEmptyDatabase } from '../../../helpers/database.helpers';
+import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
+import {TransactionSynchronisationService} from '../../../../services/accountsynchronisation/transaction-synchronisation.service';
+import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
+import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
 describe('Transaction Synchronisation Service Integration Tests', () => {
   let clientRepository: ClientRepository;
@@ -70,7 +70,7 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
     );
   });
 
-  after(async () => { });
+  after(async () => {});
 
   it('should create new bookings from existing transactions', async function () {
     // given
@@ -78,7 +78,7 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
       name: 'Client Transaction Sychronization Tests',
     });
     const accountSettings = await accountSettingsRepository.create(
-      new AccountSettings({ clientId: client.id }),
+      new AccountSettings({clientId: client.id}),
     );
 
     const tenant1 = new Tenant({
@@ -116,7 +116,7 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
     expect(unmatchedTransactions).to.eql(0);
 
     const savedBookings: Booking[] = await bookingRepository.find({
-      where: { clientId: client.id },
+      where: {clientId: client.id},
       order: ['date ASC'],
     });
     expect(savedBookings).length(1);
@@ -135,7 +135,7 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
       name: 'Client Transaction Sychronization Tests',
     });
     const accountSettings = await accountSettingsRepository.create(
-      new AccountSettings({ clientId: client.id }),
+      new AccountSettings({clientId: client.id}),
     );
 
     const tenant1 = new Tenant({
@@ -183,7 +183,7 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
     expect(unmatchedTransactions).to.eql(1);
 
     const savedBookings: Booking[] = await bookingRepository.find({
-      where: { clientId: client.id },
+      where: {clientId: client.id},
       order: ['date ASC'],
     });
     expect(savedBookings).length(1);

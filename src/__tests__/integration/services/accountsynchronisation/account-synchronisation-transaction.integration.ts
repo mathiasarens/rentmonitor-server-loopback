@@ -4,10 +4,7 @@ import {AccountSettings, AccountTransaction} from '../../../../models';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
-  BookingRepository,
   ClientRepository,
-  ContractRepository,
-  TenantRepository,
 } from '../../../../repositories';
 import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
@@ -15,9 +12,6 @@ import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
 describe('Account Synchronisation Transaction Service Integration Tests', () => {
   let clientRepository: ClientRepository;
-  let tenantRepository: TenantRepository;
-  let contractRepository: ContractRepository;
-  let bookingRepository: BookingRepository;
   let accountSettingsRepository: AccountSettingsRepository;
   let accountTransactionRepository: AccountTransactionRepository;
   let accountTransactionSaveService: AccountSynchronisationTransactionService;
@@ -26,19 +20,6 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     await givenEmptyDatabase();
     clientRepository = new ClientRepository(testdb);
     const clientRepositoryGetter = Getter.fromValue(clientRepository);
-    tenantRepository = new TenantRepository(testdb, clientRepositoryGetter);
-    const tenantRepositoryGetter = Getter.fromValue(tenantRepository);
-    contractRepository = new ContractRepository(
-      testdb,
-      clientRepositoryGetter,
-      tenantRepositoryGetter,
-    );
-    bookingRepository = new BookingRepository(
-      testdb,
-      clientRepositoryGetter,
-      tenantRepositoryGetter,
-      Getter.fromValue(contractRepository),
-    );
 
     accountSettingsRepository = new AccountSettingsRepository(
       testdb,
