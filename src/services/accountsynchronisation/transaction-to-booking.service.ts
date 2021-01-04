@@ -7,14 +7,14 @@ import {
   AccountSynchronisationBookingServiceBindings,
 } from './account-synchronisation-booking.service';
 
-export class TransactionSynchronisationResult {
+export class TransactionToBookingResult {
   constructor(
     public newBookings: number,
     public unmatchedTransactions: number,
     public error?: string,
   ) {}
 }
-export class TransactionSynchronisationService {
+export class TransactionToBookingService {
   constructor(
     @repository(AccountTransactionRepository)
     private accountTransactionRepository: AccountTransactionRepository,
@@ -27,7 +27,7 @@ export class TransactionSynchronisationService {
     clientId: number,
     from?: Date,
     to?: Date,
-  ): Promise<TransactionSynchronisationResult> {
+  ): Promise<TransactionToBookingResult> {
     const existingAccountTransactions = await this.loadExistingTransactions(
       clientId,
       from,
@@ -43,7 +43,7 @@ export class TransactionSynchronisationService {
       now,
     );
 
-    return new TransactionSynchronisationResult(
+    return new TransactionToBookingResult(
       newBookings.length,
       unmatchedAccountTransactions.length,
     );
@@ -68,8 +68,8 @@ export class TransactionSynchronisationService {
   }
 }
 
-export namespace TransactionSynchronisationServiceBindings {
-  export const SERVICE = BindingKey.create<TransactionSynchronisationService>(
-    'services.transactionsynchronisation.service',
+export namespace TransactionToBookingServiceBindings {
+  export const SERVICE = BindingKey.create<TransactionToBookingService>(
+    'services.transactiontobooking.service',
   );
 }

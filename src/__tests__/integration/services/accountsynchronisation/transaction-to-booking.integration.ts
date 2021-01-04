@@ -16,7 +16,7 @@ import {
   TenantRepository,
 } from '../../../../repositories';
 import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
-import {TransactionSynchronisationService} from '../../../../services/accountsynchronisation/transaction-synchronisation.service';
+import {TransactionToBookingService} from '../../../../services/accountsynchronisation/transaction-to-booking.service';
 import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
 import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
@@ -27,7 +27,7 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
   let bookingRepository: BookingRepository;
   let accountSettingsRepository: AccountSettingsRepository;
   let accountTransactionRepository: AccountTransactionRepository;
-  let transactionSynchronisationService: TransactionSynchronisationService;
+  let transactionSynchronisationService: TransactionToBookingService;
   let accountSynchronisationBookingService: AccountSynchronisationBookingService;
 
   beforeEach('setup service and database', async () => {
@@ -65,7 +65,7 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
       bookingRepository,
     );
 
-    transactionSynchronisationService = new TransactionSynchronisationService(
+    transactionSynchronisationService = new TransactionToBookingService(
       accountTransactionRepository,
       accountSynchronisationBookingService,
     );

@@ -9,10 +9,10 @@ import {
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import {
-  TransactionSynchronisationResult,
-  TransactionSynchronisationService,
-  TransactionSynchronisationServiceBindings,
-} from '../services/accountsynchronisation/transaction-synchronisation.service';
+  TransactionToBookingResult,
+  TransactionToBookingService,
+  TransactionToBookingServiceBindings,
+} from '../services/accountsynchronisation/transaction-to-booking.service';
 export const TransactionSynchronisationUrl = '/transaction-synchronisation';
 class TransactionSynchronisationRequest {
   from?: Date;
@@ -21,8 +21,8 @@ class TransactionSynchronisationRequest {
 }
 export class TransactionSynchronisationController {
   constructor(
-    @inject(TransactionSynchronisationServiceBindings.SERVICE)
-    public transactionSynchronisationService: TransactionSynchronisationService,
+    @inject(TransactionToBookingServiceBindings.SERVICE)
+    public transactionSynchronisationService: TransactionToBookingService,
     @inject(RestBindings.Http.RESPONSE)
     protected response: Response,
   ) {}
@@ -33,7 +33,7 @@ export class TransactionSynchronisationController {
         description: 'AccountSynchronsiationResult',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(TransactionSynchronisationResult),
+            schema: getModelSchemaRef(TransactionToBookingResult),
           },
         },
       },
@@ -59,7 +59,7 @@ export class TransactionSynchronisationController {
     transactionSynchronisationRequest: TransactionSynchronisationRequest,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUserProfile: UserProfile,
-  ): Promise<TransactionSynchronisationResult> {
+  ): Promise<TransactionToBookingResult> {
     try {
       const transactionSynchronisationResult = await this.transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
         new Date(),
