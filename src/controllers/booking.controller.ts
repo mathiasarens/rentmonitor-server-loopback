@@ -108,6 +108,7 @@ export class BookingController {
             .impose({clientId: currentUserProfile.clientId})
             .build(),
         )
+        .order('date DESC')
         .build(),
     );
   }
