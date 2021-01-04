@@ -1,4 +1,5 @@
 import {Client, expect} from '@loopback/testlab';
+import {subDays} from 'date-fns';
 import {RentmonitorServerApplication} from '../..';
 import {TransactionSynchronisationUrl} from '../../controllers/transaction-synchronisation.controller';
 import {AccountSettings, AccountTransaction, Tenant} from '../../models';
@@ -86,6 +87,58 @@ describe('TransactionSynchronisationController', () => {
     expect(bookingsInDb[0].tenantId).to.eql(tenant1.id);
     expect(bookingsInDb[0].comment).to.eql(expectedComment);
     expect(bookingsInDb[0].amount).to.eql(expectedAmount);
+  });
+
+  it('should not create bookings if filter does not match', async () => {
+    const clientId1 = await setupClientInDb(app, 'TestClient1');
+    const testUser = getTestUser('1');
+    await setupUserInDb(app, clientId1, testUser);
+    const tenant1Name = 'Tenant1NameOnAccount';
+    await setupTenantInDb(
+      new Tenant({
+        clientId: clientId1,
+        name: 'Tenant1',
+        accountSynchronisationName: tenant1Name,
+      }),
+    );
+    const token = await login(http, testUser);
+
+    const accountSettings1 = await setupAccountSettingsInDb(
+      new AccountSettings({clientId: clientId1, name: 'AccountSettings1'}),
+    );
+
+    const expectedDate = new Date(2021, 1, 2);
+    const expectedComment = 'Rent January 2021';
+    const expectedAmount = 2500;
+    await setupAccountTransactionInDb(
+      new AccountTransaction({
+        clientId: clientId1,
+        accountSettingsId: accountSettings1.id,
+        name: tenant1Name,
+        date: expectedDate,
+        text: expectedComment,
+        amount: expectedAmount,
+      }),
+    );
+
+    // test
+    const res = await synchronizeTransactions(token, {
+      from: subDays(expectedDate, 30),
+      to: subDays(expectedDate, 2),
+    })
+      .expect(200)
+      .expect('Content-Type', 'application/json');
+
+    // assertions
+    expect(res.body.newBookings).to.eql(0);
+    expect(res.body.unmatchedTransactions).to.eql(0);
+
+    const bookingRepository = await app.getRepository(BookingRepository);
+    const bookingsInDb = await bookingRepository.find({
+      where: {clientId: clientId1},
+    });
+
+    expect(bookingsInDb).to.have.lengthOf(0);
   });
 
   // non test methods --------------------------------------------------------------------

@@ -57,9 +57,9 @@ export class TransactionSynchronisationService {
     const whereBuilder = new WhereBuilder();
     whereBuilder.eq('clientId', clientId);
     if (from) {
-      whereBuilder.and({gte: {date: from}});
+      whereBuilder.and({date: {gte: from}});
       if (to) {
-        whereBuilder.and({lte: {date: to}});
+        whereBuilder.and({date: {lt: to}});
       }
     }
     return this.accountTransactionRepository.find({

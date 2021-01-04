@@ -1,5 +1,6 @@
 import {Getter} from '@loopback/repository';
 import {expect} from '@loopback/testlab';
+import {subDays} from 'date-fns';
 import {
   AccountSettings,
   AccountTransaction,
@@ -194,5 +195,55 @@ describe('Transaction Synchronisation Service Integration Tests', () => {
     expect(savedBookings[0].accountTransactionId).to.eql(
       savedAccountTransaction1.id,
     );
+  });
+
+  it('should not create new bookings if date filter does not match', async function () {
+    // given
+    const client = await clientRepository.create({
+      name: 'Client Transaction Sychronization Tests',
+    });
+    const accountSettings = await accountSettingsRepository.create(
+      new AccountSettings({clientId: client.id}),
+    );
+
+    const tenant1 = new Tenant({
+      clientId: client.id,
+      name: 'Tenant 1',
+      accountSynchronisationName: 'Tenant1',
+    });
+    const savedTenant1 = await tenantRepository.create(tenant1);
+    const expectedDate = new Date(2019, 3, 14);
+    const unsavedAccountTransaction1 = new AccountTransaction({
+      clientId: client.id,
+      accountSettingsId: accountSettings.id,
+      date: expectedDate,
+      iban: 'IBAN1',
+      bic: 'BIC1',
+      name: savedTenant1.accountSynchronisationName,
+      text: 'Rent March 2019',
+      amount: 1000,
+    });
+    await accountTransactionRepository.create(unsavedAccountTransaction1);
+
+    // when
+    const {
+      newBookings,
+      unmatchedTransactions,
+    } = await transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
+      new Date(),
+      client.id,
+      subDays(expectedDate, 60),
+      subDays(expectedDate, 10),
+    );
+
+    // than
+    expect(newBookings).to.eql(0);
+    expect(unmatchedTransactions).to.eql(0);
+
+    const savedBookings: Booking[] = await bookingRepository.find({
+      where: {clientId: client.id},
+      order: ['date ASC'],
+    });
+    expect(savedBookings).length(0);
   });
 });
