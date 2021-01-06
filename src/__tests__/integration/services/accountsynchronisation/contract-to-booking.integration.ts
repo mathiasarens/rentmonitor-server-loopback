@@ -1,15 +1,15 @@
-import { Getter } from '@loopback/repository';
-import { expect } from '@loopback/testlab';
-import { Booking, Contract, Tenant } from '../../../../models';
+import {Getter} from '@loopback/repository';
+import {expect} from '@loopback/testlab';
+import {Booking, Contract, Tenant} from '../../../../models';
 import {
   BookingRepository,
   ClientRepository,
   ContractRepository,
-  TenantRepository
+  TenantRepository,
 } from '../../../../repositories';
-import { ContractToBookingService } from '../../../../services/accountsynchronisation/contract-to-booking.service';
-import { testdb } from '../../../fixtures/datasources/rentmontior.datasource';
-import { givenEmptyDatabase } from '../../../helpers/database.helpers';
+import {ContractToBookingService} from '../../../../services/accountsynchronisation/contract-to-booking.service';
+import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
+import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
 describe('Contract To Booking Service Integration Tests', () => {
   let clientRepository: ClientRepository;
@@ -42,7 +42,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     );
   });
 
-  after(async () => { });
+  after(async () => {});
 
   it('should not create new booking if start date of contract after first expected payment', async function () {
     // given
@@ -84,7 +84,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(unmatchedContracts).to.eql(1);
 
     const savedBookings: Booking[] = await bookingRepository.find({
-      where: { clientId: client.id },
+      where: {clientId: client.id},
       order: ['date ASC'],
     });
     expect(savedBookings).length(0);
@@ -130,7 +130,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(unmatchedContracts).to.eql(0);
 
     const savedBookings: Booking[] = await bookingRepository.find({
-      where: { clientId: client.id },
+      where: {clientId: client.id},
       order: ['date ASC'],
     });
     expect(savedBookings).length(1);
@@ -182,7 +182,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(unmatchedContracts).to.eql(0);
 
     const savedBookings: Booking[] = await bookingRepository.find({
-      where: { clientId: client.id },
+      where: {clientId: client.id},
       order: ['date ASC'],
     });
     expect(savedBookings).length(1);
@@ -234,7 +234,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(unmatchedContracts).to.eql(0);
 
     const savedBookings: Booking[] = await bookingRepository.find({
-      where: { clientId: client.id },
+      where: {clientId: client.id},
       order: ['date ASC'],
     });
     expect(savedBookings).length(2);
