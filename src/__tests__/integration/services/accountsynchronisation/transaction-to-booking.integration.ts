@@ -20,7 +20,7 @@ import {TransactionToBookingService} from '../../../../services/accountsynchroni
 import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
 import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
-describe('Transaction Synchronisation Service Integration Tests', () => {
+describe('Transaction To Booking Service Integration Tests', () => {
   let clientRepository: ClientRepository;
   let tenantRepository: TenantRepository;
   let contractRepository: ContractRepository;

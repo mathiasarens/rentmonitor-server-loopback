@@ -1,7 +1,6 @@
-import { repository, WhereBuilder } from '@loopback/repository';
-import isSameDay from 'date-fns/isSameDay';
-import { Booking, Contract } from '../../models';
-import { BookingRepository, ContractRepository } from '../../repositories';
+import {repository, WhereBuilder} from '@loopback/repository';
+import {Booking, BookingType, Contract} from '../../models';
+import {BookingRepository, ContractRepository} from '../../repositories';
 
 export class ContractToBookingResult {
   constructor(
@@ -9,7 +8,7 @@ export class ContractToBookingResult {
     public matchedContracts: number,
     public unmatchedContracts: number,
     public error?: string,
-  ) { }
+  ) {}
 }
 export class ContractToBookingService {
   constructor(
@@ -17,7 +16,7 @@ export class ContractToBookingService {
     private bookingRepository: BookingRepository,
     @repository(ContractRepository)
     private contractRepository: ContractRepository,
-  ) { }
+  ) {}
 
   public async createAndSaveBookingsForContracts(
     now: Date,
@@ -31,48 +30,69 @@ export class ContractToBookingService {
       tenantIds,
     );
 
-    const [
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    ] = await this.createNewBookingsForContracts(
-      clientId,
+    const result = await this.createNewBookingsForContracts(
       existingContracts,
       now,
       from,
-      to
+      to,
     );
 
-    return new TransactionToBookingResult(
-      newBookings.length,
-      unmatchedAccountTransactions.length,
-    );
+    return result;
   }
 
-  private async createNewBookingsForContracts(clientId: number, existingContracts: Contract[], now: Date, from?: Date, to?: Date): Promise<[Booking[], Contract[], Contract[]]> {
+  private async createNewBookingsForContracts(
+    existingContracts: Contract[],
+    now: Date,
+    from?: Date,
+    to?: Date,
+  ): Promise<ContractToBookingResult> {
+    let bookings = 0;
+    let matchedContracts = 0;
+    let unmatchedContracts = 0;
     for (const contract of existingContracts) {
-      await this.createNewBookingsForContract(clientId, contract, now, from, to);
-    }
-    return [null, null, null];
-  }
-
-  private async createNewBookingsForContract(clientId: number, contract: Contract, now: Date, from?: Date, to?: Date): Promise<[Booking[]]> {
-    const calculatedStart: Date = this.maxStartDate(contract, from);
-    const calculatedEnd: Date = this.minEndDate(contract, now, to);
-    const rentDueDates: Date[] = this.calculateNextRentDueDates(contract, calculatedStart, calculatedEnd);
-    const rentDueDatesFilteredByExistingBookings: Date[] = await this.filterExistingBookingsForRentDueDates(contract, rentDueDates);
-    return null;
-  }
-
-  private async filterExistingBookingsForRentDueDates(contract: Contract, rentDueDates: Date[]): Promise<Date[]> {
-    const existingBookings = await this.bookingRepository.find({ where: { clientId: contract.clientId, tenantId: contract.tenantId, contractId: contract.id }, order: ['date ASC'] });
-    const result: Date[] = [];
-    for (const booking in existingBookings) {
-      for (const rentDueDate in rentDueDates) {
-        if (isSameDay())
+      const bookingList = await this.createNewBookingsForContract(
+        contract,
+        now,
+        from,
+        to,
+      );
+      bookings += bookingList.length;
+      if (bookingList.length > 0) {
+        matchedContracts += 1;
+      } else {
+        unmatchedContracts += 1;
       }
     }
-    return result;
+    return new ContractToBookingResult(
+      bookings,
+      matchedContracts,
+      unmatchedContracts,
+    );
+  }
+
+  private async createNewBookingsForContract(
+    contract: Contract,
+    now: Date,
+    from?: Date,
+    to?: Date,
+  ): Promise<Booking[]> {
+    const calculatedStart: Date = this.maxStartDate(contract, from);
+    const calculatedEnd: Date = this.minEndDate(contract, now, to);
+    const rentDueDates: Date[] = this.calculateNextRentDueDates(
+      contract,
+      calculatedStart,
+      calculatedEnd,
+    );
+    const rentDueDatesFilteredByExistingBookings: Date[] = await this.filterExistingBookingsForRentDueDates(
+      contract,
+      rentDueDates,
+    );
+    const bookingList: Booking[] = this.createBookings(
+      contract,
+      rentDueDatesFilteredByExistingBookings,
+    );
+    const savedBookingList: Booking[] = await this.saveBookings(bookingList);
+    return savedBookingList;
   }
 
   private maxStartDate(contract: Contract, from?: Date): Date {
@@ -82,7 +102,11 @@ export class ContractToBookingService {
     } else {
       calculationStart = contract.start;
     }
-    return new Date(calculationStart.getFullYear(), calculationStart.getMonth(), calculationStart.getDay());
+    return new Date(
+      calculationStart.getFullYear(),
+      calculationStart.getMonth(),
+      calculationStart.getDate(),
+    );
   }
 
   private minEndDate(contract: Contract, now: Date, to?: Date): Date {
@@ -98,15 +122,27 @@ export class ContractToBookingService {
     return calculationEnd;
   }
 
-  private calculateNextRentDueDates(contract: Contract, calculationStart: Date, calculationEnd: Date): Date[] {
+  private calculateNextRentDueDates(
+    contract: Contract,
+    calculationStart: Date,
+    calculationEnd: Date,
+  ): Date[] {
     const result: Date[] = [];
-    if (isSameDay(contract.start, calculationStart)) {
-      result.push(calculationStart);
+    const firstRentDueDate = new Date(
+      calculationStart.getFullYear(),
+      calculationStart.getMonth(),
+      contract.rentDueDayOfMonth,
+    );
+    if (firstRentDueDate >= calculationStart) {
+      result.push(firstRentDueDate);
     }
-    let nextRentDueDate = this.nextPossibleRentDueDate(calculationStart, contract);
+    let nextRentDueDate = this.nextPossibleRentDueDate(
+      firstRentDueDate,
+      contract,
+    );
     while (nextRentDueDate < calculationEnd) {
       result.push(nextRentDueDate);
-      nextRentDueDate = this.nextPossibleRentDueDate(calculationStart, contract);
+      nextRentDueDate = this.nextPossibleRentDueDate(nextRentDueDate, contract);
     }
     return result;
   }
@@ -122,14 +158,75 @@ export class ContractToBookingService {
     );
   }
 
+  private async filterExistingBookingsForRentDueDates(
+    contract: Contract,
+    rentDueDates: Date[],
+  ): Promise<Date[]> {
+    const existingBookings = await this.bookingRepository.find({
+      where: {
+        clientId: contract.clientId,
+        tenantId: contract.tenantId,
+        contractId: contract.id,
+      },
+      order: ['date ASC'],
+    });
+    const result: Date[] = [];
+
+    if (existingBookings.length === 0) {
+      result.push(...rentDueDates);
+    } else {
+      let i = 0;
+      let j = 0;
+      while (i < existingBookings.length && j < rentDueDates.length) {
+        if (existingBookings[i].date > rentDueDates[j]) {
+          result.push(rentDueDates[j]);
+          j += 1;
+        } else if (existingBookings[i].date < rentDueDates[j]) {
+          i += 1;
+        } else {
+          i += 1;
+          j += 1;
+        }
+      }
+    }
+    return result;
+  }
+
+  private createBookings(contract: Contract, rentDueDates: Date[]): Booking[] {
+    const resultList: Booking[] = [];
+    for (const rentDueDate of rentDueDates) {
+      resultList.push(this.createBookingFromContract(contract, rentDueDate));
+    }
+    return resultList;
+  }
+
+  private createBookingFromContract(
+    contract: Contract,
+    rentDueDate: Date,
+  ): Booking {
+    return new Booking({
+      date: rentDueDate,
+      comment: `Miete ${rentDueDate.getMonth()}/${rentDueDate.getFullYear()}`,
+      amount: -1 * contract.amount,
+      tenantId: contract.tenantId,
+      clientId: contract.clientId,
+      contractId: contract.id,
+      type: BookingType.RENT_DUE,
+    });
+  }
+
+  private async saveBookings(bookingList: Booking[]): Promise<Booking[]> {
+    return this.bookingRepository.createAll(bookingList);
+  }
+
   private async loadExistingContracts(
     clientId: number,
-    tenantIds?: number[]
+    tenantIds?: number[],
   ): Promise<Contract[]> {
     const whereBuilder = new WhereBuilder();
     whereBuilder.eq('clientId', clientId);
     if (tenantIds) {
-      whereBuilder.and({ tenantId: { inq: tenantIds } });
+      whereBuilder.and({tenantId: {inq: tenantIds}});
     }
     return this.contractRepository.find({
       where: whereBuilder.build(),

@@ -140,11 +140,28 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Transaction Synchronization Integration Tests",
+      "name": "Transaction to Booking Integration Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
         "${workspaceFolder}/dist/__tests__/integration/services/accountsynchronisation/**/transaction*.integration*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Contract to Booking Integration Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/__tests__/integration/services/accountsynchronisation/**/contract*.integration*.js"
       ],
       "env": {
         "NODE_ENV": "test"
