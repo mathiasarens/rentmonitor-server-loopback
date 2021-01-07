@@ -106,11 +106,28 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Transaction Synchronisation Controller Acceptance Tests",
+      "name": "Transaction-To-Booking Controller Acceptance Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/transaction-synchronisation.controller.acceptance*.js"
+        "${workspaceFolder}/dist/__tests__/**/transaction-to-booking.controller.acceptance*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Contract-To-Booking Controller Acceptance Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/__tests__/**/contract-to-booking.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"

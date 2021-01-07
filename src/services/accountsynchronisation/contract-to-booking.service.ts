@@ -1,3 +1,4 @@
+import {BindingKey} from '@loopback/core';
 import {repository, WhereBuilder} from '@loopback/repository';
 import {Booking, BookingType, Contract} from '../../models';
 import {BookingRepository, ContractRepository} from '../../repositories';
@@ -236,4 +237,10 @@ export class ContractToBookingService {
       where: whereBuilder.build(),
     });
   }
+}
+
+export namespace ContractToBookingServiceBindings {
+  export const SERVICE = BindingKey.create<ContractToBookingService>(
+    'services.contracttobooking.service',
+  );
 }

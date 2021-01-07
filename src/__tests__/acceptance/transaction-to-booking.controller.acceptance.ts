@@ -1,7 +1,7 @@
 import {Client, expect} from '@loopback/testlab';
 import {subDays} from 'date-fns';
 import {RentmonitorServerApplication} from '../..';
-import {TransactionSynchronisationUrl} from '../../controllers/transaction-synchronisation.controller';
+import {TransactionToBookingUrl} from '../../controllers/transaction-to-booking.controller';
 import {AccountSettings, AccountTransaction, Tenant} from '../../models';
 import {
   AccountSettingsRepository,
@@ -18,7 +18,7 @@ import {
   setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
-describe('TransactionSynchronisationController', () => {
+describe('TransactionToBookingController Acceptance Tests', () => {
   let app: RentmonitorServerApplication;
   let http: Client;
 
@@ -145,7 +145,7 @@ describe('TransactionSynchronisationController', () => {
 
   function synchronizeTransactions(token: string, data: {}) {
     return http
-      .post(TransactionSynchronisationUrl)
+      .post(TransactionToBookingUrl)
       .set('Authorization', 'Bearer ' + token)
       .send(data)
       .set('Content-Type', 'application/json');

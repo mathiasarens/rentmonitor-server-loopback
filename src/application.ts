@@ -33,6 +33,10 @@ import {
   AccountSynchronisationServiceBindings,
 } from './services/accountsynchronisation/account-synchronisation.service';
 import {
+  ContractToBookingService,
+  ContractToBookingServiceBindings,
+} from './services/accountsynchronisation/contract-to-booking.service';
+import {
   FintsClientBindings,
   FintsClientFactoryImpl,
 } from './services/accountsynchronisation/fints-client.factory.impl';
@@ -127,6 +131,10 @@ export class RentmonitorServerApplication extends BootMixin(
 
     this.bind(TransactionToBookingServiceBindings.SERVICE).toClass(
       TransactionToBookingService,
+    );
+
+    this.bind(ContractToBookingServiceBindings.SERVICE).toClass(
+      ContractToBookingService,
     );
   }
 }

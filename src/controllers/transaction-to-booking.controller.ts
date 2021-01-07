@@ -13,24 +13,24 @@ import {
   TransactionToBookingService,
   TransactionToBookingServiceBindings,
 } from '../services/accountsynchronisation/transaction-to-booking.service';
-export const TransactionSynchronisationUrl = '/transaction-synchronisation';
-class TransactionSynchronisationRequest {
+export const TransactionToBookingUrl = '/transaction-to-booking';
+class TransactionToBookingRequest {
   from?: Date;
   to?: Date;
   constructor() {}
 }
-export class TransactionSynchronisationController {
+export class TransactionToBookingController {
   constructor(
     @inject(TransactionToBookingServiceBindings.SERVICE)
-    public transactionSynchronisationService: TransactionToBookingService,
+    public transactionToBookingService: TransactionToBookingService,
     @inject(RestBindings.Http.RESPONSE)
     protected response: Response,
   ) {}
 
-  @post(TransactionSynchronisationUrl, {
+  @post(TransactionToBookingUrl, {
     responses: {
       '200': {
-        description: 'AccountSynchronsiationResult',
+        description: 'TransactionToBookingResult',
         content: {
           'application/json': {
             schema: getModelSchemaRef(TransactionToBookingResult),
@@ -56,22 +56,22 @@ export class TransactionSynchronisationController {
         },
       },
     })
-    transactionSynchronisationRequest: TransactionSynchronisationRequest,
+    transactionToBookingRequest: TransactionToBookingRequest,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUserProfile: UserProfile,
   ): Promise<TransactionToBookingResult> {
     try {
-      const transactionSynchronisationResult = await this.transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
+      const transactionToBookingResult = await this.transactionToBookingService.createAndSaveBookingsForUnmatchedAccountTransactions(
         new Date(),
         currentUserProfile.clientId,
-        transactionSynchronisationRequest.from
-          ? new Date(transactionSynchronisationRequest.from!)
+        transactionToBookingRequest.from
+          ? new Date(transactionToBookingRequest.from!)
           : undefined,
-        transactionSynchronisationRequest.to
-          ? new Date(transactionSynchronisationRequest.to!)
+        transactionToBookingRequest.to
+          ? new Date(transactionToBookingRequest.to!)
           : undefined,
       );
-      return transactionSynchronisationResult;
+      return transactionToBookingResult;
     } catch (error) {
       console.error(error);
       throw error;
