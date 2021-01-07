@@ -188,6 +188,10 @@ export class ContractToBookingService {
           j += 1;
         }
       }
+      while (j < rentDueDates.length) {
+        result.push(rentDueDates[j]);
+        j += 1;
+      }
     }
     return result;
   }
