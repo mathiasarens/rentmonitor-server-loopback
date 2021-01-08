@@ -34,7 +34,13 @@ export class TenantBookingOverviewService {
       resultMap.get(booking.tenantId)!.sum += booking.amount;
     }
 
-    return Array.from(resultMap.values());
+    return Array.from(resultMap.values()).sort((a, b) =>
+      a.tenant.name < b.tenant.name
+        ? -1
+        : a.tenant.name > b.tenant.name
+        ? 1
+        : 0,
+    );
   }
 }
 
