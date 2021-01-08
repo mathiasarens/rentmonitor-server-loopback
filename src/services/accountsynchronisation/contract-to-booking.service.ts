@@ -211,7 +211,7 @@ export class ContractToBookingService {
   ): Booking {
     return new Booking({
       date: rentDueDate,
-      comment: `Miete ${rentDueDate.getMonth()}/${rentDueDate.getFullYear()}`,
+      comment: `${rentDueDate.getMonth()}/${rentDueDate.getFullYear()}`,
       amount: -1 * contract.amount,
       tenantId: contract.tenantId,
       clientId: contract.clientId,

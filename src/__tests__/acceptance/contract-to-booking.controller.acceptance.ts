@@ -84,7 +84,7 @@ describe('ContractToBookingController Acceptance Tests', () => {
     expect(bookingsInDb[0].date).to.eql(new Date(2021, 1, 10));
     expect(bookingsInDb[0].tenantId).to.eql(tenant1.id);
     expect(bookingsInDb[0].contractId).to.eql(contract1.id);
-    expect(bookingsInDb[0].comment).to.eql('Miete 1/2021');
+    expect(bookingsInDb[0].comment).to.eql('1/2021');
     expect(bookingsInDb[0].amount).to.eql(-1 * expectedAmount);
   });
 

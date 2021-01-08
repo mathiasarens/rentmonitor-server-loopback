@@ -136,7 +136,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(savedBookings).length(1);
     expect(savedBookings[0].date).to.eql(new Date(2019, 3, 10));
     expect(savedBookings[0].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[0].comment).to.eql('Miete 3/2019');
+    expect(savedBookings[0].comment).to.eql('3/2019');
     expect(savedBookings[0].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[0].contractId).to.eql(savedContract1.id);
     expect(savedBookings[0].accountTransactionId).to.eql(null);
@@ -188,7 +188,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(savedBookings).length(1);
     expect(savedBookings[0].date).to.eql(new Date(2019, 3, 10));
     expect(savedBookings[0].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[0].comment).to.eql('Miete 3/2019');
+    expect(savedBookings[0].comment).to.eql('3/2019');
     expect(savedBookings[0].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[0].contractId).to.eql(savedContract1.id);
     expect(savedBookings[0].accountTransactionId).to.eql(null);
@@ -240,14 +240,14 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(savedBookings).length(2);
     expect(savedBookings[0].date).to.eql(new Date(2019, 4, 10));
     expect(savedBookings[0].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[0].comment).to.eql('Miete 4/2019');
+    expect(savedBookings[0].comment).to.eql('4/2019');
     expect(savedBookings[0].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[0].contractId).to.eql(savedContract1.id);
     expect(savedBookings[0].accountTransactionId).to.eql(null);
 
     expect(savedBookings[1].date).to.eql(new Date(2019, 5, 10));
     expect(savedBookings[1].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[1].comment).to.eql('Miete 5/2019');
+    expect(savedBookings[1].comment).to.eql('5/2019');
     expect(savedBookings[1].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[1].contractId).to.eql(savedContract1.id);
     expect(savedBookings[1].accountTransactionId).to.eql(null);
@@ -310,7 +310,7 @@ describe('Contract To Booking Service Integration Tests', () => {
 
     expect(savedBookings[0].date).to.eql(new Date(2019, 5, 10));
     expect(savedBookings[0].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[0].comment).to.eql('Miete 5/2019');
+    expect(savedBookings[0].comment).to.eql('5/2019');
     expect(savedBookings[0].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[0].contractId).to.eql(savedContract1.id);
     expect(savedBookings[0].accountTransactionId).to.eql(null);
@@ -364,7 +364,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(savedBookings).length(1);
     expect(savedBookings[0].date).to.eql(new Date(2019, 3, 10));
     expect(savedBookings[0].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[0].comment).to.eql('Miete 3/2019');
+    expect(savedBookings[0].comment).to.eql('3/2019');
     expect(savedBookings[0].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[0].contractId).to.eql(savedContract1.id);
     expect(savedBookings[0].accountTransactionId).to.eql(null);
@@ -419,7 +419,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(savedBookings).length(1);
     expect(savedBookings[0].date).to.eql(new Date(2019, 10, 10));
     expect(savedBookings[0].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[0].comment).to.eql('Miete 10/2019');
+    expect(savedBookings[0].comment).to.eql('10/2019');
     expect(savedBookings[0].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[0].contractId).to.eql(savedContract1.id);
     expect(savedBookings[0].accountTransactionId).to.eql(null);
@@ -475,7 +475,7 @@ describe('Contract To Booking Service Integration Tests', () => {
     expect(savedBookings).length(1);
     expect(savedBookings[0].date).to.eql(new Date(2019, 9, 10));
     expect(savedBookings[0].tenantId).to.eql(savedTenant1.id);
-    expect(savedBookings[0].comment).to.eql('Miete 9/2019');
+    expect(savedBookings[0].comment).to.eql('9/2019');
     expect(savedBookings[0].amount).to.eql(-1 * unsavedContract1.amount);
     expect(savedBookings[0].contractId).to.eql(savedContract1.id);
     expect(savedBookings[0].accountTransactionId).to.eql(null);
