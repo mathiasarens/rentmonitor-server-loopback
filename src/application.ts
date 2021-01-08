@@ -51,6 +51,10 @@ import {
 import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
 import {JWTService} from './services/authentication/jwt.service';
 import {MyUserService} from './services/authentication/user.service';
+import {
+  TenantBookingOverviewService,
+  TenantBookingOverviewServiceBindings,
+} from './services/overview/tenant-booking-overview.service';
 
 /**
  * Information from package.json
@@ -135,6 +139,10 @@ export class RentmonitorServerApplication extends BootMixin(
 
     this.bind(ContractToBookingServiceBindings.SERVICE).toClass(
       ContractToBookingService,
+    );
+
+    this.bind(TenantBookingOverviewServiceBindings.SERVICE).toClass(
+      TenantBookingOverviewService,
     );
   }
 }
