@@ -10,6 +10,7 @@ databases:
 
 ```
 createuser rentmonitor -P
+CREATE USER rentmonitor WITH ENCRYPTED PASSWORD ‘mypass’;
 createuser rentmonitor_test -P
 
 createdb rentmonitor_test --owner rentmonitor_test --username <user with createdb permissions>
