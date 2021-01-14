@@ -9,11 +9,12 @@
     "payments",
     "fints-support"
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
-    "node": ">=8.9"
+    "node": ">=10.16"
   },
-  "scripts": {
+    "scripts": {
     "build": "lb-tsc",
     "build:watch": "lb-tsc --watch",
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
@@ -28,8 +29,8 @@
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
-    "docker:build": "docker build -t rentmonitor-server-loopback-new .",
-    "docker:run": "docker run -p 3000:3000 -d rentmonitor-server-loopback-new",
+    "docker:build": "docker build -t rentmonitor-server-loopback .",
+    "docker:run": "docker run -p 3000:3000 -d rentmonitor-server-loopback",
     "migrate": "node ./dist/migrate",
     "migrate:testdb": "NODE_ENV=test node ./dist/migrate -- --rebuild",
     "preopenapi-spec": "npm run build",
