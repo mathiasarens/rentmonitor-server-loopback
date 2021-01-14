@@ -21,9 +21,38 @@ CREATE DATABASE rentmonitor OWNER rentmonitor;
 
 To setup both databases run:
 
-npm run migrate npm run migrate:testdb
+npm run migrate
+npm run migrate:testdb
 
 If you have trouble running the tests because the database schema is not
 up-to-date please run:
 
 npm run migrate:testdb
+
+## Docker setup
+
+### Raspberry Pi Zero W
+
+docker run --name postgres-13 -e POSTGRES_PASSWORD=postgres -d arm32v6/postgres:13-alpine
+
+docker exec -it postgres-13 bash
+psql -h localhost -p 5432 -U postgres -W
+
+CREATE USER rentmonitor WITH ENCRYPTED PASSWORD ‘rentmonitor’;
+CREATE DATABASE rentmonitor OWNER rentmonitor;
+
+#### Build docker image
+
+docker build -t arm32v6/rentmonitor-server-loopback:1.0.0 .
+
+#### Copy image via ssh to Raspberry Pi 0 W
+
+docker save -o /tmp/rentmonitor-server-loopback-1.0.0.img arm32v6/rentmonitor-server-loopback:1.0.0
+
+#### Install image on raspberry pi 0 w
+
+docker load -i rentmonitor-server-loopback:1.0.0
+
+#### Container auf Raspberry Pi starten
+
+docker run -e RENTMONITOR_DB_HOST -e RENTMONITOR_DB_PORT -e RENTMONITOR_DB_NAME -e RENTMONITOR_DB_USER -e RENTMONITOR_DB_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET arm32v6/rentmonitor-server-loopback:1.0.0
