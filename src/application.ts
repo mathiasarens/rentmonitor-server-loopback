@@ -3,7 +3,7 @@ import {
   registerAuthenticationStrategy,
 } from '@loopback/authentication';
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig, BindingKey} from '@loopback/core';
+import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {
@@ -56,18 +56,6 @@ import {
   TenantBookingOverviewServiceBindings,
 } from './services/overview/tenant-booking-overview.service';
 
-/**
- * Information from package.json
- */
-export interface PackageInfo {
-  name: string;
-  version: string;
-  description: string;
-}
-export const PackageKey = BindingKey.create<PackageInfo>('application.package');
-
-const pkg: PackageInfo = require('../package.json');
-
 export class RentmonitorServerApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
@@ -88,7 +76,7 @@ export class RentmonitorServerApplication extends BootMixin(
     this.static('/', path.join(__dirname, '../public'));
 
     // Customize @loopback/rest-explorer configuration here
-    this.bind(RestExplorerBindings.CONFIG).to({
+    this.configure(RestExplorerBindings.COMPONENT).to({
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
@@ -106,9 +94,6 @@ export class RentmonitorServerApplication extends BootMixin(
   }
 
   setUpBindings(): void {
-    // Bind package.json to the application context
-    this.bind(PackageKey).to(pkg);
-
     this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
       TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     );
