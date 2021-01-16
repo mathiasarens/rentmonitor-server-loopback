@@ -50,14 +50,14 @@ docker build -t arm32v6/rentmonitor-server-loopback:1.0.0 .
 
 docker save -o /tmp/rentmonitor-server-loopback-1.0.0.img arm32v6/rentmonitor-server-loopback:1.0.0
 
-#### Copy image via ssh to Raspberry Pi 0 W
+#### Copy image via ssh to Raspberry Pi0W
 
 scp /tmp/rentmonitor-server-loopback-1.0.0.img pirate@pi0w:~/rentmonitor-server-loopback-1.0.0.img
 
-#### Install image on raspberry pi 0 w
+#### Install image on Raspberry Pi0W
 
 docker load -i rentmonitor-server-loopback-1.0.0.img
 
-#### Container auf Raspberry Pi starten
+#### Start container on Raspberry Pi0W
 
 docker run --network rentmonitor-network -e RENTMONITOR_DB_HOST -e RENTMONITOR_DB_PORT -e RENTMONITOR_DB_NAME -e RENTMONITOR_DB_USER -e RENTMONITOR_DB_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET -p 3000:3000 -d arm32v6/rentmonitor-server-loopback:1.0.0

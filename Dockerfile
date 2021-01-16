@@ -25,5 +25,4 @@ RUN npm run build
 ENV HOST=0.0.0.0 PORT=3000
 
 EXPOSE ${PORT}
-CMD [ "node" "./dist/migrate"]
-CMD [ "node", "." ]
+CMD [ "sh","-c", "node ./dist/migrate && node ." ]
