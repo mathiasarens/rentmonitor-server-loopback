@@ -31,7 +31,7 @@ npm run migrate:testdb
 
 ## Docker setup
 
-### Raspberry Pi Zero W
+### Raspberry Pi0W
 
 docker network create rentmonitor-network
 docker run --network rentmonitor-network --name postgresdb -e POSTGRES_PASSWORD=postgres -d arm32v6/postgres:13-alpine
