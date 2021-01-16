@@ -33,12 +33,13 @@ npm run migrate:testdb
 
 ### Raspberry Pi Zero W
 
-docker run --name postgres-13 -e POSTGRES_PASSWORD=postgres -d arm32v6/postgres:13-alpine
+docker network create rentmonitor-network
+docker run --network rentmonitor-network --name postgresdb -e POSTGRES_PASSWORD=postgres -d arm32v6/postgres:13-alpine
 
-docker exec -it postgres-13 bash
+docker exec -it postgresdb bash
 psql -h localhost -p 5432 -U postgres -W
 
-CREATE USER rentmonitor WITH ENCRYPTED PASSWORD ‘rentmonitor’;
+CREATE ROLE rentmonitor WITH LOGIN PASSWORD 'mypass';
 CREATE DATABASE rentmonitor OWNER rentmonitor;
 
 #### Build docker image
@@ -59,4 +60,4 @@ docker load -i rentmonitor-server-loopback-1.0.0.img
 
 #### Container auf Raspberry Pi starten
 
-docker run -e RENTMONITOR_DB_HOST -e RENTMONITOR_DB_PORT -e RENTMONITOR_DB_NAME -e RENTMONITOR_DB_USER -e RENTMONITOR_DB_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET -p 3000:3000 -d arm32v6/rentmonitor-server-loopback:1.0.0
+docker run --network rentmonitor-network -e RENTMONITOR_DB_HOST -e RENTMONITOR_DB_PORT -e RENTMONITOR_DB_NAME -e RENTMONITOR_DB_USER -e RENTMONITOR_DB_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET -p 3000:3000 -d arm32v6/rentmonitor-server-loopback:1.0.0
