@@ -3,3 +3,5 @@ npm-debug.log
 /dist
 # Cache used by TypeScript's incremental build
 *.tsbuildinfo
+deploy
+deploy-pi0w.sh
