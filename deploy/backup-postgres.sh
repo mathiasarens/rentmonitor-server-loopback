@@ -1,2 +1,4 @@
 #!/bin/bash
-docker exec -t postgresdb pg_dumpall -c -U postgres > backup/rentmonitor-`date +%d-%m-%Y"_"%H_%M_%S`.sql
+NOW=`date +%d-%m-%Y"_"%H_%M_%S`
+docker exec -t $BACKUP_DB pg_dumpall -c -U $BACKUP_DB_USER > backup/rentmonitor-$NOW.sql
+scp -i ~/.ssh/$BACKUP_HOST ~/backup/rentmonitor-$NOW.sql $BACKUP_HOST:~
