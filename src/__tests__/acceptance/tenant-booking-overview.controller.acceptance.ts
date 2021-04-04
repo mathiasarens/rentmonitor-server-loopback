@@ -1,15 +1,15 @@
-import {Client, expect} from '@loopback/testlab';
-import {RentmonitorServerApplication} from '../..';
-import {TenantBookingOverviewUrl} from '../../controllers/tenant-booking-overview.controller';
-import {Booking, Tenant} from '../../models';
-import {BookingRepository, TenantRepository} from '../../repositories';
+import { Client, expect } from '@loopback/testlab';
+import { RentmonitorServerApplication } from '../..';
+import { TenantBookingOverviewUrl } from '../../controllers/tenant-booking-overview.controller';
+import { Booking, Tenant } from '../../models';
+import { BookingRepository, TenantRepository } from '../../repositories';
 import {
   clearDatabase,
   getTestUser,
   login,
   setupApplication,
   setupClientInDb,
-  setupUserInDb,
+  setupUserInDb
 } from '../helpers/acceptance-test.helpers';
 
 describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
@@ -30,7 +30,7 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
 
   // post
 
-  it('should load bookings sum by tenant', async () => {
+  it('should load bookings sum by tenant ordered by sum descending', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser);
@@ -85,10 +85,10 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
 
     // assertions
     expect(res.body).length(2);
-    expect(res.body[0].tenant.name).to.eql('Tenant 1');
-    expect(res.body[0].sum).to.eql(5000);
-    expect(res.body[1].tenant.name).to.eql('Tenant 2');
-    expect(res.body[1].sum).to.eql(-1000);
+    expect(res.body[0].tenant.name).to.eql('Tenant 2');
+    expect(res.body[0].sum).to.eql(-1000);
+    expect(res.body[1].tenant.name).to.eql('Tenant 1');
+    expect(res.body[1].sum).to.eql(5000);
   });
 
   // non test methods --------------------------------------------------------------------

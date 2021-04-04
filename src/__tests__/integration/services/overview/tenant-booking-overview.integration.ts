@@ -1,15 +1,15 @@
-import {Getter} from '@loopback/repository';
-import {expect} from '@loopback/testlab';
-import {Booking, BookingType, Tenant} from '../../../../models';
+import { Getter } from '@loopback/repository';
+import { expect } from '@loopback/testlab';
+import { Booking, BookingType, Tenant } from '../../../../models';
 import {
   BookingRepository,
   ClientRepository,
   ContractRepository,
-  TenantRepository,
+  TenantRepository
 } from '../../../../repositories';
-import {TenantBookingOverviewService} from '../../../../services/overview/tenant-booking-overview.service';
-import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
-import {givenEmptyDatabase} from '../../../helpers/database.helpers';
+import { TenantBookingOverviewService } from '../../../../services/overview/tenant-booking-overview.service';
+import { testdb } from '../../../fixtures/datasources/rentmontior.datasource';
+import { givenEmptyDatabase } from '../../../helpers/database.helpers';
 
 describe('Tenant Booking Overview Service Integration Tests', () => {
   let clientRepository: ClientRepository;
@@ -44,7 +44,7 @@ describe('Tenant Booking Overview Service Integration Tests', () => {
 
   after(async () => {});
 
-  it('should sum booking amounts by tenant', async function () {
+  it('should sum booking amounts by tenant order by sum descending', async function () {
     // given
     const client = await clientRepository.create({
       name: 'Client Transaction Sychronization Tests',
@@ -109,9 +109,9 @@ describe('Tenant Booking Overview Service Integration Tests', () => {
 
     // than
     expect(results).length(2);
-    expect(results[0].tenant.name).to.eql('Tenant 1');
-    expect(results[0].sum).to.eql(500);
-    expect(results[1].tenant.name).to.eql('Tenant 2');
-    expect(results[1].sum).to.eql(-2400);
+    expect(results[0].tenant.name).to.eql('Tenant 2');
+    expect(results[0].sum).to.eql(-2400);
+    expect(results[1].tenant.name).to.eql('Tenant 1');
+    expect(results[1].sum).to.eql(500);
   });
 });
