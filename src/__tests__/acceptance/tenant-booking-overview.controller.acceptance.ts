@@ -1,15 +1,15 @@
-import { Client, expect } from '@loopback/testlab';
-import { RentmonitorServerApplication } from '../..';
-import { TenantBookingOverviewUrl } from '../../controllers/tenant-booking-overview.controller';
-import { Booking, Tenant } from '../../models';
-import { BookingRepository, TenantRepository } from '../../repositories';
+import {Client, expect} from '@loopback/testlab';
+import {RentmonitorServerApplication} from '../..';
+import {TenantBookingOverviewUrl} from '../../controllers/tenant-booking-overview.controller';
+import {Booking, Tenant} from '../../models';
+import {BookingRepository, TenantRepository} from '../../repositories';
 import {
   clearDatabase,
   getTestUser,
   login,
   setupApplication,
   setupClientInDb,
-  setupUserInDb
+  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {

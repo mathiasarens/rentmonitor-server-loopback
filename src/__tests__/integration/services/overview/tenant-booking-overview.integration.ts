@@ -1,15 +1,15 @@
-import { Getter } from '@loopback/repository';
-import { expect } from '@loopback/testlab';
-import { Booking, BookingType, Tenant } from '../../../../models';
+import {Getter} from '@loopback/repository';
+import {expect} from '@loopback/testlab';
+import {Booking, BookingType, Tenant} from '../../../../models';
 import {
   BookingRepository,
   ClientRepository,
   ContractRepository,
-  TenantRepository
+  TenantRepository,
 } from '../../../../repositories';
-import { TenantBookingOverviewService } from '../../../../services/overview/tenant-booking-overview.service';
-import { testdb } from '../../../fixtures/datasources/rentmontior.datasource';
-import { givenEmptyDatabase } from '../../../helpers/database.helpers';
+import {TenantBookingOverviewService} from '../../../../services/overview/tenant-booking-overview.service';
+import {testdb} from '../../../fixtures/datasources/rentmontior.datasource';
+import {givenEmptyDatabase} from '../../../helpers/database.helpers';
 
 describe('Tenant Booking Overview Service Integration Tests', () => {
   let clientRepository: ClientRepository;

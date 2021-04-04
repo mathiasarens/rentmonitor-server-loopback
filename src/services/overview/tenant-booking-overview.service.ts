@@ -1,7 +1,7 @@
-import { BindingKey } from '@loopback/core';
-import { repository } from '@loopback/repository';
-import { Booking, Tenant } from '../../models';
-import { BookingRepository, TenantRepository } from '../../repositories';
+import {BindingKey} from '@loopback/core';
+import {repository} from '@loopback/repository';
+import {Booking, Tenant} from '../../models';
+import {BookingRepository, TenantRepository} from '../../repositories';
 
 export class BookingSumPerTenant {
   constructor(public tenant: Tenant, public sum: number) {}
@@ -35,7 +35,15 @@ export class TenantBookingOverviewService {
     }
 
     return Array.from(resultMap.values()).sort((a, b) =>
-      a.sum < b.sum ? -1 : a.sum > b.sum ? 1 : a.tenant.name < b.tenant.name ? -1 :  a.tenant.name > b.tenant.name ? 1 : 0,
+      a.sum < b.sum
+        ? -1
+        : a.sum > b.sum
+        ? 1
+        : a.tenant.name < b.tenant.name
+        ? -1
+        : a.tenant.name > b.tenant.name
+        ? 1
+        : 0,
     );
   }
 }
