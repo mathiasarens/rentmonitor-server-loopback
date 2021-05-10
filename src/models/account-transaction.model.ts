@@ -1,23 +1,27 @@
-import {belongsTo, Entity, model, property} from '@loopback/repository';
-import {AccountSettings} from './account-settings.model';
-import {Client} from './client.model';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+import { AccountSettings } from './account-settings.model';
+import { Client } from './client.model';
 
 @model({
   settings: {
-    // foreignKeys: {
-    //   fkAccountTransactionClientId: {
-    //     name: 'fk_accountTransaction_clientId',
-    //     entity: 'Client',
-    //     entityKey: 'id',
-    //     foreignKey: 'clientid',
-    //   },
-    //   fkAccountTransactionAccountSettingsId: {
-    //     name: 'fk_accountTransaction_accountSettingsId',
-    //     entity: 'AccountSettings',
-    //     entityKey: 'id',
-    //     foreignKey: 'accountsettingsid',
-    //   },
-    // },
+    foreignKeys: {
+      fkAccountTransactionClientId: {
+        name: 'fk_accountTransaction_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientid',
+        onDelete: 'CASCADE',
+        onUpdate: 'SET NULL'
+      },
+      fkAccountTransactionAccountSettingsId: {
+        name: 'fk_accountTransaction_accountSettingsId',
+        entity: 'AccountSettings',
+        entityKey: 'id',
+        foreignKey: 'accountsettingsid',
+        onDelete: 'CASCADE',
+        onUpdate: 'SET NULL'
+      },
+    },
   },
 })
 export class AccountTransaction extends Entity {

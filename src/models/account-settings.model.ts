@@ -3,21 +3,23 @@ import {
   DataObject,
   Entity,
   model,
-  property,
+  property
 } from '@loopback/repository';
-import {Client} from './client.model';
+import { Client } from './client.model';
 
 @model({
   settings: {
     hiddenProperties: ['fintsPassword'],
-    // foreignKeys: {
-    //   fkAccountSettingsClientId: {
-    //     name: 'fk_accountSettings_clientId',
-    //     entity: 'Client',
-    //     entityKey: 'id',
-    //     foreignKey: 'clientid',
-    //   },
-    // },
+    foreignKeys: {
+      fkAccountSettingsClientId: {
+        name: 'fk_accountSettings_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientid',
+        onDelete: 'CASCADE',
+        onUpdate: 'SET NULL'
+      },
+    },
   },
 })
 export class AccountSettings extends Entity {

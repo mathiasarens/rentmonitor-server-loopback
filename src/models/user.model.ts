@@ -3,20 +3,22 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import {belongsTo, Entity, model, property} from '@loopback/repository';
-import {Client} from '.';
+import { belongsTo, Entity, model, property } from '@loopback/repository';
+import { Client } from '.';
 
 @model({
   settings: {
     hiddenProperties: ['password'],
-    // foreignKeys: {
-    //   fkUserClientId: {
-    //     name: 'fk_user_clientId',
-    //     entity: 'Client',
-    //     entityKey: 'id',
-    //     foreignKey: 'clientid',
-    //   },
-    // },
+    foreignKeys: {
+      fkUserClientId: {
+        name: 'fk_user_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientid',
+        onDelete: 'CASCADE',
+        onUpdate: 'SET NULL'
+      },
+    },
   },
 })
 export class User extends Entity {
