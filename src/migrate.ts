@@ -1,4 +1,4 @@
-import { RentmonitorServerApplication } from './application';
+import {RentmonitorServerApplication} from './application';
 
 export async function migrate(args: string[]) {
   const existingSchema = args.includes('--rebuild') ? 'drop' : 'alter';

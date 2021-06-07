@@ -1,8 +1,8 @@
-import { belongsTo, Entity, model, property } from '@loopback/repository';
-import { Contract } from '.';
-import { AccountTransaction } from './account-transaction.model';
-import { Client } from './client.model';
-import { Tenant } from './tenant.model';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {Contract} from '.';
+import {AccountTransaction} from './account-transaction.model';
+import {Client} from './client.model';
+import {Tenant} from './tenant.model';
 @model({
   settings: {
     foreignKeys: {
@@ -12,7 +12,7 @@ import { Tenant } from './tenant.model';
         entityKey: 'id',
         foreignKey: 'clientid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
       fkBookingTenantId: {
         name: 'fk_booking_tenantId',
@@ -20,7 +20,7 @@ import { Tenant } from './tenant.model';
         entityKey: 'id',
         foreignKey: 'tenantid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
       fkBookingContractId: {
         name: 'fk_booking_contractId',
@@ -28,7 +28,7 @@ import { Tenant } from './tenant.model';
         entityKey: 'id',
         foreignKey: 'contractid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
       fkBookingAccountTransactionId: {
         name: 'fk_booking_accountTransactionId',
@@ -36,7 +36,7 @@ import { Tenant } from './tenant.model';
         entityKey: 'id',
         foreignKey: 'accounttransactionid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
     },
   },

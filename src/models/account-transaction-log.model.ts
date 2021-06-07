@@ -1,6 +1,6 @@
-import { belongsTo, Entity, model, property } from '@loopback/repository';
-import { AccountSettings } from './account-settings.model';
-import { Client } from './client.model';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {AccountSettings} from './account-settings.model';
+import {Client} from './client.model';
 
 @model({
   settings: {
@@ -11,7 +11,7 @@ import { Client } from './client.model';
         entityKey: 'id',
         foreignKey: 'clientid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
       fkAccountTransactionLogAccountSettingsId: {
         name: 'fk_accountTransactionLog_accountSettingsId',
@@ -19,7 +19,7 @@ import { Client } from './client.model';
         entityKey: 'id',
         foreignKey: 'accountsettingsid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
     },
   },

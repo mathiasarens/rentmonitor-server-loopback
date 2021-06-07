@@ -3,8 +3,8 @@
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
 
-import { belongsTo, Entity, model, property } from '@loopback/repository';
-import { Client } from '.';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {Client} from '.';
 
 @model({
   settings: {
@@ -16,7 +16,7 @@ import { Client } from '.';
         entityKey: 'id',
         foreignKey: 'clientid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
     },
   },

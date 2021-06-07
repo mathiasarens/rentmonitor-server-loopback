@@ -3,9 +3,9 @@ import {
   DataObject,
   Entity,
   model,
-  property
+  property,
 } from '@loopback/repository';
-import { Client } from './client.model';
+import {Client} from './client.model';
 
 @model({
   settings: {
@@ -17,7 +17,7 @@ import { Client } from './client.model';
         entityKey: 'id',
         foreignKey: 'clientid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
     },
   },

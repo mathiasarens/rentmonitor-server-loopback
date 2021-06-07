@@ -1,5 +1,5 @@
-import { belongsTo, Entity, model, property } from '@loopback/repository';
-import { Client, Tenant } from '.';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import {Client, Tenant} from '.';
 @model({
   settings: {
     foreignKeys: {
@@ -9,7 +9,7 @@ import { Client, Tenant } from '.';
         entityKey: 'id',
         foreignKey: 'clientid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
       fkContractTenantId: {
         name: 'fk_contract_tenantId',
@@ -17,7 +17,7 @@ import { Client, Tenant } from '.';
         entityKey: 'id',
         foreignKey: 'tenantid',
         onDelete: 'CASCADE',
-        onUpdate: 'SET NULL'
+        onUpdate: 'SET NULL',
       },
     },
   },
