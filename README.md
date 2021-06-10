@@ -61,3 +61,7 @@ docker load -i rentmonitor-server-loopback-1.0.1.img
 #### Start container on Raspberry Pi0W
 
 docker run --network rentmonitor-network --name rentmonitor-server -e RENTMONITOR_DB_HOST -e RENTMONITOR_DB_PORT -e RENTMONITOR_DB_NAME -e RENTMONITOR_DB_USER -e RENTMONITOR_DB_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET -p 3000:3000 -d arm32v6/rentmonitor-server-loopback:1.0.1
+
+#### Restore database dump
+
+cat rentmonitor_dump.sql | docker exec -i postgresdb psql -U rentmonitor
