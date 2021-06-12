@@ -1,5 +1,5 @@
 # Check out https://hub.docker.com/_/node to select a new base image
-FROM arm32v6/node:16-alpine
+FROM arm32v6/node:16-alpine3.11
 
 # Set to a non-root built-in user `node`
 USER node
