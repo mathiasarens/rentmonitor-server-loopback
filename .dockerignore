@@ -7,3 +7,7 @@ deploy*
 README.md
 DEVELOPING.md
 
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+.git
+.gitignore
