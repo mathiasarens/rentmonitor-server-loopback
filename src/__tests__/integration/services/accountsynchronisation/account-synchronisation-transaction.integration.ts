@@ -33,9 +33,10 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
       clientRepositoryGetter,
     );
 
-    accountTransactionSaveService = new AccountSynchronisationTransactionService(
-      accountTransactionRepository,
-    );
+    accountTransactionSaveService =
+      new AccountSynchronisationTransactionService(
+        accountTransactionRepository,
+      );
   });
 
   after(async () => {});
@@ -61,18 +62,18 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     ];
 
     // when
-    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
-      accountSettings,
-      accountTransactions,
-    );
+    const newTransactionsList =
+      await accountTransactionSaveService.saveNewAccountTransactions(
+        accountSettings,
+        accountTransactions,
+      );
 
     // then
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(1);
     expect(newTransactionsList).length(1);
   });
@@ -120,18 +121,18 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     });
 
     // when
-    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
-      accountSettings,
-      newAccountTransactions,
-    );
+    const newTransactionsList =
+      await accountTransactionSaveService.saveNewAccountTransactions(
+        accountSettings,
+        newAccountTransactions,
+      );
 
     // then
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(3);
     expect(newTransactionsList).length(2);
   });
@@ -218,18 +219,18 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     });
 
     // when
-    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
-      accountSettings,
-      newAccountTransactions,
-    );
+    const newTransactionsList =
+      await accountTransactionSaveService.saveNewAccountTransactions(
+        accountSettings,
+        newAccountTransactions,
+      );
 
     // then
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(7);
     expect(newTransactionsList).length(6);
   });
@@ -285,18 +286,18 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     });
 
     // when
-    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
-      accountSettings,
-      newAccountTransactions,
-    );
+    const newTransactionsList =
+      await accountTransactionSaveService.saveNewAccountTransactions(
+        accountSettings,
+        newAccountTransactions,
+      );
 
     // then
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(3);
     expect(newTransactionsList).length(2);
   });
@@ -363,18 +364,18 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     });
 
     // when
-    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
-      accountSettings,
-      newAccountTransactions,
-    );
+    const newTransactionsList =
+      await accountTransactionSaveService.saveNewAccountTransactions(
+        accountSettings,
+        newAccountTransactions,
+      );
 
     // then
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(3);
     expect(newTransactionsList).length(1);
   });
@@ -419,18 +420,18 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     ];
 
     // when
-    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
-      accountSettings,
-      newAccountTransactions,
-    );
+    const newTransactionsList =
+      await accountTransactionSaveService.saveNewAccountTransactions(
+        accountSettings,
+        newAccountTransactions,
+      );
 
     // then
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(3);
     expect(newTransactionsList).length(3);
   });
@@ -497,18 +498,18 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     });
 
     // when
-    const newTransactionsList = await accountTransactionSaveService.saveNewAccountTransactions(
-      accountSettings,
-      newAccountTransactions,
-    );
+    const newTransactionsList =
+      await accountTransactionSaveService.saveNewAccountTransactions(
+        accountSettings,
+        newAccountTransactions,
+      );
 
     // then
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client.id, accountSettingsId: accountSettings.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(5);
     expect(newTransactionsList).length(3);
   });

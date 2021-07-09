@@ -16,9 +16,10 @@ describe('AccountSynchronisationTransactionService Unit Tests', () => {
       AccountTransactionRepository,
     );
 
-    accountSynchronisationTransactionService = new AccountSynchronisationTransactionService(
-      accountTransactionRepositoryStub,
-    );
+    accountSynchronisationTransactionService =
+      new AccountSynchronisationTransactionService(
+        accountTransactionRepositoryStub,
+      );
   });
 
   after(async () => {});

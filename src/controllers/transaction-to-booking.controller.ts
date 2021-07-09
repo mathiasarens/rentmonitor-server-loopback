@@ -61,16 +61,17 @@ export class TransactionToBookingController {
     currentUserProfile: UserProfile,
   ): Promise<TransactionToBookingResult> {
     try {
-      const transactionToBookingResult = await this.transactionToBookingService.createAndSaveBookingsForUnmatchedAccountTransactions(
-        new Date(),
-        currentUserProfile.clientId,
-        transactionToBookingRequest.from
-          ? new Date(transactionToBookingRequest.from!)
-          : undefined,
-        transactionToBookingRequest.to
-          ? new Date(transactionToBookingRequest.to!)
-          : undefined,
-      );
+      const transactionToBookingResult =
+        await this.transactionToBookingService.createAndSaveBookingsForUnmatchedAccountTransactions(
+          new Date(),
+          currentUserProfile.clientId,
+          transactionToBookingRequest.from
+            ? new Date(transactionToBookingRequest.from!)
+            : undefined,
+          transactionToBookingRequest.to
+            ? new Date(transactionToBookingRequest.to!)
+            : undefined,
+        );
       return transactionToBookingResult;
     } catch (error) {
       console.error(error);

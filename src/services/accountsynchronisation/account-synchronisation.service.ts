@@ -47,26 +47,24 @@ export class AccountSynchronisationService {
     from?: Date,
     to?: Date,
   ): Promise<AccountSynchronisationResult[]> {
-    const accountSettingsList: AccountSettings[] = await this.accountSettingsRepository.find(
-      {where: {clientId: clientId}},
-    );
+    const accountSettingsList: AccountSettings[] =
+      await this.accountSettingsRepository.find({where: {clientId: clientId}});
     const accountSynchronisationResults: AccountSynchronisationResult[] = [];
     for (const accountSettings of accountSettingsList) {
       try {
-        const newTransactions = await this.retrieveAndSaveNewAccountTransactions(
-          now,
-          accountSettings,
-          from,
-          to,
-        );
-        const [
-          newBookings,
-          unmatchedAccountTransactions,
-        ] = await this.accountSynchronisationBookingService.createAndSaveNewBookings(
-          clientId,
-          newTransactions,
-          now,
-        );
+        const newTransactions =
+          await this.retrieveAndSaveNewAccountTransactions(
+            now,
+            accountSettings,
+            from,
+            to,
+          );
+        const [newBookings, unmatchedAccountTransactions] =
+          await this.accountSynchronisationBookingService.createAndSaveNewBookings(
+            clientId,
+            newTransactions,
+            now,
+          );
         accountSynchronisationResults.push(
           new AccountSynchronisationResult(
             accountSettings.id,
@@ -110,14 +108,12 @@ export class AccountSynchronisationService {
         to,
         tan,
       );
-      const [
-        newBookings,
-        unmatchedAccountTransactions,
-      ] = await this.accountSynchronisationBookingService.createAndSaveNewBookings(
-        clientId,
-        newTransactions,
-        now,
-      );
+      const [newBookings, unmatchedAccountTransactions] =
+        await this.accountSynchronisationBookingService.createAndSaveNewBookings(
+          clientId,
+          newTransactions,
+          now,
+        );
       await this.clearTanRequiredErrorOnAccountSettings(accountSettings);
       return new AccountSynchronisationResult(
         accountSettings!.id,
@@ -146,24 +142,27 @@ export class AccountSynchronisationService {
     to?: Date,
     tan?: string,
   ): Promise<AccountTransaction[]> {
-    const rawAccountTransactions: FinTsAccountTransactionDTO[] = await this.fintsAccountTransactionSynchronization.fetchStatements(
-      accountSettings,
-      from,
-      to,
-      tan,
-    );
+    const rawAccountTransactions: FinTsAccountTransactionDTO[] =
+      await this.fintsAccountTransactionSynchronization.fetchStatements(
+        accountSettings,
+        from,
+        to,
+        tan,
+      );
     await this.logAccountTransactions(
       now,
       accountSettings,
       rawAccountTransactions,
     );
-    const accountTransactions: AccountTransaction[] = rawAccountTransactions.map(
-      at => this.convertToAccountTransaction(accountSettings, at),
-    );
-    const newAccountTransactions = await this.accountSynchronisationSaveService.saveNewAccountTransactions(
-      accountSettings,
-      accountTransactions,
-    );
+    const accountTransactions: AccountTransaction[] =
+      rawAccountTransactions.map(at =>
+        this.convertToAccountTransaction(accountSettings, at),
+      );
+    const newAccountTransactions =
+      await this.accountSynchronisationSaveService.saveNewAccountTransactions(
+        accountSettings,
+        accountTransactions,
+      );
 
     return newAccountTransactions;
   }
@@ -189,15 +188,16 @@ export class AccountSynchronisationService {
     accountSettings: AccountSettings,
     rawAccountTransactions: FinTsAccountTransactionDTO[],
   ) {
-    const accountTransactionsToSave: AccountTransactionLog[] = rawAccountTransactions.map(
-      at =>
-        new AccountTransactionLog({
-          clientId: accountSettings.clientId,
-          accountSettingsId: accountSettings.id,
-          time: now,
-          rawstring: at.rawstring,
-        }),
-    );
+    const accountTransactionsToSave: AccountTransactionLog[] =
+      rawAccountTransactions.map(
+        at =>
+          new AccountTransactionLog({
+            clientId: accountSettings.clientId,
+            accountSettingsId: accountSettings.id,
+            time: now,
+            rawstring: at.rawstring,
+          }),
+      );
     await this.accountTransactionLogRepository.createAll(
       accountTransactionsToSave,
     );

@@ -69,14 +69,11 @@ describe('Contract To Booking Service Integration Tests', () => {
     await contractRepository.create(unsavedContract1);
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 3, 15),
-      client.id,
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 3, 15),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(0);
@@ -115,14 +112,11 @@ describe('Contract To Booking Service Integration Tests', () => {
     const savedContract1 = await contractRepository.create(unsavedContract1);
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 3, 15),
-      client.id,
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 3, 15),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(1);
@@ -167,14 +161,11 @@ describe('Contract To Booking Service Integration Tests', () => {
     const savedContract1 = await contractRepository.create(unsavedContract1);
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 3, 15),
-      client.id,
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 3, 15),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(1);
@@ -219,14 +210,11 @@ describe('Contract To Booking Service Integration Tests', () => {
     const savedContract1 = await contractRepository.create(unsavedContract1);
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 5, 15),
-      client.id,
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 5, 15),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(2);
@@ -288,14 +276,11 @@ describe('Contract To Booking Service Integration Tests', () => {
     await bookingRepository.create(existingBooking);
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 5, 15),
-      client.id,
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 5, 15),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(1);
@@ -343,14 +328,11 @@ describe('Contract To Booking Service Integration Tests', () => {
     const savedContract1 = await contractRepository.create(unsavedContract1);
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 5, 15),
-      client.id,
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 5, 15),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(1);
@@ -396,16 +378,13 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenantIds: number[] = [savedTenant1.id];
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 10, 15),
-      client.id,
-      tenantIds,
-      new Date(2019, 9, 15),
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 10, 15),
+        client.id,
+        tenantIds,
+        new Date(2019, 9, 15),
+      );
 
     // than
     expect(newBookings).to.eql(1);
@@ -451,17 +430,14 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenantIds: number[] = [savedTenant1.id];
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 11, 15),
-      client.id,
-      tenantIds,
-      new Date(2019, 8, 15),
-      new Date(2019, 9, 15),
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 11, 15),
+        client.id,
+        tenantIds,
+        new Date(2019, 8, 15),
+        new Date(2019, 9, 15),
+      );
 
     // than
     expect(newBookings).to.eql(1);
@@ -506,15 +482,12 @@ describe('Contract To Booking Service Integration Tests', () => {
     await contractRepository.create(unsavedContract1);
 
     // when
-    const {
-      newBookings,
-      matchedContracts,
-      unmatchedContracts,
-    } = await contractToBookingService.createAndSaveBookingsForContracts(
-      new Date(2019, 11, 15),
-      client.id,
-      [],
-    );
+    const {newBookings, matchedContracts, unmatchedContracts} =
+      await contractToBookingService.createAndSaveBookingsForContracts(
+        new Date(2019, 11, 15),
+        client.id,
+        [],
+      );
 
     // than
     expect(newBookings).to.eql(0);

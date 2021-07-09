@@ -35,9 +35,10 @@ export class TenantBookingOverviewController {
     currentUserProfile: UserProfile,
   ): Promise<BookingSumPerTenant[]> {
     try {
-      const bookingSumPerTenantList = await this.tenantBookingOverviewService.loadBookingSumPerTenant(
-        currentUserProfile.clientId,
-      );
+      const bookingSumPerTenantList =
+        await this.tenantBookingOverviewService.loadBookingSumPerTenant(
+          currentUserProfile.clientId,
+        );
       return bookingSumPerTenantList;
     } catch (error) {
       console.error(error);

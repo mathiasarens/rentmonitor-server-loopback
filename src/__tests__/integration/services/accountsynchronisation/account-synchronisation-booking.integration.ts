@@ -58,10 +58,11 @@ describe('Account Synchronisation Booking Integration Tests', () => {
       testdb,
       clientRepositoryGetter,
     );
-    accountSynchronisationBookingService = new AccountSynchronisationBookingService(
-      tenantRepository,
-      bookingRepository,
-    );
+    accountSynchronisationBookingService =
+      new AccountSynchronisationBookingService(
+        tenantRepository,
+        bookingRepository,
+      );
 
     client1 = await clientRepository.create({name: 'Client1'});
     tenant1 = await tenantRepository.create({
@@ -92,11 +93,12 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     const accountTransactions = [accountTransaction1];
 
     // when
-    const result = await accountSynchronisationBookingService.createAndSaveNewBookings(
-      client1.id,
-      accountTransactions,
-      new Date(2019, 0, 1),
-    );
+    const result =
+      await accountSynchronisationBookingService.createAndSaveNewBookings(
+        client1.id,
+        accountTransactions,
+        new Date(2019, 0, 1),
+      );
 
     // then
     expect(result[0]).length(1);
@@ -117,12 +119,11 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     expect(bookings[0].type).to.eql(BookingType.RENT_PAID_ALGO);
 
     // updated account transaction
-    const savedAccountTransactions: AccountTransaction[] = await accountTransactionRepository.find(
-      {
+    const savedAccountTransactions: AccountTransaction[] =
+      await accountTransactionRepository.find({
         where: {clientId: client1.id, accountSettingsId: accountSettings1.id},
         order: ['date ASC'],
-      },
-    );
+      });
     expect(savedAccountTransactions).length(1);
   });
 });

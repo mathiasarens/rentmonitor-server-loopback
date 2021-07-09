@@ -34,14 +34,12 @@ export class TransactionToBookingService {
       to,
     );
 
-    const [
-      newBookings,
-      unmatchedAccountTransactions,
-    ] = await this.accountSynchronisationBookingService.createAndSaveNewBookings(
-      clientId,
-      existingAccountTransactions,
-      now,
-    );
+    const [newBookings, unmatchedAccountTransactions] =
+      await this.accountSynchronisationBookingService.createAndSaveNewBookings(
+        clientId,
+        existingAccountTransactions,
+        now,
+      );
 
     return new TransactionToBookingResult(
       newBookings.length,

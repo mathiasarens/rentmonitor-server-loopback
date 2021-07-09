@@ -191,14 +191,8 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should return return data for both clients', async () => {
-    const {
-      token1,
-      fintsName1,
-      fintsUrl1,
-      token2,
-      fintsName2,
-      fintsUrl2,
-    } = await setup2();
+    const {token1, fintsName1, fintsUrl1, token2, fintsName2, fintsUrl2} =
+      await setup2();
     // when
     const res1 = await http
       .get('/account-settings')
@@ -252,14 +246,8 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should patch account settings only for current client', async () => {
-    const {
-      token1,
-      fintsName1,
-      fintsUrl1,
-      token2,
-      fintsName2,
-      fintsUrl2,
-    } = await setup2();
+    const {token1, fintsName1, fintsUrl1, token2, fintsName2, fintsUrl2} =
+      await setup2();
 
     // when
     await http
@@ -392,12 +380,8 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should find account settings for the same client by id', async () => {
-    const {
-      fintsName2,
-      fintsUrl2,
-      accountSettingsResult2,
-      token2,
-    } = await setup2();
+    const {fintsName2, fintsUrl2, accountSettingsResult2, token2} =
+      await setup2();
 
     // when
     const res1 = await http
@@ -456,13 +440,8 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should put a single account settings by id', async () => {
-    const {
-      token1,
-      fintsName1,
-      fintsUrl1,
-      token2,
-      accountSettingsResult2,
-    } = await setup2();
+    const {token1, fintsName1, fintsUrl1, token2, accountSettingsResult2} =
+      await setup2();
 
     // when
     await http
@@ -552,13 +531,8 @@ describe('AccountSettingsController Acceptence Test', () => {
   });
 
   it('should delete a single account settings object by id', async () => {
-    const {
-      token1,
-      token2,
-      fintsName2,
-      fintsUrl2,
-      accountSettingsResult1,
-    } = await setup2();
+    const {token1, token2, fintsName2, fintsUrl2, accountSettingsResult1} =
+      await setup2();
 
     // when
     await http

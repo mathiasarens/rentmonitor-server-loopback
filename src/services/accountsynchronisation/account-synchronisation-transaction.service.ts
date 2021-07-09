@@ -17,23 +17,26 @@ export class AccountSynchronisationTransactionService {
     const newAccountTransactionsAsc = accountTransactions.sort((...args) =>
       this.compareByDateIbanBicNameTextValue(...args),
     );
-    const alreadySavedAccountTransactionsFromDb = await this.findAlreadySavedAccountTransactions(
-      newAccountTransactionsAsc,
-      accountSettings,
-    );
+    const alreadySavedAccountTransactionsFromDb =
+      await this.findAlreadySavedAccountTransactions(
+        newAccountTransactionsAsc,
+        accountSettings,
+      );
 
-    const alreadySavedAccountTransactionsFromDbAsc = alreadySavedAccountTransactionsFromDb.sort(
-      (...args) => this.compareByDateIbanBicNameTextValue(...args),
-    );
+    const alreadySavedAccountTransactionsFromDbAsc =
+      alreadySavedAccountTransactionsFromDb.sort((...args) =>
+        this.compareByDateIbanBicNameTextValue(...args),
+      );
 
     const mergedAccountTransactions = this.merge(
       alreadySavedAccountTransactionsFromDbAsc,
       newAccountTransactionsAsc,
     );
 
-    const mergedAccountTransactionsFromDb = await this.accountTransactionRepository.createAll(
-      mergedAccountTransactions,
-    );
+    const mergedAccountTransactionsFromDb =
+      await this.accountTransactionRepository.createAll(
+        mergedAccountTransactions,
+      );
 
     return mergedAccountTransactionsFromDb;
   }
@@ -143,7 +146,8 @@ export class AccountSynchronisationTransactionService {
 }
 
 export namespace AccountSynchronisationTransactionServiceBindings {
-  export const SERVICE = BindingKey.create<AccountSynchronisationTransactionService>(
-    'services.accountsynchronisationtransaction.service',
-  );
+  export const SERVICE =
+    BindingKey.create<AccountSynchronisationTransactionService>(
+      'services.accountsynchronisationtransaction.service',
+    );
 }

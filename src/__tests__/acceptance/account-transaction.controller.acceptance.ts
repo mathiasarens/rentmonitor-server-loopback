@@ -250,12 +250,8 @@ describe('AccountTransactionController Acceptence Test', () => {
   });
 
   it('should not allow to delete a single account settings of another client by id', async () => {
-    const {
-      token1,
-      accountTransactionId1,
-      token2,
-      accountTransactionId2,
-    } = await setup2();
+    const {token1, accountTransactionId1, token2, accountTransactionId2} =
+      await setup2();
 
     // when
     await http

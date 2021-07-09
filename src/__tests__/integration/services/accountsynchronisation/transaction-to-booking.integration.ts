@@ -60,10 +60,11 @@ describe('Transaction To Booking Service Integration Tests', () => {
       clientRepositoryGetter,
     );
 
-    accountSynchronisationBookingService = new AccountSynchronisationBookingService(
-      tenantRepository,
-      bookingRepository,
-    );
+    accountSynchronisationBookingService =
+      new AccountSynchronisationBookingService(
+        tenantRepository,
+        bookingRepository,
+      );
 
     transactionSynchronisationService = new TransactionToBookingService(
       accountTransactionRepository,
@@ -104,13 +105,11 @@ describe('Transaction To Booking Service Integration Tests', () => {
     );
 
     // when
-    const {
-      newBookings,
-      unmatchedTransactions,
-    } = await transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
-      new Date(),
-      client.id,
-    );
+    const {newBookings, unmatchedTransactions} =
+      await transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
+        new Date(),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(1);
@@ -171,13 +170,11 @@ describe('Transaction To Booking Service Integration Tests', () => {
     await bookingRepository.create(unsavedBooking1);
 
     // when
-    const {
-      newBookings,
-      unmatchedTransactions,
-    } = await transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
-      new Date(),
-      client.id,
-    );
+    const {newBookings, unmatchedTransactions} =
+      await transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
+        new Date(),
+        client.id,
+      );
 
     // than
     expect(newBookings).to.eql(0);
@@ -226,15 +223,13 @@ describe('Transaction To Booking Service Integration Tests', () => {
     await accountTransactionRepository.create(unsavedAccountTransaction1);
 
     // when
-    const {
-      newBookings,
-      unmatchedTransactions,
-    } = await transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
-      new Date(),
-      client.id,
-      subDays(expectedDate, 60),
-      subDays(expectedDate, 10),
-    );
+    const {newBookings, unmatchedTransactions} =
+      await transactionSynchronisationService.createAndSaveBookingsForUnmatchedAccountTransactions(
+        new Date(),
+        client.id,
+        subDays(expectedDate, 60),
+        subDays(expectedDate, 10),
+      );
 
     // than
     expect(newBookings).to.eql(0);

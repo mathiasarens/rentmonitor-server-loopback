@@ -41,9 +41,8 @@ describe('AccountSynchronisationService Unit Tests', () => {
     accountTransactionLogRepositoryStub = createStubInstance(
       AccountTransactionLogRepository,
     );
-    fintsAccountSynchronisationStub = sinon.createStubInstance(
-      FintsServiceImpl,
-    );
+    fintsAccountSynchronisationStub =
+      sinon.createStubInstance(FintsServiceImpl);
     accountSynchronisationSaveServiceStub = sinon.createStubInstance(
       AccountSynchronisationTransactionService,
     );
@@ -54,9 +53,9 @@ describe('AccountSynchronisationService Unit Tests', () => {
     accountTransactionService = new AccountSynchronisationService(
       accountSettingsRepositoryStub,
       accountTransactionLogRepositoryStub,
-      (fintsAccountSynchronisationStub as unknown) as FintsService,
-      (accountSynchronisationSaveServiceStub as unknown) as AccountSynchronisationTransactionService,
-      (accountSynchronisationBookingServiceStub as unknown) as AccountSynchronisationBookingService,
+      fintsAccountSynchronisationStub as unknown as FintsService,
+      accountSynchronisationSaveServiceStub as unknown as AccountSynchronisationTransactionService,
+      accountSynchronisationBookingServiceStub as unknown as AccountSynchronisationBookingService,
     );
   });
 
@@ -112,10 +111,11 @@ describe('AccountSynchronisationService Unit Tests', () => {
 
     const now = new Date(2019, 3, 11);
     // when
-    const result: AccountSynchronisationResult[] = await accountTransactionService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
-      now,
-      clientId,
-    );
+    const result: AccountSynchronisationResult[] =
+      await accountTransactionService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
+        now,
+        clientId,
+      );
 
     // then
     sinon.assert.calledWithExactly(

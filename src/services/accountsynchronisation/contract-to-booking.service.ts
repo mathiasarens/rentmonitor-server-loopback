@@ -84,10 +84,8 @@ export class ContractToBookingService {
       calculatedStart,
       calculatedEnd,
     );
-    const rentDueDatesFilteredByExistingBookings: Date[] = await this.filterExistingBookingsForRentDueDates(
-      contract,
-      rentDueDates,
-    );
+    const rentDueDatesFilteredByExistingBookings: Date[] =
+      await this.filterExistingBookingsForRentDueDates(contract, rentDueDates);
     const bookingList: Booking[] = this.createBookings(
       contract,
       rentDueDatesFilteredByExistingBookings,

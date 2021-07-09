@@ -64,17 +64,18 @@ export class ContractToBookingController {
     currentUserProfile: UserProfile,
   ): Promise<ContractToBookingResult> {
     try {
-      const contractToBookingResult = await this.contractToBookingService.createAndSaveBookingsForContracts(
-        new Date(),
-        currentUserProfile.clientId,
-        contractToBookingRequest.tenantIds,
-        contractToBookingRequest.from
-          ? new Date(contractToBookingRequest.from!)
-          : undefined,
-        contractToBookingRequest.to
-          ? new Date(contractToBookingRequest.to!)
-          : undefined,
-      );
+      const contractToBookingResult =
+        await this.contractToBookingService.createAndSaveBookingsForContracts(
+          new Date(),
+          currentUserProfile.clientId,
+          contractToBookingRequest.tenantIds,
+          contractToBookingRequest.from
+            ? new Date(contractToBookingRequest.from!)
+            : undefined,
+          contractToBookingRequest.to
+            ? new Date(contractToBookingRequest.to!)
+            : undefined,
+        );
       return contractToBookingResult;
     } catch (error) {
       console.error(error);

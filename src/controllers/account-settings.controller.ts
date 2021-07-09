@@ -175,15 +175,16 @@ export class AccountSettingsController {
     @param.query.object('filter', getFilterSchemaFor(AccountSettings))
     filter?: Filter<AccountSettings>,
   ): Promise<AccountSettings[]> {
-    const accountSettingsFromDb: AccountSettings[] = await this.accountSettingsRepository.find(
-      new FilterBuilder(filter)
-        .where(
-          new WhereBuilder(filter?.where)
-            .impose({clientId: currentUserProfile.clientId})
-            .build(),
-        )
-        .build(),
-    );
+    const accountSettingsFromDb: AccountSettings[] =
+      await this.accountSettingsRepository.find(
+        new FilterBuilder(filter)
+          .where(
+            new WhereBuilder(filter?.where)
+              .impose({clientId: currentUserProfile.clientId})
+              .build(),
+          )
+          .build(),
+      );
     return Promise.resolve(this.filterPasswordList(accountSettingsFromDb));
   }
 

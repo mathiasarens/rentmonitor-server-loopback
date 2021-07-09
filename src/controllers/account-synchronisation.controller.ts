@@ -75,14 +75,15 @@ export class AccountSynchronisationController {
     currentUserProfile: UserProfile,
   ): Promise<AccountSynchronisationResult | TanRequiredResult> {
     try {
-      const accountSynchronisationResult = await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForASingleAccount(
-        new Date(),
-        currentUserProfile.clientId,
-        accountSynchronisationRequest.accountSettingsId,
-        new Date(accountSynchronisationRequest.from!),
-        new Date(accountSynchronisationRequest.to!),
-        accountSynchronisationRequest.tan,
-      );
+      const accountSynchronisationResult =
+        await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForASingleAccount(
+          new Date(),
+          currentUserProfile.clientId,
+          accountSynchronisationRequest.accountSettingsId,
+          new Date(accountSynchronisationRequest.from!),
+          new Date(accountSynchronisationRequest.to!),
+          accountSynchronisationRequest.tan,
+        );
       return accountSynchronisationResult;
     } catch (error) {
       if (error instanceof TanRequiredError) {
@@ -130,12 +131,13 @@ export class AccountSynchronisationController {
     currentUserProfile: UserProfile,
   ): Promise<AccountSynchronisationResult[]> {
     try {
-      const accountSynchronisationResults = await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
-        new Date(),
-        currentUserProfile.clientId,
-        new Date(accountSynchronisationRequest.from!),
-        new Date(accountSynchronisationRequest.to!),
-      );
+      const accountSynchronisationResults =
+        await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
+          new Date(),
+          currentUserProfile.clientId,
+          new Date(accountSynchronisationRequest.from!),
+          new Date(accountSynchronisationRequest.to!),
+        );
       return accountSynchronisationResults;
     } catch (error) {
       console.error(error);
