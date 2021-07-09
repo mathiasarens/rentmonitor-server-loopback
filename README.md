@@ -15,8 +15,8 @@ createuser rentmonitor_test -P
 
 createdb rentmonitor_test --owner rentmonitor_test --username <user with createdb permissions>
 
-createdb rentmonitor --owner rentmonitor --username <user with createdb permissions>
-CREATE DATABASE rentmonitor OWNER rentmonitor;
+createdb $RENTMONITOR_DB_USER --owner $RENTMONITOR_DB_USER --username <user with createdb permissions>
+CREATE DATABASE $RENTMONITOR_DB_USER OWNER $RENTMONITOR_DB_USER;
 ```
 
 To setup both databases run:
@@ -39,8 +39,8 @@ docker run --network rentmonitor-network --name postgresdb -e POSTGRES_PASSWORD=
 docker exec -it postgresdb bash
 psql -h localhost -p 5432 -U postgres -W
 
-CREATE ROLE rentmonitor WITH LOGIN PASSWORD 'mypass';
-CREATE DATABASE rentmonitor OWNER rentmonitor;
+CREATE ROLE $RENTMONITOR_DB_USER WITH LOGIN PASSWORD $RENTMONITOR_DB_PASSWORD;
+CREATE DATABASE $RENTMONITOR_DB_USER OWNER $RENTMONITOR_DB_USER;
 
 #### Build docker image
 
@@ -52,7 +52,7 @@ docker save -o /tmp/rentmonitor-server-loopback-1.0.1.img arm32v6/rentmonitor-se
 
 #### Copy image via ssh to Raspberry Pi0W
 
-scp /tmp/rentmonitor-server-loopback-1.0.1.img pirate@pi0w:~/rentmonitor-server-loopback-1.0.1.img
+scp /tmp/rentmonitor-server-loopback-1.0.1.img $RENTMONITOR_DEPLOY_HOST:~/rentmonitor-server-loopback-1.0.1.img
 
 #### Install image on Raspberry Pi0W
 
@@ -64,4 +64,8 @@ docker run --network rentmonitor-network --name rentmonitor-server -e RENTMONITO
 
 #### Restore database dump
 
-cat rentmonitor_dump.sql | docker exec -i postgresdb psql -U rentmonitor
+cat rentmonitor_dump.sql | docker exec -i postgresdb psql -U $RENTMONITOR_DB_USER
+
+#### Create AWS Elastic Beanstalk environment
+
+eb create --region us-east-1 --database --database.engine postgres --database.user $RENTMONITOR_DB_USER --database.password $RENTMONITOR_DB_PASSWORD --envvars RENTMONITOR_DB_HOST=$RENTMONITOR_DB_HOST,RENTMONITOR_DB_PORT=$RENTMONITOR_DB_PORT,RENTMONITOR_DB_USER=$RENTMONITOR_DB_USER,RENTMONITOR_DB_PASSWORD=$RENTMONITOR_DB_PASSWORD,RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
