@@ -9,14 +9,14 @@ In case you are using postgresql please run these commands to setup the
 databases:
 
 ```
-createuser rentmonitor -P
-CREATE USER rentmonitor WITH ENCRYPTED PASSWORD ‘mypass’;
+createuser $RDS_USERNAME -P
+CREATE USER $RDS_USERNAME WITH ENCRYPTED PASSWORD $RDS_PASSWORD;
 createuser rentmonitor_test -P
 
 createdb rentmonitor_test --owner rentmonitor_test --username <user with createdb permissions>
 
-createdb $RENTMONITOR_DB_USER --owner $RENTMONITOR_DB_USER --username <user with createdb permissions>
-CREATE DATABASE $RENTMONITOR_DB_USER OWNER $RENTMONITOR_DB_USER;
+createdb $RDS_DB_NAME --owner $RDS_USERNAME --username <user with createdb permissions>
+CREATE DATABASE $RDS_DB_NAME OWNER $RDS_USERNAME;
 ```
 
 To setup both databases run:
@@ -39,8 +39,8 @@ docker run --network rentmonitor-network --name postgresdb -e POSTGRES_PASSWORD=
 docker exec -it postgresdb bash
 psql -h localhost -p 5432 -U postgres -W
 
-CREATE ROLE $RENTMONITOR_DB_USER WITH LOGIN PASSWORD $RENTMONITOR_DB_PASSWORD;
-CREATE DATABASE $RENTMONITOR_DB_USER OWNER $RENTMONITOR_DB_USER;
+CREATE ROLE $RDS_USERNAME WITH LOGIN PASSWORD $RDS_PASSWORD;
+CREATE DATABASE $RDS_DB_NAME OWNER $RDS_USER;
 
 #### Build docker image
 
@@ -60,12 +60,12 @@ docker load -i rentmonitor-server-loopback-1.0.1.img
 
 #### Start container on Raspberry Pi0W
 
-docker run --network rentmonitor-network --name rentmonitor-server -e RENTMONITOR_DB_HOST -e RENTMONITOR_DB_PORT -e RENTMONITOR_DB_NAME -e RENTMONITOR_DB_USER -e RENTMONITOR_DB_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET -p 3000:3000 -d arm32v6/rentmonitor-server-loopback:1.0.1
+docker run --network rentmonitor-network --name rentmonitor-server -e RDS_HOSTNAME -e RDS_PORT -e RDS_DB_NAME -e RDS_USERNAME -e RDS_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET -p 3000:3000 -d arm32v6/rentmonitor-server-loopback:1.0.1
 
 #### Restore database dump
 
-cat rentmonitor_dump.sql | docker exec -i postgresdb psql -U $RENTMONITOR_DB_USER
+cat rentmonitor_dump.sql | docker exec -i postgresdb psql -U $RDS_USERNAME
 
 #### Create AWS Elastic Beanstalk environment
 
-eb create --region us-east-1 --database --database.engine postgres --database.user $RENTMONITOR_DB_USER --database.password $RENTMONITOR_DB_PASSWORD --envvars RENTMONITOR_DB_HOST=$RENTMONITOR_DB_HOST,RENTMONITOR_DB_PORT=$RENTMONITOR_DB_PORT,RENTMONITOR_DB_USER=$RENTMONITOR_DB_USER,RENTMONITOR_DB_PASSWORD=$RENTMONITOR_DB_PASSWORD,RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
+eb create --region us-east-1 --elb-type application --database --database.engine postgres --database.user $RDS_USERNAME --database.password $RDS_PASSWORD --envvars RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET

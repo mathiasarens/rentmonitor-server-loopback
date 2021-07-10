@@ -19,11 +19,11 @@ export async function main(options: ApplicationConfig = {}) {
     name: 'rentmonitor',
     connector: 'postgresql',
     url: '',
-    host: process.env.RENTMONITOR_DB_HOST,
-    port: process.env.RENTMONITOR_DB_PORT,
-    user: process.env.RENTMONITOR_DB_USER,
-    password: process.env.RENTMONITOR_DB_PASSWORD,
-    database: process.env.RENTMONITOR_DB_USER,
+    host: process.env.RDS_HOSTNAME,
+    port: process.env.RDS_PORT,
+    user: process.env.RDS_USERNAME,
+    password: process.env.RDS_PASSWORD,
+    database: process.env.RDS_DB_NAME,
   });
   await app.boot();
   await app.start();
