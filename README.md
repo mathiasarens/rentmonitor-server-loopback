@@ -68,4 +68,4 @@ cat rentmonitor_dump.sql | docker exec -i postgresdb psql -U $RDS_USERNAME
 
 #### Create AWS Elastic Beanstalk environment
 
-eb create --region us-east-1 --elb-type application --database --database.engine postgres --database.user $RDS_USERNAME --database.password $RDS_PASSWORD --envvars RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
+eb create rentmonitor-server-loopback-dev --region us-east-1 --elb-type application --database --database.engine postgres --database.user $RDS_USERNAME --database.password $RDS_PASSWORD --envvars RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
