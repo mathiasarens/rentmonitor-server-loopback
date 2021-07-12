@@ -1,0 +1,9 @@
+Resources:
+  sslSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: {"Fn::GetAtt" : ["AWSEBSecurityGroup", "GroupId"]}
+      IpProtocol: tcp
+      ToPort: 3000
+      FromPort: 3000
+      SourceSecurityGroupName: {"Fn::GetAtt" : ["AWSEBLoadBalancer" , "SourceSecurityGroup.GroupName"]}
