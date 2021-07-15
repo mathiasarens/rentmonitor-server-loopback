@@ -29,9 +29,7 @@ up-to-date please run:
 
 npm run migrate:testdb
 
-## Docker setup
-
-### Raspberry Pi0W
+## Raspberry Setup
 
 docker network create rentmonitor-network
 docker run --network rentmonitor-network --name postgresdb -e POSTGRES_PASSWORD=postgres -d --restart unless-stopped arm32v6/postgres:13-alpine
@@ -42,30 +40,36 @@ psql -h localhost -p 5432 -U postgres -W
 CREATE ROLE $RDS_USERNAME WITH LOGIN PASSWORD $RDS_PASSWORD;
 CREATE DATABASE $RDS_DB_NAME OWNER $RDS_USER;
 
-#### Build docker image
+### Build docker image
 
 docker build -t arm32v6/rentmonitor-server-loopback:1.0.1 .
 
-#### Save docker image to file
+### Save docker image to file
 
 docker save -o /tmp/rentmonitor-server-loopback-1.0.1.img arm32v6/rentmonitor-server-loopback:1.0.1
 
-#### Copy image via ssh to Raspberry Pi0W
+### Copy image via ssh to Raspberry Pi0W
 
 scp /tmp/rentmonitor-server-loopback-1.0.1.img $RENTMONITOR_DEPLOY_HOST:~/rentmonitor-server-loopback-1.0.1.img
 
-#### Install image on Raspberry Pi0W
+### Install image on Raspberry Pi0W
 
 docker load -i rentmonitor-server-loopback-1.0.1.img
 
-#### Start container on Raspberry Pi0W
+### Start container on Raspberry Pi0W
 
 docker run --network rentmonitor-network --name rentmonitor-server -e RDS_HOSTNAME -e RDS_PORT -e RDS_DB_NAME -e RDS_USERNAME -e RDS_PASSWORD -e RENTMONITOR_DB_ENCRYPTION_SECRET -e RENTMONITOR_DB_ENCRYPTION_SALT -e RENTMONITOR_JWT_SECRET -p 3000:3000 -d arm32v6/rentmonitor-server-loopback:1.0.1
 
-#### Restore database dump
+### Restore database dump
 
 cat rentmonitor_dump.sql | docker exec -i postgresdb psql -U $RDS_USERNAME
 
-#### Create AWS Elastic Beanstalk environment
+## AWS Setup
 
-eb create rentmonitor-server-loopback-dev --region us-east-1 --elb-type application --database --database.engine postgres --database.user $RDS_USERNAME --database.password $RDS_PASSWORD --envvars RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
+### Import existing dump into AWS RDS
+
+psql -f rentmonitor-2021-07-14_15_00_01.sql --host $RDS_HOSTNAME --port $RDS_PORT --username $RDS_USERNAME --dbname $RDS_DB_NAME
+
+### Create AWS Elastic Beanstalk environment
+
+eb create rentmonitor-server-loopback-dev --region us-east-1 --elb-type application --database.engine postgres --database.user $RDS_USERNAME --database.password $RDS_PASSWORD --envvars RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
