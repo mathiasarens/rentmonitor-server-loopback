@@ -35,8 +35,14 @@ export class Crypto {
         this.key,
         this.iv,
       );
-      let decrypted = decipher.update(str, 'hex', 'utf8');
-      decrypted += decipher.final('utf8');
+      let decrypted;
+      try {
+        decrypted = decipher.update(str, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+      } catch (e) {
+        decrypted = 'decrypt error';
+        console.log(e);
+      }
       return decrypted;
     } else {
       return '';
