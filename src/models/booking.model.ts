@@ -64,6 +64,9 @@ export class Booking extends Entity {
   @property({
     type: 'date',
     required: true,
+    postgresql: {
+      dataType: 'date',
+    },
   })
   date: Date;
 

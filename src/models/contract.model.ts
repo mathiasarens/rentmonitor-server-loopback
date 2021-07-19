@@ -38,11 +38,17 @@ export class Contract extends Entity {
 
   @property({
     type: 'date',
+    postgresql: {
+      dataType: 'date',
+    },
   })
   start: Date;
 
   @property({
     type: 'date',
+    postgresql: {
+      dataType: 'date',
+    },
   })
   end?: Date;
 

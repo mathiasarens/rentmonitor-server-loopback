@@ -41,6 +41,9 @@ export class AccountTransaction extends Entity {
   @property({
     type: 'date',
     required: true,
+    postgresql: {
+      dataType: 'date',
+    },
   })
   date: Date;
 
