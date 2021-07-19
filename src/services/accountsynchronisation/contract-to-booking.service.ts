@@ -127,12 +127,23 @@ export class ContractToBookingService {
     calculationEnd: Date,
   ): Date[] {
     const result: Date[] = [];
+    // including overflow logic into next month and/or next month and next year
     const firstRentDueDate = new Date(
-      calculationStart.getFullYear(),
-      calculationStart.getMonth(),
+      calculationStart.getDate() > contract.rentDueDayOfMonth &&
+      calculationStart.getMonth() === 11
+        ? calculationStart.getFullYear() + 1
+        : calculationStart.getFullYear(),
+      calculationStart.getDate() > contract.rentDueDayOfMonth
+        ? calculationStart.getMonth() === 11
+          ? 0
+          : calculationStart.getMonth() + 1
+        : calculationStart.getMonth(),
       contract.rentDueDayOfMonth,
     );
-    if (firstRentDueDate >= calculationStart) {
+    if (
+      firstRentDueDate >= calculationStart &&
+      firstRentDueDate <= calculationEnd
+    ) {
       result.push(firstRentDueDate);
     }
     let nextRentDueDate = this.nextPossibleRentDueDate(
