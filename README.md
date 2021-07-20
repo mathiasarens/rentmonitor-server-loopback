@@ -72,4 +72,14 @@ psql -f rentmonitor-2021-07-14_15_00_01.sql --host $RDS_HOSTNAME --port $RDS_POR
 
 ### Create AWS Elastic Beanstalk environment
 
-eb create rentmonitor-server-loopback-dev --region us-east-1 --elb-type application --database.engine postgres --database.user $RDS_USERNAME --database.password $RDS_PASSWORD --envvars RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
+eb create rentmonitor-server-loopback-dev --region us-east-1 --elb-type application --database.engine postgres --database.user $RDS_USERNAME --database.password $RDS_PASSWORD --envvars TZ='UTC' RENTMONITOR_DB_ENCRYPTION_SECRET=$RENTMONITOR_DB_ENCRYPTION_SECRET,RENTMONITOR_DB_ENCRYPTION_SALT=$RENTMONITOR_DB_ENCRYPTION_SALT,RENTMONITOR_JWT_SECRET=$RENTMONITOR_JWT_SECRET
+
+# Debugging
+
+## Start development server locally
+
+TZ='UTC' PORT=3001 DEBUG=loopback:connector\* node --inspect .
+
+## Connect with Visual Studio Code
+
+cmd + shift + p -> attach to process
