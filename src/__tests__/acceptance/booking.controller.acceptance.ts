@@ -236,7 +236,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 2, 1);
     const expectedAmount = 1000;
     await setupBookingInDb(
       new Booking({
@@ -458,7 +458,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 3, 2);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
       new Booking({
@@ -576,7 +576,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 3, 4);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
@@ -635,7 +635,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 4, 5);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     await setupBookingInDb(
@@ -694,7 +694,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 5, 6);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
@@ -756,7 +756,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 6, 7);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
@@ -822,7 +822,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 8, 9);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
@@ -894,7 +894,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 7, 8);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
@@ -1003,7 +1003,7 @@ describe('BookingController', () => {
     expect(clientId2Bookings[0].amount).to.eql(expectedAmount + 200);
   });
 
-  it('should not delete contract2 if filtered to client2 ', async () => {
+  it('should not delete contract2 if filtered to client2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser('1');
@@ -1015,7 +1015,7 @@ describe('BookingController', () => {
     const tenant2 = await setupTenantInDb(
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
-    const expectedDate = new Date();
+    const expectedDate = new Date(2021, 9, 10);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     await setupBookingInDb(

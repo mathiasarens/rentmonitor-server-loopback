@@ -4,7 +4,7 @@ import {
 } from '@loopback/authentication';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
-import {RepositoryMixin} from '@loopback/repository';
+import {RepositoryMixin, SchemaMigrationOptions} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
 import {
   RestExplorerBindings,
@@ -19,6 +19,7 @@ import {
   TokenServiceConstants,
   UserServiceBindings,
 } from './keys';
+import {ClientRepository} from './repositories';
 import {MyAuthenticationSequence} from './sequence';
 import {
   AccountSynchronisationBookingService,
@@ -129,5 +130,42 @@ export class RentmonitorServerApplication extends BootMixin(
     this.bind(TenantBookingOverviewServiceBindings.SERVICE).toClass(
       TenantBookingOverviewService,
     );
+  }
+
+  async migrateSchema(options?: SchemaMigrationOptions) {
+    console.log('Running custom schema migration', options);
+
+    if (options?.existingSchema === 'drop') {
+      console.log('Fixing postgresql database connector issue');
+      const clientRepo = await this.getRepository(ClientRepository);
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.client CASCADE',
+      );
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.accountsettings CASCADE',
+      );
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.accounttransaction CASCADE',
+      );
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.accounttransactionlog CASCADE',
+      );
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.contract CASCADE',
+      );
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.tenant CASCADE',
+      );
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.booking CASCADE',
+      );
+      await clientRepo.dataSource.execute(
+        'DROP TABLE IF EXISTS public.user CASCADE',
+      );
+      console.log('Done');
+      options.existingSchema = 'alter';
+    }
+    // 1. Run migration scripts provided by connectors
+    await super.migrateSchema(options);
   }
 }

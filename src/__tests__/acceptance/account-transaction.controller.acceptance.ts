@@ -362,8 +362,8 @@ describe('AccountTransactionController Acceptence Test', () => {
     const accountSettingsId1 = await setupAccountSettingsInDb(clientId1);
     const accountSettingsId2 = await setupAccountSettingsInDb(clientId2);
 
-    const date1 = new Date();
-    const date2 = new Date();
+    const date1 = new Date(2021, 2, 24);
+    const date2 = new Date(2021, 1, 13);
     const name1 = 'Tenant1';
     const name2 = 'Tenant2';
     const iban1 = 'IBAN1';
