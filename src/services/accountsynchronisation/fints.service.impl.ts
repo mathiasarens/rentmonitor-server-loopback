@@ -1,19 +1,19 @@
-import { bind, BindingKey, BindingScope, inject } from '@loopback/core';
-import { repository } from '@loopback/repository';
+import {bind, BindingKey, BindingScope, inject} from '@loopback/core';
+import {repository} from '@loopback/repository';
 import {
   PinTanClient,
   SEPAAccount,
   TanRequiredError,
-  Transaction
+  Transaction,
 } from 'node-fints';
-import { AccountSettings } from '../../models';
-import { AccountSettingsRepository } from '../../repositories';
-import { FintsClientFactory } from './fints-client.factory';
-import { FintsClientBindings } from './fints-client.factory.impl';
+import {AccountSettings} from '../../models';
+import {AccountSettingsRepository} from '../../repositories';
+import {FintsClientFactory} from './fints-client.factory';
+import {FintsClientBindings} from './fints-client.factory.impl';
 import {
   FinTsAccountDTO,
   FinTsAccountTransactionDTO,
-  FintsService
+  FintsService,
 } from './fints.service';
 
 @bind({
