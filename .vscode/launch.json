@@ -9,14 +9,16 @@
       "request": "launch",
       "name": "Server",
       "runtimeExecutable": "node",
-      "program": "${workspaceFolder}/index.js",
+      "program": "${workspaceFolder}/dist/index.js",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ],
       "restart": true,
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "PORT": "3001"
+      }
     },
     {
       "type": "node",
