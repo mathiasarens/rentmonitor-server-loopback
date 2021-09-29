@@ -1,3 +1,5 @@
+import {authenticate, AuthenticationBindings} from '@loopback/authentication';
+import {inject} from '@loopback/context';
 import {
   Count,
   CountSchema,
@@ -17,6 +19,7 @@ import {
   put,
   requestBody,
 } from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
 import {Client} from '../models';
 import {ClientRepository} from '../repositories';
 
@@ -131,11 +134,16 @@ export class ClientController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.path.number('id') id: number,
     @requestBody() client: Client,
   ): Promise<void> {
-    await this.clientRepository.replaceById(id, client);
+    if (id === currentUserProfile.clientId) {
+      await this.clientRepository.replaceById(id, client);
+    }
   }
 
   @del('/clients/{id}', {
@@ -145,7 +153,14 @@ export class ClientController {
       },
     },
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.clientRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+    @param.path.number('id') id: number,
+  ): Promise<void> {
+    if (id === currentUserProfile.clientId) {
+      await this.clientRepository.deleteById(id);
+    }
   }
 }

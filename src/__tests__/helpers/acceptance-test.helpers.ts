@@ -7,7 +7,7 @@ import {
 import {Connection, Dialog, DialogConfig, TanRequiredError} from 'node-fints';
 import {RentmonitorServerApplication} from '../..';
 import {PasswordHasherBindings, TokenServiceBindings} from '../../keys';
-import {AccountSettings, User} from '../../models';
+import {AccountSettings, Booking, Contract, Tenant, User} from '../../models';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
@@ -162,12 +162,6 @@ export async function setupClientInDb(
   return clientFromDb.id;
 }
 
-export async function clearDatabase(
-  app: RentmonitorServerApplication,
-): Promise<void> {
-  await givenEmptyDatabase(app);
-}
-
 export async function setupUserInDb(
   app: RentmonitorServerApplication,
   clientId: number,
@@ -186,4 +180,34 @@ export async function setupUserInDb(
   });
   const newUserFromDb = await userRepository.create(newUser);
   return newUserFromDb;
+}
+
+export async function setupTenantInDb(
+  app: RentmonitorServerApplication,
+  tenant: Tenant,
+): Promise<Tenant> {
+  const tenantRepository = await app.getRepository(TenantRepository);
+  return tenantRepository.save(tenant);
+}
+
+export async function setupContractInDb(
+  app: RentmonitorServerApplication,
+  contract: Contract,
+): Promise<Contract> {
+  const contractRepository = await app.getRepository(ContractRepository);
+  return contractRepository.save(contract);
+}
+
+export async function setupBookingInDb(
+  app: RentmonitorServerApplication,
+  booking: Booking,
+): Promise<Booking> {
+  const bookingRepository = await app.getRepository(BookingRepository);
+  return bookingRepository.save(booking);
+}
+
+export async function clearDatabase(
+  app: RentmonitorServerApplication,
+): Promise<void> {
+  await givenEmptyDatabase(app);
 }

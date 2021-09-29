@@ -2,17 +2,16 @@ import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {BookingsUrl} from '../../controllers';
 import {Booking, Contract, Tenant} from '../../models';
-import {
-  BookingRepository,
-  ContractRepository,
-  TenantRepository,
-} from '../../repositories';
+import {BookingRepository} from '../../repositories';
 import {
   clearDatabase,
   getTestUser,
   login,
   setupApplication,
+  setupBookingInDb,
   setupClientInDb,
+  setupContractInDb,
+  setupTenantInDb,
   setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
@@ -39,6 +38,7 @@ describe('BookingController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
     );
     const token = await login(http, testUser);
@@ -64,6 +64,7 @@ describe('BookingController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
     );
     const token = await login(http, testUser);
@@ -90,9 +91,11 @@ describe('BookingController', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
     );
     const contract1 = await setupContractInDb(
+      app,
       new Contract({
         clientId: clientId,
         tenantId: tenant1.id,
@@ -133,11 +136,13 @@ describe('BookingController', () => {
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -161,11 +166,13 @@ describe('BookingController', () => {
     const testUser1 = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser1);
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant1'}),
     );
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -193,12 +200,15 @@ describe('BookingController', () => {
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -207,6 +217,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -231,14 +242,17 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 2, 1);
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -247,6 +261,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -280,14 +295,17 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -296,6 +314,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -336,14 +355,17 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -352,6 +374,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -393,14 +416,17 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -409,6 +435,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -453,14 +480,17 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 3, 2);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -469,6 +499,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -494,14 +525,17 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -510,6 +544,7 @@ describe('BookingController', () => {
       }),
     );
     const booking2 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -532,14 +567,17 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date();
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -548,6 +586,7 @@ describe('BookingController', () => {
       }),
     );
     const booking2 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -571,15 +610,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 3, 4);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -588,6 +630,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -630,15 +673,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 4, 5);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -647,6 +693,7 @@ describe('BookingController', () => {
       }),
     );
     const booking2 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -689,15 +736,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 5, 6);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -706,6 +756,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -751,15 +802,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 6, 7);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -768,6 +822,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -817,15 +872,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 8, 9);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -834,6 +892,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -889,15 +948,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 7, 8);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -906,6 +968,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -955,15 +1018,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date();
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     const booking1 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -972,6 +1038,7 @@ describe('BookingController', () => {
       }),
     );
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -1010,15 +1077,18 @@ describe('BookingController', () => {
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({clientId: clientId2, name: 'Tenant2'}),
     );
     const expectedDate = new Date(2021, 9, 10);
     const expectedDate2 = new Date(2020, 10, 12);
     const expectedAmount = 1000;
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -1027,6 +1097,7 @@ describe('BookingController', () => {
       }),
     );
     const booking2 = await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId2,
         tenantId: tenant2.id,
@@ -1069,20 +1140,5 @@ describe('BookingController', () => {
       .set('Authorization', 'Bearer ' + token)
       .send(data)
       .set('Content-Type', 'application/json');
-  }
-
-  async function setupTenantInDb(tenant: Tenant): Promise<Tenant> {
-    const tenantRepository = await app.getRepository(TenantRepository);
-    return tenantRepository.save(tenant);
-  }
-
-  async function setupContractInDb(contract: Contract): Promise<Contract> {
-    const contractRepository = await app.getRepository(ContractRepository);
-    return contractRepository.save(contract);
-  }
-
-  async function setupBookingInDb(booking: Booking): Promise<Booking> {
-    const bookingRepository = await app.getRepository(BookingRepository);
-    return bookingRepository.save(booking);
   }
 });
