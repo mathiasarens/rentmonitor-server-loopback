@@ -194,11 +194,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Selected Test",
+      "name": "Client Controller Acceptance Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/${fileBasenameNoExtension}.js"
+        "${workspaceFolder}/dist/__tests__/**/client.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -211,11 +211,28 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Client Controller Acceptance Tests",
+      "name": "Version Controller Acceptance Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/client.controller.acceptance*.js"
+        "${workspaceFolder}/dist/__tests__/**/version.controller.acceptance*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Selected Test",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/__tests__/**/${fileBasenameNoExtension}.js"
       ],
       "env": {
         "NODE_ENV": "test"
