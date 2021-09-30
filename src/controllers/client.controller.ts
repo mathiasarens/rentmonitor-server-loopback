@@ -4,8 +4,10 @@ import {
   Count,
   CountSchema,
   Filter,
+  FilterBuilder,
   repository,
   Where,
+  WhereBuilder,
 } from '@loopback/repository';
 import {
   del,
@@ -78,28 +80,39 @@ export class ClientController {
       },
     },
   })
+  @authenticate('jwt')
   async find(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.query.object('filter', getFilterSchemaFor(Client))
     filter?: Filter<Client>,
   ): Promise<Client[]> {
-    return this.clientRepository.find(filter);
+    return this.clientRepository.find(
+      new FilterBuilder(filter)
+        .where(
+          new WhereBuilder(filter?.where)
+            .impose({id: currentUserProfile.clientId})
+            .build(),
+        )
+        .build(),
+    );
   }
 
-  @patch('/clients', {
-    responses: {
-      '200': {
-        description: 'Client PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async updateAll(
-    @requestBody() client: Client,
-    @param.query.object('where', getWhereSchemaFor(Client))
-    where?: Where<Client>,
-  ): Promise<Count> {
-    return this.clientRepository.updateAll(client, where);
-  }
+  // @patch('/clients', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Client PATCH success count',
+  //       content: {'application/json': {schema: CountSchema}},
+  //     },
+  //   },
+  // })
+  // async updateAll(
+  //   @requestBody() client: Client,
+  //   @param.query.object('where', getWhereSchemaFor(Client))
+  //   where?: Where<Client>,
+  // ): Promise<Count> {
+  //   return this.clientRepository.updateAll(client, where);
+  // }
 
   @get('/clients/{id}', {
     responses: {
@@ -109,8 +122,17 @@ export class ClientController {
       },
     },
   })
-  async findById(@param.path.number('id') id: number): Promise<Client> {
-    return this.clientRepository.findById(id);
+  @authenticate('jwt')
+  async findById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
+    @param.path.number('id') id: number,
+  ): Promise<Client> {
+    if (id === currentUserProfile.clientId) {
+      return this.clientRepository.findById(id);
+    } else {
+      return Promise.reject(`incorrect client id: ${id}`);
+    }
   }
 
   @patch('/clients/{id}', {
@@ -120,11 +142,18 @@ export class ClientController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
+    @inject(AuthenticationBindings.CURRENT_USER)
+    currentUserProfile: UserProfile,
     @param.path.number('id') id: number,
     @requestBody() client: Client,
   ): Promise<void> {
-    await this.clientRepository.updateById(id, client);
+    if (id === currentUserProfile.clientId) {
+      await this.clientRepository.updateById(id, client);
+    } else {
+      return Promise.reject(`incorrect client id: ${id}`);
+    }
   }
 
   @put('/clients/{id}', {
@@ -143,6 +172,8 @@ export class ClientController {
   ): Promise<void> {
     if (id === currentUserProfile.clientId) {
       await this.clientRepository.replaceById(id, client);
+    } else {
+      return Promise.reject(`incorrect client id: ${id}`);
     }
   }
 
@@ -161,6 +192,8 @@ export class ClientController {
   ): Promise<void> {
     if (id === currentUserProfile.clientId) {
       await this.clientRepository.deleteById(id);
+    } else {
+      return Promise.reject(`incorrect client id: ${id}`);
     }
   }
 }
