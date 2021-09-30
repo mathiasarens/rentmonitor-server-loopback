@@ -26,6 +26,6 @@ describe('VersionController', () => {
     const result = await http.get(`/version`).expect(200);
 
     // asserts
-    expect(result.text).to.eql('undefined');
+    expect(result.text).to.be.String();
   });
 });
