@@ -1,5 +1,5 @@
 # Check out https://hub.docker.com/_/node to select a new base image
-FROM node:16-alpine
+FROM node:16.10-alpine
 
 # Set to a non-root built-in user `node`
 USER node
@@ -23,4 +23,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD [ "sh","-c", "node ./dist/migrate && node ." ]
+CMD [ "sh","-c", "node ./src/migrate.js && node ./src/index.js" ]

@@ -1,6 +1,7 @@
 // Uncomment these imports to begin using these cool features!
 
 import {get} from '@loopback/rest';
+import {version} from '../../package.json';
 
 export class VersionController {
   constructor() {}
@@ -14,6 +15,6 @@ export class VersionController {
     },
   })
   async version(): Promise<string | undefined> {
-    return `${process.env.npm_package_version}`;
+    return `${version}`;
   }
 }
