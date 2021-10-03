@@ -23,4 +23,4 @@ RUN npm run build
 
 EXPOSE 3000
 
-CMD [ "sh","-c", "node ./src/migrate.js && node ./src/index.js" ]
+CMD [ "sh","-c", "node ./dist/src/migrate.js && node ./dist/src/index.js" ]
