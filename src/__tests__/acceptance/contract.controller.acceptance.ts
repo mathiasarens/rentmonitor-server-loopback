@@ -45,7 +45,8 @@ describe('ContractController', () => {
       start: startDate,
       rentDueEveryMonth: 1,
       rentDueDayOfMonth: 10,
-      amount: 25,
+      amount: 2500,
+      deposit: 1000,
     })
       .expect(200)
       .expect('Content-Type', 'application/json');
@@ -55,7 +56,8 @@ describe('ContractController', () => {
     expect(res.body.start).to.eql(startDate.toISOString());
     expect(res.body.rentDueEveryMonth).to.eql(1);
     expect(res.body.rentDueDayOfMonth).to.eql(10);
-    expect(res.body.amount).to.eql(25);
+    expect(res.body.amount).to.eql(2500);
+    expect(res.body.deposit).to.eql(1000);
   });
 
   it('should add contract with clientId from logged in user', async () => {

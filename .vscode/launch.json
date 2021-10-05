@@ -28,7 +28,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -45,7 +45,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/contract.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/contract.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -62,7 +62,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/booking.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/booking.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -79,7 +79,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/tenant.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/tenant.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -96,7 +96,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/user.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/user.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -113,7 +113,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/transaction-to-booking.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/transaction-to-booking.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -130,7 +130,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/contract-to-booking.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/contract-to-booking.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -147,7 +147,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/integration/repositories/**/*.integration*.js"
+        "${workspaceFolder}/dist/src/__tests__/integration/repositories/**/*.integration*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -164,7 +164,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/integration/services/accountsynchronisation/**/transaction*.integration*.js"
+        "${workspaceFolder}/dist/src/__tests__/integration/services/accountsynchronisation/**/transaction*.integration*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -177,11 +177,30 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Account Synchronisation Transaction Integration Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/src/__tests__/integration/services/accountsynchronisation/**/account-synchronisation-transaction*.integration*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test",
+        "TZ": "UTC"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Contract to Booking Integration Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/integration/services/accountsynchronisation/**/contract*.integration*.js"
+        "${workspaceFolder}/dist/src/__tests__/integration/services/accountsynchronisation/**/contract*.integration*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -198,7 +217,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/client.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/client.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -215,7 +234,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/version.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/**/version.controller.acceptance*.js"
       ],
       "env": {
         "NODE_ENV": "test"
@@ -232,7 +251,7 @@
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/__tests__/**/${fileBasenameNoExtension}.js"
+        "${workspaceFolder}/dist/src/__tests__/**/${fileBasenameNoExtension}.js"
       ],
       "env": {
         "NODE_ENV": "test"

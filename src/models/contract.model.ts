@@ -67,6 +67,11 @@ export class Contract extends Entity {
   })
   amount: number;
 
+  @property({
+    type: 'number',
+  })
+  deposit: number;
+
   private isActive(now: Date) {
     return now > this.start && now < this.end!;
   }
