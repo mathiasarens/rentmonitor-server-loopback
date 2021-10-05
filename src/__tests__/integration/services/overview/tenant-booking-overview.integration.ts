@@ -39,12 +39,13 @@ describe('Tenant Booking Overview Service Integration Tests', () => {
     tenantBookingOverviewService = new TenantBookingOverviewService(
       bookingRepository,
       tenantRepository,
+      contractRepository,
     );
   });
 
   after(async () => {});
 
-  it('should sum booking amounts by tenant order by sum descending', async function () {
+  it('should sum booking amounts by tenant ordered by sum descending', async function () {
     // given
     const client = await clientRepository.create({
       name: 'Client Transaction Sychronization Tests',

@@ -1,7 +1,11 @@
 import {BindingKey} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {Booking, Tenant} from '../../models';
-import {BookingRepository, TenantRepository} from '../../repositories';
+import {Booking, Contract, Tenant} from '../../models';
+import {
+  BookingRepository,
+  ContractRepository,
+  TenantRepository,
+} from '../../repositories';
 
 export class BookingSumPerTenant {
   constructor(public tenant: Tenant, public sum: number) {}
@@ -12,6 +16,8 @@ export class TenantBookingOverviewService {
     private bookingRepository: BookingRepository,
     @repository(TenantRepository)
     private tenantRepository: TenantRepository,
+    @repository(ContractRepository)
+    private contractRepository: ContractRepository,
   ) {}
 
   public async loadBookingSumPerTenant(
@@ -32,6 +38,13 @@ export class TenantBookingOverviewService {
     });
     for (const booking of bookings) {
       resultMap.get(booking.tenantId)!.sum += booking.amount;
+    }
+
+    const contracts: Contract[] = await this.contractRepository.find({
+      where: {clientId: clientId},
+    });
+    for (const contract of contracts) {
+      resultMap.get(contract.tenantId)!.sum -= contract.deposit;
     }
 
     return Array.from(resultMap.values()).sort((a, b) =>

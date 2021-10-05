@@ -1,14 +1,16 @@
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {TenantBookingOverviewUrl} from '../../controllers/tenant-booking-overview.controller';
-import {Booking, Tenant} from '../../models';
-import {BookingRepository, TenantRepository} from '../../repositories';
+import {Booking, Contract, Tenant} from '../../models';
 import {
   clearDatabase,
   getTestUser,
   login,
   setupApplication,
+  setupBookingInDb,
   setupClientInDb,
+  setupContractInDb,
+  setupTenantInDb,
   setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
@@ -35,12 +37,14 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
     const testUser = getTestUser('1');
     await setupUserInDb(app, clientId1, testUser);
     const tenant1 = await setupTenantInDb(
+      app,
       new Tenant({
         clientId: clientId1,
         name: 'Tenant 1',
       }),
     );
     const tenant2 = await setupTenantInDb(
+      app,
       new Tenant({
         clientId: clientId1,
         name: 'Tenant 2',
@@ -49,6 +53,7 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
     const token = await login(http, testUser);
 
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -59,6 +64,7 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
     );
 
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant1.id,
@@ -69,12 +75,24 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
     );
 
     await setupBookingInDb(
+      app,
       new Booking({
         clientId: clientId1,
         tenantId: tenant2.id,
         date: new Date(2020, 1, 1),
         comment: 'Rent 1/2020',
         amount: -1000,
+      }),
+    );
+
+    await setupContractInDb(
+      app,
+      new Contract({
+        clientId: clientId1,
+        tenantId: tenant1.id,
+        start: new Date(2020, 1, 1),
+        amount: 1000,
+        deposit: 5000,
       }),
     );
 
@@ -88,7 +106,7 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
     expect(res.body[0].tenant.name).to.eql('Tenant 2');
     expect(res.body[0].sum).to.eql(-1000);
     expect(res.body[1].tenant.name).to.eql('Tenant 1');
-    expect(res.body[1].sum).to.eql(5000);
+    expect(res.body[1].sum).to.eql(0);
   });
 
   // non test methods --------------------------------------------------------------------
@@ -97,15 +115,5 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
     return http
       .get(TenantBookingOverviewUrl)
       .set('Authorization', 'Bearer ' + token);
-  }
-
-  async function setupTenantInDb(tenant: Tenant): Promise<Tenant> {
-    const tenantRepository = await app.getRepository(TenantRepository);
-    return tenantRepository.save(tenant);
-  }
-
-  async function setupBookingInDb(booking: Booking): Promise<Booking> {
-    const bookingRepository = await app.getRepository(BookingRepository);
-    return bookingRepository.create(booking);
   }
 });

@@ -58,6 +58,41 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Tenant-Booking-Overview Controller Acceptance Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/src/__tests__/**/tenant-booking-overview.controller.acceptance*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test",
+        "TZ": "UTC"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Version Controller Acceptance Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/src/__tests__/**/version.controller.acceptance*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Booking Controller Acceptance Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
@@ -143,6 +178,23 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Client Controller Acceptance Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/src/__tests__/**/client.controller.acceptance*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "AccountSettings Repository Integration Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
@@ -192,7 +244,6 @@
       "internalConsoleOptions": "neverOpen",
       "protocol": "inspector"
     },
-
     {
       "type": "node",
       "request": "launch",
@@ -213,28 +264,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Client Controller Acceptance Tests",
+      "name": "Tenant-Booking-Overview Integration Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "args": [
         "--colors",
-        "${workspaceFolder}/dist/src/__tests__/**/client.controller.acceptance*.js"
-      ],
-      "env": {
-        "NODE_ENV": "test"
-      },
-      "preLaunchTask": "npm: build",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "protocol": "inspector"
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Version Controller Acceptance Tests",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--colors",
-        "${workspaceFolder}/dist/src/__tests__/**/version.controller.acceptance*.js"
+        "${workspaceFolder}/dist/src/__tests__/integration/services/overview/**/*.integration*.js"
       ],
       "env": {
         "NODE_ENV": "test"
