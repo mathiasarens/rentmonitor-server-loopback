@@ -96,6 +96,16 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
       }),
     );
 
+    await setupContractInDb(
+      app,
+      new Contract({
+        clientId: clientId1,
+        tenantId: tenant2.id,
+        start: new Date(2020, 1, 1),
+        amount: 1000,
+      }),
+    );
+
     // test
     const res = await loadTenantBookingOverview(token)
       .expect(200)

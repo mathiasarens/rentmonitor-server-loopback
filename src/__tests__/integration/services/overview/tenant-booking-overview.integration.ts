@@ -1,6 +1,6 @@
 import {Getter} from '@loopback/repository';
 import {expect} from '@loopback/testlab';
-import {Booking, BookingType, Tenant} from '../../../../models';
+import {Booking, BookingType, Contract, Tenant} from '../../../../models';
 import {
   BookingRepository,
   ClientRepository,
@@ -63,6 +63,22 @@ describe('Tenant Booking Overview Service Integration Tests', () => {
     });
     const savedTenant2 = await tenantRepository.create(tenant2);
 
+    await contractRepository.create(
+      new Contract({
+        clientId: client.id,
+        tenantId: savedTenant1.id,
+        start: new Date(2018, 1, 1),
+      }),
+    );
+
+    await contractRepository.create(
+      new Contract({
+        clientId: client.id,
+        tenantId: savedTenant2.id,
+        start: new Date(2018, 1, 1),
+      }),
+    );
+
     const unsavedBooking1 = new Booking({
       clientId: client.id,
       tenantId: savedTenant1.id,
@@ -106,6 +122,7 @@ describe('Tenant Booking Overview Service Integration Tests', () => {
     // when
     const results = await tenantBookingOverviewService.loadBookingSumPerTenant(
       client.id,
+      new Date(),
     );
 
     // than
@@ -114,5 +131,64 @@ describe('Tenant Booking Overview Service Integration Tests', () => {
     expect(results[0].sum).to.eql(-2400);
     expect(results[1].tenant.name).to.eql('Tenant 1');
     expect(results[1].sum).to.eql(500);
+  });
+
+  it('should not return tenants with two inactive contracts', async function () {
+    // given
+    const client = await clientRepository.create({
+      name: 'Client Transaction Sychronization Tests',
+    });
+
+    const tenant1 = new Tenant({
+      clientId: client.id,
+      name: 'Tenant 1',
+    });
+    const savedTenant1 = await tenantRepository.create(tenant1);
+
+    await contractRepository.create(
+      new Contract({
+        clientId: client.id,
+        tenantId: savedTenant1.id,
+        start: new Date(2016, 1, 1),
+        end: new Date(2017, 12, 31),
+      }),
+    );
+
+    await contractRepository.create(
+      new Contract({
+        clientId: client.id,
+        tenantId: savedTenant1.id,
+        start: new Date(2018, 1, 1),
+        end: new Date(2019, 12, 31),
+      }),
+    );
+
+    const unsavedBooking1 = new Booking({
+      clientId: client.id,
+      tenantId: savedTenant1.id,
+      date: new Date(2019, 3, 14),
+      comment: '3/2019',
+      amount: -1000,
+      type: BookingType.RENT_DUE,
+    });
+    const unsavedBooking2 = new Booking({
+      clientId: client.id,
+      tenantId: savedTenant1.id,
+      date: new Date(2019, 3, 15),
+      comment: 'Rent 3/2019',
+      amount: 1500,
+      type: BookingType.RENT_PAID_ALGO,
+    });
+
+    await bookingRepository.createAll([unsavedBooking1, unsavedBooking2]);
+
+    // when
+    const results = await tenantBookingOverviewService.loadBookingSumPerTenant(
+      client.id,
+      new Date(2021, 3, 10),
+    );
+
+    // than
+    expect(results).length(0);
   });
 });

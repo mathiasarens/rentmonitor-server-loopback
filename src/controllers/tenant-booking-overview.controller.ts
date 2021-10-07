@@ -38,6 +38,7 @@ export class TenantBookingOverviewController {
       const bookingSumPerTenantList =
         await this.tenantBookingOverviewService.loadBookingSumPerTenant(
           currentUserProfile.clientId,
+          new Date(),
         );
       return bookingSumPerTenantList;
     } catch (error) {

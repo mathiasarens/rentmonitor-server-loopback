@@ -1,5 +1,6 @@
 import {BindingKey} from '@loopback/core';
 import {repository} from '@loopback/repository';
+import {format} from 'date-fns';
 import {Booking, Contract, Tenant} from '../../models';
 import {
   BookingRepository,
@@ -22,29 +23,60 @@ export class TenantBookingOverviewService {
 
   public async loadBookingSumPerTenant(
     clientId: number,
+    today: Date,
   ): Promise<BookingSumPerTenant[]> {
+    // full set of tenants
+    const tenantMap = new Map<number, Tenant>();
+    // resultMap contains only tenants with at least one active contract
     const resultMap = new Map<number, BookingSumPerTenant>();
 
-    const tenants: Tenant[] = await this.tenantRepository.find({
+    const contracts: Contract[] = (
+      await this.contractRepository.execute(
+        `SELECT * FROM contract c WHERE c.clientId = ${clientId} and (c.end is null or c.end > '${format(
+          today,
+          'yyyy-MM-dd',
+        )}');`,
+      )
+    ).map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (resultItem: any | undefined) =>
+        new Contract({
+          id: resultItem?.id,
+          tenantId: resultItem?.tenantid,
+          start: resultItem?.start,
+          end: resultItem?.end,
+          deposit: resultItem?.deposit,
+        }),
+    );
+
+    const tenantsFromDb: Tenant[] = await this.tenantRepository.find({
       where: {clientId: clientId},
     });
-    tenants.forEach(tenant =>
-      resultMap.set(tenant.id, new BookingSumPerTenant(tenant, 0)),
-    );
+    tenantsFromDb.forEach(tenant => tenantMap.set(tenant.id, tenant));
+
+    // only add tenants with at least one active contract to the resultMap
+    for (const contract of contracts) {
+      resultMap.set(
+        contract.tenantId,
+        new BookingSumPerTenant(tenantMap.get(contract.tenantId)!, 0),
+      );
+    }
 
     const bookings: Booking[] = await this.bookingRepository.find({
       where: {clientId: clientId},
       order: ['date DESC'],
     });
     for (const booking of bookings) {
-      resultMap.get(booking.tenantId)!.sum += booking.amount;
+      if (resultMap.has(booking.tenantId)) {
+        resultMap.get(booking.tenantId)!.sum += booking.amount;
+      }
     }
 
-    const contracts: Contract[] = await this.contractRepository.find({
-      where: {clientId: clientId},
-    });
+    // deduct deposits
     for (const contract of contracts) {
-      resultMap.get(contract.tenantId)!.sum -= contract.deposit;
+      if (resultMap.has(contract.tenantId)) {
+        resultMap.get(contract.tenantId)!.sum -= contract.deposit;
+      }
     }
 
     return Array.from(resultMap.values()).sort((a, b) =>

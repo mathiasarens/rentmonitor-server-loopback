@@ -271,7 +271,8 @@
         "${workspaceFolder}/dist/src/__tests__/integration/services/overview/**/*.integration*.js"
       ],
       "env": {
-        "NODE_ENV": "test"
+        "NODE_ENV": "test",
+        "TZ": "UTC"
       },
       "preLaunchTask": "npm: build",
       "console": "integratedTerminal",
