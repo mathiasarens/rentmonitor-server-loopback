@@ -52,27 +52,15 @@ export class AccountSynchronisationService {
     const accountSynchronisationResults: AccountSynchronisationResult[] = [];
     for (const accountSettings of accountSettingsList) {
       try {
-        const newTransactions =
-          await this.retrieveAndSaveNewAccountTransactions(
+        const result =
+          await this.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForASingleAccount(
             now,
-            accountSettings,
+            clientId,
+            accountSettings.id,
             from,
             to,
           );
-        const [newBookings, unmatchedAccountTransactions] =
-          await this.accountSynchronisationBookingService.createAndSaveNewBookings(
-            clientId,
-            newTransactions,
-            now,
-          );
-        accountSynchronisationResults.push(
-          new AccountSynchronisationResult(
-            accountSettings.id,
-            accountSettings.name,
-            newBookings.length,
-            unmatchedAccountTransactions.length,
-          ),
-        );
+        accountSynchronisationResults.push(result);
       } catch (error) {
         console.error(error);
         accountSynchronisationResults.push(
@@ -81,7 +69,6 @@ export class AccountSynchronisationService {
             accountSettings.name,
             0,
             0,
-            error,
           ),
         );
       }

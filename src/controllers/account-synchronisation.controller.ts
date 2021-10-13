@@ -119,8 +119,6 @@ export class AccountSynchronisationController {
             properties: {
               from: {type: 'string'},
               to: {type: 'string'},
-              transactionReference: {type: 'string'},
-              tan: {type: 'string'},
             },
           },
         },
