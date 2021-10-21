@@ -235,7 +235,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(6);
   });
 
-  it('should save 2 new transactions but not override an duplicate one', async function () {
+  it('should save 2 new transactions but not override an duplicate one, otherwise your database is not running in UTC', async function () {
     // given
     const client = await clientRepository.create({name: 'Client 2'});
     const accountSettings = await accountSettingsRepository.create(
@@ -302,7 +302,7 @@ describe('Account Synchronisation Transaction Service Integration Tests', () => 
     expect(newTransactionsList).length(2);
   });
 
-  it('should save a new transactions but not override two duplicates', async function () {
+  it('should save a new transactions but not override two duplicates, otherwise your database is not running in UTC', async function () {
     // given
     const client = await clientRepository.create({name: 'Client 2'});
     const accountSettings = await accountSettingsRepository.create(
