@@ -75,6 +75,8 @@ describe('AccountSynchronisationService Unit Tests', () => {
       rawAccount: 'serializedFintsAccount',
     });
     accountSettingsRepositoryStub.stubs.find.resolves([accountSettings1]);
+    accountSettingsRepositoryStub.stubs.findOne.resolves(accountSettings1);
+
     fintsAccountSynchronisationStub.fetchStatements.resolves([
       new FinTsAccountTransactionDTO(
         'rawstring1',
