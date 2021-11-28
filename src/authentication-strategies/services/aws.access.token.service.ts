@@ -11,16 +11,23 @@ import {promisify} from 'util';
 import {TokenServiceBindings} from '../../keys';
 
 const jwt = require('jsonwebtoken');
-const signAsync = promisify(jwt.sign);
 const verifyAsync = promisify(jwt.verify);
 
-export class JWTService implements TokenService {
+export class AwsAccessTokenService implements TokenService {
+  jwk: string;
+
   constructor(
-    @inject(TokenServiceBindings.TOKEN_SECRET)
-    private jwtSecret: string,
-    @inject(TokenServiceBindings.TOKEN_EXPIRES_IN)
-    private jwtExpiresIn: string,
-  ) {}
+    @inject(TokenServiceBindings.AWS_COGNITO_JWK_URL)
+    private jwkUrl: string,
+  ) {
+    this.fetchJwk().catch(error =>
+      console.log('Could not load aws cognito jwk url', jwkUrl, error),
+    );
+  }
+
+  async fetchJwk(): Promise<void> {
+    await fetch(this.jwkUrl);
+  }
 
   async verifyToken(token: string): Promise<UserProfile> {
     if (!token) {
@@ -52,27 +59,6 @@ export class JWTService implements TokenService {
   }
 
   async generateToken(userProfile: UserProfile): Promise<string> {
-    if (!userProfile) {
-      throw new HttpErrors.Unauthorized(
-        'Error generating token : userProfile is null',
-      );
-    }
-    const userInfoForToken = {
-      id: userProfile[securityId],
-      name: userProfile.name,
-      email: userProfile.email,
-      clientId: userProfile.clientId,
-    };
-    // Generate a JSON Web Token
-    let token: string;
-    try {
-      token = await signAsync(userInfoForToken, this.jwtSecret, {
-        expiresIn: Number(this.jwtExpiresIn),
-      });
-    } catch (error) {
-      throw new HttpErrors.Unauthorized(`Error encoding token : ${error}`);
-    }
-
-    return token;
+    throw new Error('not supported');
   }
 }

@@ -12,7 +12,7 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as path from 'path';
-import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
+import {JWTAuthorizationHeaderStrategy} from './authentication-strategies/authorization-header-jwt-strategy';
 import {
   PasswordHasherBindings,
   TokenServiceBindings,
@@ -50,7 +50,7 @@ import {
   TransactionToBookingServiceBindings,
 } from './services/accountsynchronisation/transaction-to-booking.service';
 import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
-import {JWTService} from './services/authentication/jwt.service';
+import {JWTLocalService} from './services/authentication/jwt.local.service';
 import {MyUserService} from './services/authentication/user.service';
 import {
   TenantBookingOverviewService,
@@ -68,7 +68,7 @@ export class RentmonitorServerApplication extends BootMixin(
     // Bind authentication component related elements
     this.component(AuthenticationComponent);
 
-    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
+    registerAuthenticationStrategy(this, JWTAuthorizationHeaderStrategy);
 
     // Set up the custom sequence
     this.sequence(MyAuthenticationSequence);
@@ -95,11 +95,16 @@ export class RentmonitorServerApplication extends BootMixin(
   }
 
   setUpBindings(): void {
-    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
+    this.bind(TokenServiceBindings.LOCAL_TOKEN_EXPIRES_IN).to(
       TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
     );
+    this.bind(TokenServiceBindings.LOCAL_TOKEN_SERVICE).toClass(
+      JWTLocalService,
+    );
 
-    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWK_URL).toDynamicValue(
+      () => process.env.RENTMONITOR_AWS_COGNITO_JWK_URL,
+    );
 
     // // Bind bcrypt hash services
     this.bind(PasswordHasherBindings.ROUNDS).to(10);

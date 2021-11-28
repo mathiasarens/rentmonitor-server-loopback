@@ -24,7 +24,7 @@ import {
 } from '../../services/accountsynchronisation/fints.service';
 import {FintsServiceBindings} from '../../services/accountsynchronisation/fints.service.impl';
 import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
-import {JWTService} from '../../services/authentication/jwt.service';
+import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 
 const JWT_TOKEN_SECRET = 'test';
 
@@ -64,7 +64,7 @@ export async function setupApplication(): Promise<AppWithClient> {
   // rest client
   const client = createRestAppClient(app);
 
-  const jwtService = new JWTService(
+  const jwtService = new JWTLocalService(
     JWT_TOKEN_SECRET,
     TokenServiceBindings.TOKEN_EXPIRES_IN.key,
   );
@@ -102,7 +102,7 @@ class FintsServiceDummy implements FintsService {
 export interface AppWithClient {
   app: RentmonitorServerApplication;
   client: Client;
-  jwtService: JWTService;
+  jwtService: JWTLocalService;
 }
 
 export async function givenEmptyDatabase(app: RentmonitorServerApplication) {

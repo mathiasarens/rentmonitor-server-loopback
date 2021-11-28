@@ -9,21 +9,21 @@ import {HttpErrors, Request} from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import {TokenServiceBindings} from '../keys';
 
-export class JWTAuthenticationStrategy implements AuthenticationStrategy {
+export class JWTAuthorizationHeaderStrategy implements AuthenticationStrategy {
   name = 'jwt';
 
   constructor(
-    @inject(TokenServiceBindings.TOKEN_SERVICE)
+    @inject(TokenServiceBindings.LOCAL_TOKEN_SERVICE)
     public tokenService: TokenService,
   ) {}
 
   async authenticate(request: Request): Promise<UserProfile | undefined> {
-    const token: string = this.extractCredentials(request);
+    const token: string = this.extractToken(request);
     const userProfile: UserProfile = await this.tokenService.verifyToken(token);
     return userProfile;
   }
 
-  extractCredentials(request: Request): string {
+  extractToken(request: Request): string {
     if (!request.headers.authorization) {
       throw new HttpErrors.Unauthorized(`Authorization header not found.`);
     }

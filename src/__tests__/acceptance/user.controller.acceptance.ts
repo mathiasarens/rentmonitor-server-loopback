@@ -6,7 +6,7 @@ import {PasswordHasherBindings} from '../../keys';
 import {User} from '../../models';
 import {ClientRepository, UserRepository} from '../../repositories';
 import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
-import {JWTService} from '../../services/authentication/jwt.service';
+import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 import {
   givenEmptyDatabase,
   setupApplication,
@@ -15,7 +15,7 @@ import {
 describe('UserController Acceptence Test', () => {
   let app: RentmonitorServerApplication;
   let http: Client;
-  let jwtService: JWTService;
+  let jwtService: JWTLocalService;
 
   before('setupApplication', async () => {
     ({app, client: http, jwtService} = await setupApplication());

@@ -14,12 +14,25 @@ export namespace TokenServiceConstants {
 }
 
 export namespace TokenServiceBindings {
-  export const TOKEN_SECRET = BindingKey.create('authentication.jwt.secret');
-  export const TOKEN_EXPIRES_IN = BindingKey.create<string>(
-    'authentication.jwt.expires.in.seconds',
+  export const LOCAL_TOKEN_SECRET = BindingKey.create(
+    'authentication.jwt.local.secret',
   );
-  export const TOKEN_SERVICE = BindingKey.create<TokenService>(
-    'services.authentication.jwt.tokenservice',
+  export const LOCAL_TOKEN_EXPIRES_IN = BindingKey.create<string>(
+    'authentication.jwt.local.expires.in.seconds',
+  );
+  export const LOCAL_TOKEN_SERVICE = BindingKey.create<TokenService>(
+    'services.authentication.jwt.local.tokenservice',
+  );
+
+  export const AWS_COGNITO_JWK_URL = BindingKey.create<string>(
+    'authentication.jwt.aws.cognito.jwk.url',
+  );
+  export const AWS_COGNITO_ACCESS_TOKEN_SERVICE =
+    BindingKey.create<TokenService>(
+      'services.authentication.jwt.aws.cognito.access.tokenservice',
+    );
+  export const AWS_COGNITO_ID_TOKEN_SERVICE = BindingKey.create<TokenService>(
+    'services.authentication.jwt.aws.cognito.id.tokenservice',
   );
 }
 
