@@ -50,7 +50,7 @@ export async function setupApplication(): Promise<AppWithClient> {
     password: process.env.RENTMONITOR_TEST_DB_PASSWORD,
     database: process.env.RENTMONITOR_TEST_DB_USER,
   });
-  app.bind(TokenServiceBindings.TOKEN_SECRET).to(JWT_TOKEN_SECRET);
+  app.bind(TokenServiceBindings.LOCAL_TOKEN_SECRET).to(JWT_TOKEN_SECRET);
   app.bind(FintsServiceBindings.SERVICE).toClass(FintsServiceDummy);
   await app.boot();
   await app.start();
@@ -66,7 +66,7 @@ export async function setupApplication(): Promise<AppWithClient> {
 
   const jwtService = new JWTLocalService(
     JWT_TOKEN_SECRET,
-    TokenServiceBindings.TOKEN_EXPIRES_IN.key,
+    TokenServiceBindings.LOCAL_TOKEN_EXPIRES_IN.key,
   );
 
   return {app, client, jwtService};

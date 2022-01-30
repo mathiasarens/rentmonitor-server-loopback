@@ -13,7 +13,7 @@ export async function main(options: ApplicationConfig = {}) {
     .bind('datasources.encryption.salt')
     .to(process.env.RENTMONITOR_DB_ENCRYPTION_SALT);
   app
-    .bind(TokenServiceBindings.TOKEN_SECRET)
+    .bind(TokenServiceBindings.LOCAL_TOKEN_SECRET)
     .to(process.env.RENTMONITOR_JWT_SECRET);
   app.bind('datasources.config.rentmonitor').to({
     name: 'rentmonitor',

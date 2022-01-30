@@ -7,16 +7,17 @@ import {TokenService} from '@loopback/authentication';
 import {inject} from '@loopback/context';
 import {HttpErrors} from '@loopback/rest';
 import {securityId, UserProfile} from '@loopback/security';
-import {promisify} from 'util';
+import jwt, {JwtPayload} from 'jsonwebtoken';
 import {TokenServiceBindings} from '../../keys';
-
-const jwt = require('jsonwebtoken');
-const verifyAsync = promisify(jwt.verify);
-
+import {AwsJwkService} from './aws.jwk.service';
 export class AwsIdTokenService implements TokenService {
   constructor(
-    @inject(TokenServiceBindings.TOKEN_SECRET)
-    private jwtSecret: string,
+    @inject(TokenServiceBindings.AWS_COGNITO_JWK_SERVICE)
+    private awsJwkService: AwsJwkService,
+    @inject(TokenServiceBindings.AWS_COGNITO_JWT_AUDIENCE)
+    private expectedAudience: string,
+    @inject(TokenServiceBindings.AWS_COGNITO_JWT_ISSUER)
+    private expectedIssuer: string,
   ) {}
 
   async verifyToken(token: string): Promise<UserProfile> {
@@ -25,21 +26,51 @@ export class AwsIdTokenService implements TokenService {
         `Error verifying token : 'token' is null`,
       );
     }
-
+    const pems = await this.awsJwkService.getPems();
     let userProfile: UserProfile;
 
     try {
-      // decode user profile from token
-      const decodedToken = await verifyAsync(token, this.jwtSecret);
-      // don't copy over  token field 'iat' and 'exp', nor 'email' to user profile
-      userProfile = Object.assign(
-        {[securityId]: '', name: '', clientId: 0},
-        {
-          [securityId]: decodedToken.id,
-          name: decodedToken.name,
-          clientId: decodedToken.clientId,
-        },
-      );
+      let decodedToken: jwt.JwtPayload;
+      try {
+        // first pem
+        decodedToken = jwt.verify(token, pems[0], {
+          algorithms: ['RS256'],
+        }) as JwtPayload;
+      } catch (error) {
+        console.log(`Could not decrypt token ${token} with ${pems[0]}`);
+        console.log(`Error: ${error}`);
+        console.log(`Trying second key: ${pems[1]}`);
+        // second pem
+        decodedToken = jwt.verify(token, pems[1], {
+          algorithms: ['RS256'],
+        }) as JwtPayload;
+      }
+      // verify decoded token
+      if (decodedToken.aud !== this.expectedAudience) {
+        throw new HttpErrors.Unauthorized(`Invalid audience ${decodedToken}`);
+      }
+      if (decodedToken.iss !== this.expectedIssuer) {
+        throw new HttpErrors.Unauthorized(`Invalid issuer ${decodedToken}`);
+      }
+      if (decodedToken['token_use'] !== 'id') {
+        throw new HttpErrors.Unauthorized(`Invalid token_use ${decodedToken}`);
+      }
+
+      // convert token into userprofile
+      if (typeof decodedToken === 'object') {
+        userProfile = Object.assign(
+          {[securityId]: '', name: '', clientId: 0},
+          {
+            [securityId]: decodedToken['cognito:username'],
+            name: decodedToken['email'],
+            clientId: decodedToken['custom:clientId2'],
+          },
+        );
+      } else {
+        throw new HttpErrors.Unauthorized(
+          `Token verification failed with ${decodedToken}`,
+        );
+      }
     } catch (error) {
       throw new HttpErrors.Unauthorized(
         `Error verifying token : ${error.message}`,

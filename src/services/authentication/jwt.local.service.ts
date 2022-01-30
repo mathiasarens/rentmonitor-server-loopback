@@ -16,9 +16,9 @@ const verifyAsync = promisify(jwt.verify);
 
 export class JWTLocalService implements TokenService {
   constructor(
-    @inject(TokenServiceBindings.TOKEN_SECRET)
+    @inject(TokenServiceBindings.LOCAL_TOKEN_SECRET)
     private jwtSecret: string,
-    @inject(TokenServiceBindings.TOKEN_EXPIRES_IN)
+    @inject(TokenServiceBindings.LOCAL_TOKEN_EXPIRES_IN)
     private jwtExpiresIn: string,
   ) {}
 

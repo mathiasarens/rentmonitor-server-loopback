@@ -26,12 +26,13 @@ export class JWTAuthorizationAuthenticationHeaderStrategy
     const idToken: string = this.extractIdToken(request);
     const userAccessProfile: UserProfile =
       await this.accessTokenService.verifyToken(accessToken);
-    const userIdProfile: UserProfile =
-      await this.accessTokenService.verifyToken(idToken);
+    const userIdProfile: UserProfile = await this.idTokenService.verifyToken(
+      idToken,
+    );
     const userProfile = Object.assign(
       {[securityId]: '', name: '', clientId: 0},
       {
-        [securityId]: userAccessProfile.id,
+        [securityId]: userAccessProfile[securityId],
         name: userIdProfile.name,
         clientId: userIdProfile.clientId,
       },

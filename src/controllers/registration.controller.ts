@@ -28,7 +28,7 @@ export class RegistrationController {
     @repository(UserRepository) public userRepository: UserRepository,
     @inject(PasswordHasherBindings.PASSWORD_HASHER)
     public passwordHasher: PasswordHasher,
-    @inject(TokenServiceBindings.TOKEN_SERVICE)
+    @inject(TokenServiceBindings.LOCAL_TOKEN_SERVICE)
     public jwtService: TokenService,
     @inject(UserServiceBindings.USER_SERVICE)
     public userService: UserService<User, Credentials>,

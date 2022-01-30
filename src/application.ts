@@ -3,6 +3,7 @@ import {
   registerAuthenticationStrategy,
 } from '@loopback/authentication';
 import {BootMixin} from '@loopback/boot';
+import {BindingScope} from '@loopback/context';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin, SchemaMigrationOptions} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
@@ -12,7 +13,10 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as path from 'path';
-import {JWTAuthorizationHeaderStrategy} from './authentication-strategies/authorization-header-jwt-strategy';
+import {JWTAuthorizationAuthenticationHeaderStrategy} from './authentication-strategies/authorization-authentication-header-jwt-strategy';
+import {AwsAccessTokenService} from './authentication-strategies/services/aws.access.token.service';
+import {AwsIdTokenService} from './authentication-strategies/services/aws.id.token.service';
+import {AwsJwkService} from './authentication-strategies/services/aws.jwk.service';
 import {
   PasswordHasherBindings,
   TokenServiceBindings,
@@ -68,7 +72,10 @@ export class RentmonitorServerApplication extends BootMixin(
     // Bind authentication component related elements
     this.component(AuthenticationComponent);
 
-    registerAuthenticationStrategy(this, JWTAuthorizationHeaderStrategy);
+    registerAuthenticationStrategy(
+      this,
+      JWTAuthorizationAuthenticationHeaderStrategy,
+    );
 
     // Set up the custom sequence
     this.sequence(MyAuthenticationSequence);
@@ -102,8 +109,28 @@ export class RentmonitorServerApplication extends BootMixin(
       JWTLocalService,
     );
 
+    this.bind(TokenServiceBindings.AWS_COGNITO_ACCESS_TOKEN_SERVICE).toClass(
+      AwsAccessTokenService,
+    );
+
+    this.bind(TokenServiceBindings.AWS_COGNITO_ID_TOKEN_SERVICE).toClass(
+      AwsIdTokenService,
+    );
+
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWK_SERVICE)
+      .toClass(AwsJwkService)
+      .inScope(BindingScope.SINGLETON);
+
     this.bind(TokenServiceBindings.AWS_COGNITO_JWK_URL).toDynamicValue(
       () => process.env.RENTMONITOR_AWS_COGNITO_JWK_URL,
+    );
+
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWT_AUDIENCE).toDynamicValue(
+      () => process.env.RENTMONITOR_AWS_COGNITO_JWT_AUDIENCE,
+    );
+
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWT_ISSUER).toDynamicValue(
+      () => process.env.RENTMONITOR_AWS_COGNITO_JWT_ISSUER,
     );
 
     // // Bind bcrypt hash services
