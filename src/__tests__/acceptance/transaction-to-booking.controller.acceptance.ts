@@ -10,6 +10,7 @@ import {
   TenantRepository,
 } from '../../repositories';
 import {
+  AuthenticationTokens,
   clearDatabase,
   getTestUser,
   login,
@@ -38,7 +39,7 @@ describe('TransactionToBookingController Acceptance Tests', () => {
 
   it('should create bookings for existing transactions', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser);
     const tenant1Name = 'Tenant1NameOnAccount';
     const tenant1 = await setupTenantInDb(
@@ -91,7 +92,7 @@ describe('TransactionToBookingController Acceptance Tests', () => {
 
   it('should not create bookings if filter does not match', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser);
     const tenant1Name = 'Tenant1NameOnAccount';
     await setupTenantInDb(
@@ -143,10 +144,11 @@ describe('TransactionToBookingController Acceptance Tests', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function synchronizeTransactions(token: string, data: {}) {
+  function synchronizeTransactions(token: AuthenticationTokens, data: {}) {
     return http
       .post(TransactionToBookingUrl)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .send(data)
       .set('Content-Type', 'application/json');
   }

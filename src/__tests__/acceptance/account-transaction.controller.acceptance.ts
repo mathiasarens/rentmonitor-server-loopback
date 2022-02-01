@@ -12,6 +12,7 @@ import {
 } from '../../repositories';
 import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
 import {
+  getTestUser,
   givenEmptyDatabase,
   setupApplication,
 } from '../helpers/acceptance-test.helpers';
@@ -33,10 +34,10 @@ describe('AccountTransactionController Acceptence Test', () => {
 
   it('should not count account transactions from other clients', async () => {
     const clientId1 = await setupClientInDb('TestClient1');
-    const testUser1 = getTestUser('4');
+    const testUser1 = getTestUser(clientId1, 4);
     await setupUserInDb(clientId1, testUser1);
     const clientId2 = await setupClientInDb('TestClient2');
-    const testUser2 = getTestUser('5');
+    const testUser2 = getTestUser(clientId2, 5);
     await setupUserInDb(clientId2, testUser2);
     const token1 = await login(testUser1);
     const accountSettingsId2 = await setupAccountSettingsInDb(clientId2);
@@ -62,7 +63,7 @@ describe('AccountTransactionController Acceptence Test', () => {
 
   it('should return empty result on get', async () => {
     const clientId = await setupClientInDb('TestClient1');
-    const testUser = getTestUser('3');
+    const testUser = getTestUser(clientId, 3);
     await setupUserInDb(clientId, testUser);
     const token = await login(testUser);
 
@@ -339,22 +340,12 @@ describe('AccountTransactionController Acceptence Test', () => {
     return token;
   }
 
-  function getTestUser(testId: string): User {
-    const testUser = Object.assign({}, new User(), {
-      email: 'test@loopback' + testId + '.io',
-      password: 'p4ssw0rd',
-      firstName: 'Example',
-      lastName: 'User ' + testId,
-    });
-    return testUser;
-  }
-
   async function setup2() {
     const clientId1 = await setupClientInDb('TestClient1');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(clientId1, testUser1);
     const clientId2 = await setupClientInDb('TestClient2');
-    const testUser2 = getTestUser('2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(clientId2, testUser2);
     const token1 = await login(testUser1);
     const token2 = await login(testUser2);

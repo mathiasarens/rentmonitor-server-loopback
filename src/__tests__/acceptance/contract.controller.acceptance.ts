@@ -4,6 +4,7 @@ import {ContractsUrl} from '../../controllers';
 import {Contract, Tenant} from '../../models';
 import {ContractRepository, TenantRepository} from '../../repositories';
 import {
+  AuthenticationTokens,
   clearDatabase,
   getTestUser,
   login,
@@ -32,7 +33,7 @@ describe('ContractController', () => {
 
   it('should add new contract on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -62,7 +63,7 @@ describe('ContractController', () => {
 
   it('should add contract with clientId from logged in user', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -87,7 +88,7 @@ describe('ContractController', () => {
 
   it('should return 0 count for count contracts if user passed false clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -117,7 +118,7 @@ describe('ContractController', () => {
   it('should find contracts for users clientId only if user overwrites clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const startDate = new Date();
@@ -144,7 +145,7 @@ describe('ContractController', () => {
   it('should find contracts for users clientId only if user uses a where filter without clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -186,8 +187,8 @@ describe('ContractController', () => {
   it('should update contracts for users clientId only if no clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    const testUser2 = getTestUser('2');
+    const testUser1 = getTestUser(clientId1, 1);
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId1, testUser1);
     await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
@@ -243,7 +244,7 @@ describe('ContractController', () => {
   it('should update contracts for users clientId only if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -299,7 +300,7 @@ describe('ContractController', () => {
   it('should not update contracts clientId to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -356,7 +357,7 @@ describe('ContractController', () => {
   it('should find contracts by id for users clientId only if api user uses no filter', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -392,7 +393,7 @@ describe('ContractController', () => {
   it('should not find contracts by id for users clientId only if api user uses no filter', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -426,7 +427,7 @@ describe('ContractController', () => {
   it('should not find contracts by id for users clientId only if api user filters for other clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -462,7 +463,7 @@ describe('ContractController', () => {
   it('should update contract by id for users clientId only if no clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -514,7 +515,7 @@ describe('ContractController', () => {
   it('should update contract by id for users clientId only if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -566,7 +567,7 @@ describe('ContractController', () => {
   it('should not update contract by id if own clientId is set to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -621,7 +622,7 @@ describe('ContractController', () => {
   it('should replace contract1 by id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -682,7 +683,7 @@ describe('ContractController', () => {
   it('should not replace client id of contract1 to clientId2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -743,7 +744,7 @@ describe('ContractController', () => {
   it('should delete contract1', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -795,7 +796,7 @@ describe('ContractController', () => {
   it('should not delete contract2 if filtered to client2 ', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -847,10 +848,11 @@ describe('ContractController', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function createContractViaHttp(token: string, data: {}) {
+  function createContractViaHttp(token: AuthenticationTokens, data: {}) {
     return http
       .post(ContractsUrl)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .send(data)
       .set('Content-Type', 'application/json');
   }

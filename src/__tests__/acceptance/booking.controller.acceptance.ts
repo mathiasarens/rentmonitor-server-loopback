@@ -4,6 +4,7 @@ import {BookingsUrl} from '../../controllers';
 import {Booking, Contract, Tenant} from '../../models';
 import {BookingRepository} from '../../repositories';
 import {
+  AuthenticationTokens,
   clearDatabase,
   getTestUser,
   login,
@@ -35,7 +36,7 @@ describe('BookingController', () => {
 
   it('should add minimal new booking on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       app,
@@ -61,7 +62,7 @@ describe('BookingController', () => {
 
   it('should add booking and override clientId from logged in user / wrong clientId passed', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       app,
@@ -88,7 +89,7 @@ describe('BookingController', () => {
 
   it('should add full new booking on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       app,
@@ -133,7 +134,7 @@ describe('BookingController', () => {
 
   it("should count bookings for users' clientId only / client with bookings", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -163,7 +164,7 @@ describe('BookingController', () => {
   it('should return zero count if user passed false clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const tenant2 = await setupTenantInDb(
       app,
@@ -195,7 +196,7 @@ describe('BookingController', () => {
   it('should find zero bookings if user passed false clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
@@ -238,7 +239,7 @@ describe('BookingController', () => {
   it("should find bookings for users' clientId only if user uses a where filter without clientId", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -289,8 +290,8 @@ describe('BookingController', () => {
   it('should update bookings if no clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    const testUser2 = getTestUser('2');
+    const testUser1 = getTestUser(clientId1, 1);
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId1, testUser1);
     await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
@@ -351,7 +352,7 @@ describe('BookingController', () => {
   it('should not update bookings if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -412,7 +413,7 @@ describe('BookingController', () => {
   it('should not update the client of a booking to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -476,7 +477,7 @@ describe('BookingController', () => {
   it("should find bookings by id for users' clientId only if api user uses no filter", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -521,7 +522,7 @@ describe('BookingController', () => {
   it("should not find bookings by id for users' clientId only if api user uses no filter", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -563,7 +564,7 @@ describe('BookingController', () => {
   it('should not find bookings if user filters for different bookingId and different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -606,7 +607,7 @@ describe('BookingController', () => {
   it("should update booking by id for users' clientId only if no clientId is given", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -669,7 +670,7 @@ describe('BookingController', () => {
   it('should not update booking by id if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -732,7 +733,7 @@ describe('BookingController', () => {
   it('should not update booking by id if own clientId is set to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -798,7 +799,7 @@ describe('BookingController', () => {
   it('should replace booking1 by new booking', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -868,7 +869,7 @@ describe('BookingController', () => {
   it('should allow null values for optional fields', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -944,7 +945,7 @@ describe('BookingController', () => {
   it('should not replace client id of booking1 to clientId2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -1014,7 +1015,7 @@ describe('BookingController', () => {
   it('should delete booking1', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -1073,7 +1074,7 @@ describe('BookingController', () => {
   it('should not delete contract2 if filtered to client2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
@@ -1134,10 +1135,11 @@ describe('BookingController', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function createBookingViaHttp(token: string, data: {}) {
+  function createBookingViaHttp(token: AuthenticationTokens, data: {}) {
     return http
       .post(BookingsUrl)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .send(data)
       .set('Content-Type', 'application/json');
   }

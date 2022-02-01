@@ -52,8 +52,8 @@ describe('ClientController', () => {
 
   it('should return clients for own clientId only', async () => {
     await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('2');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
@@ -73,8 +73,8 @@ describe('ClientController', () => {
 
   it('should return client by id', async () => {
     await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('2');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
@@ -91,8 +91,8 @@ describe('ClientController', () => {
 
   it('should not return different client by id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('2');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
@@ -107,7 +107,7 @@ describe('ClientController', () => {
 
   it('should allow to patch own client by id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser);
     const token = await login(http, testUser);
 
@@ -136,8 +136,8 @@ describe('ClientController', () => {
 
   it('should not allow to patch different client by id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('2');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
@@ -174,8 +174,8 @@ describe('ClientController', () => {
 
   it('should not allow to patch different client by id with own id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('2');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
@@ -216,7 +216,7 @@ describe('ClientController', () => {
 
   it('should allow to update own client', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser);
     const token = await login(http, testUser);
 
@@ -246,8 +246,8 @@ describe('ClientController', () => {
 
   it('should not allow to update different client', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('2');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
@@ -284,8 +284,8 @@ describe('ClientController', () => {
 
   it('should not allow to update own client to different client id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('2');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
@@ -324,7 +324,7 @@ describe('ClientController', () => {
 
   it('should allow to delete own client', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser);
     const token = await login(http, testUser);
 
@@ -370,8 +370,8 @@ describe('ClientController', () => {
 
   it('should not allow to delete a different client than it own client', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser2 = getTestUser('1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
+    const testUser2 = getTestUser(clientId2, 1);
     await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 

@@ -37,9 +37,6 @@ export class AwsIdTokenService implements TokenService {
           algorithms: ['RS256'],
         }) as JwtPayload;
       } catch (error) {
-        console.log(`Could not decrypt token ${token} with ${pems[0]}`);
-        console.log(`Error: ${error}`);
-        console.log(`Trying second key: ${pems[1]}`);
         // second pem
         decodedToken = jwt.verify(token, pems[1], {
           algorithms: ['RS256'],

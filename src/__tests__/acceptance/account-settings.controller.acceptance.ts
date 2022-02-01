@@ -1,6 +1,7 @@
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {
+  AuthenticationTokens,
   clearDatabase,
   getTestUser,
   login,
@@ -26,7 +27,7 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should add new account-settings on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
@@ -54,7 +55,7 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should return 422 on create with clientId', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('2');
+    const testUser = getTestUser(clientId, 2);
     await setupUserInDb(app, clientId, testUser);
     const token = await login(http, testUser);
     const name = 'Konto1';
@@ -87,7 +88,7 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should return newly created account-settings on get', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('2');
+    const testUser = getTestUser(clientId, 2);
     await setupUserInDb(app, clientId, testUser);
     const token = await login(http, testUser);
     const name = 'Konto1';
@@ -126,10 +127,10 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should not allow to count account settings from other clients', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser1 = getTestUser('4');
+    const testUser1 = getTestUser(clientId1, 4);
     await setupUserInDb(app, clientId1, testUser1);
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser2 = getTestUser('5');
+    const testUser2 = getTestUser(clientId2, 5);
     await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const token2 = await login(http, testUser2);
@@ -176,7 +177,7 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should return empty result on get', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('3');
+    const testUser = getTestUser(clientId, 3);
     await setupUserInDb(app, clientId, testUser);
     const token = await login(http, testUser);
 
@@ -601,7 +602,7 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should return http status 209 on successful post to /account-settings/fints-accounts', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
@@ -630,7 +631,7 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   it('should return http status 210 if tan required on post to /account-settings/fints-accounts', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(app, clientId, testUser);
     const name = 'Konto1';
     const fintsBlz = '41627645';
@@ -656,20 +657,21 @@ describe('AccountSettingsController Acceptence Test', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function createAccountSettingsViaHttp(token: string, data: {}) {
+  function createAccountSettingsViaHttp(token: AuthenticationTokens, data: {}) {
     return http
       .post('/account-settings')
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .send(data)
       .set('Content-Type', 'application/json');
   }
 
   async function setup2() {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser1 = getTestUser('1');
+    const testUser1 = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser1);
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser2 = getTestUser('2');
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const token2 = await login(http, testUser2);

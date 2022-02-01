@@ -4,6 +4,8 @@ import {
   createRestAppClient,
   givenHttpServerConfig,
 } from '@loopback/testlab';
+import fs from 'fs';
+import jwt, {JwtPayload} from 'jsonwebtoken';
 import {Connection, Dialog, DialogConfig, TanRequiredError} from 'node-fints';
 import {RentmonitorServerApplication} from '../..';
 import {PasswordHasherBindings, TokenServiceBindings} from '../../keys';
@@ -27,6 +29,10 @@ import {PasswordHasher} from '../../services/authentication/hash.password.bcrypt
 import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 
 const JWT_TOKEN_SECRET = 'test';
+const PRIVATE_KEY = fs.readFileSync(
+  './src/__tests__/fixtures/keys/jwtRS256.key',
+  'utf8',
+);
 
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
@@ -51,6 +57,9 @@ export async function setupApplication(): Promise<AppWithClient> {
     database: process.env.RENTMONITOR_TEST_DB_USER,
   });
   app.bind(TokenServiceBindings.LOCAL_TOKEN_SECRET).to(JWT_TOKEN_SECRET);
+  app
+    .bind(TokenServiceBindings.AWS_COGNITO_JWK_URL)
+    .to('./src/__tests__/fixtures/keys/jwtRS256.key.jwk');
   app.bind(FintsServiceBindings.SERVICE).toClass(FintsServiceDummy);
   await app.boot();
   await app.start();
@@ -133,24 +142,67 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
   await clientRepository.deleteAll();
 }
 
-export async function login(http: Client, user: User): Promise<string> {
-  const res = await http
-    .post('/users/login')
-    .send({email: user.email, password: user.password})
-    .expect(200);
-
-  const token = res.body.token;
-  return token;
+export interface AuthenticationTokens {
+  accessToken: string;
+  idToken: string;
 }
 
-export function getTestUser(testId: string): User {
+export async function login(
+  http: Client,
+  user: User,
+): Promise<AuthenticationTokens> {
+  const accessToken = generateToken(
+    {
+      username: user.id,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      client_id: '5cm8aoerf4544lccbr7oe2fn81',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      token_use: 'access',
+    },
+    {
+      issuer: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_AcayKISdN',
+      expiresIn: Number(3600),
+      algorithm: 'RS256',
+    },
+  );
+  const idToken = generateToken(
+    {
+      'cognito:username': user.id,
+      email: user.email,
+      'custom:clientId2': user.clientId,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      token_use: 'id',
+    },
+    {
+      expiresIn: Number(3600),
+      issuer: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_AcayKISdN',
+      audience: '5cm8aoerf4544lccbr7oe2fn81',
+      algorithm: 'RS256',
+    },
+  );
+  return {accessToken, idToken};
+}
+
+export function getTestUser(clientId: number, testId: number): User {
   const testUser = Object.assign({}, new User(), {
     email: 'test@loopback' + testId + '.io',
     password: 'p4ssw0rd',
     firstName: 'Example',
     lastName: 'User ' + testId,
+    clientId: clientId,
   });
   return testUser;
+}
+
+function generateToken(payload: JwtPayload, options: jwt.SignOptions): string {
+  // Generate a JSON Web Token
+  let token: string;
+  try {
+    token = jwt.sign(payload, PRIVATE_KEY, options);
+  } catch (error) {
+    throw new Error(`Error encoding token : ${error}`);
+  }
+  return token;
 }
 
 export async function setupClientInDb(

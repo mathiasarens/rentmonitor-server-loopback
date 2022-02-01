@@ -8,6 +8,7 @@ import {
   TenantRepository,
 } from '../../repositories';
 import {
+  AuthenticationTokens,
   clearDatabase,
   getTestUser,
   login,
@@ -36,7 +37,7 @@ describe('ContractToBookingController Acceptance Tests', () => {
 
   it('should create bookings for existing transactions', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser);
     const tenant1Name = 'Tenant1NameOnAccount';
     const tenant1 = await setupTenantInDb(
@@ -90,10 +91,11 @@ describe('ContractToBookingController Acceptance Tests', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function synchronizeContract(token: string, data: {}) {
+  function synchronizeContract(token: AuthenticationTokens, data: {}) {
     return http
       .post(ContractToBookingUrl)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .send(data)
       .set('Content-Type', 'application/json');
   }

@@ -7,12 +7,8 @@ import {TokenService} from '@loopback/authentication';
 import {inject} from '@loopback/context';
 import {HttpErrors} from '@loopback/rest';
 import {securityId, UserProfile} from '@loopback/security';
-import {promisify} from 'util';
+import jwt from 'jsonwebtoken';
 import {TokenServiceBindings} from '../../keys';
-
-const jwt = require('jsonwebtoken');
-const signAsync = promisify(jwt.sign);
-const verifyAsync = promisify(jwt.verify);
 
 export class JWTLocalService implements TokenService {
   constructor(
@@ -33,7 +29,7 @@ export class JWTLocalService implements TokenService {
 
     try {
       // decode user profile from token
-      const decodedToken = await verifyAsync(token, this.jwtSecret);
+      const decodedToken = jwt.verify(token, this.jwtSecret) as jwt.JwtPayload;
       // don't copy over  token field 'iat' and 'exp', nor 'email' to user profile
       userProfile = Object.assign(
         {[securityId]: '', name: '', clientId: 0},
@@ -66,7 +62,7 @@ export class JWTLocalService implements TokenService {
     // Generate a JSON Web Token
     let token: string;
     try {
-      token = await signAsync(userInfoForToken, this.jwtSecret, {
+      token = jwt.sign(userInfoForToken, this.jwtSecret, {
         expiresIn: Number(this.jwtExpiresIn),
       });
     } catch (error) {

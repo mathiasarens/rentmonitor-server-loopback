@@ -3,6 +3,7 @@ import {RentmonitorServerApplication} from '../..';
 import {TenantBookingOverviewUrl} from '../../controllers/tenant-booking-overview.controller';
 import {Booking, Contract, Tenant} from '../../models';
 import {
+  AuthenticationTokens,
   clearDatabase,
   getTestUser,
   login,
@@ -34,7 +35,7 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
 
   it('should load bookings sum by tenant ordered by sum descending', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId1, 1);
     await setupUserInDb(app, clientId1, testUser);
     const tenant1 = await setupTenantInDb(
       app,
@@ -121,9 +122,10 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function loadTenantBookingOverview(token: string) {
+  function loadTenantBookingOverview(token: AuthenticationTokens) {
     return http
       .get(TenantBookingOverviewUrl)
-      .set('Authorization', 'Bearer ' + token);
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken);
   }
 });

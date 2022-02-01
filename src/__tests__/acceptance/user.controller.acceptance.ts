@@ -8,6 +8,7 @@ import {ClientRepository, UserRepository} from '../../repositories';
 import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
 import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 import {
+  getTestUser,
   givenEmptyDatabase,
   setupApplication,
 } from '../helpers/acceptance-test.helpers';
@@ -29,7 +30,7 @@ describe('UserController Acceptence Test', () => {
   // login
   it('should return jwt token on successful login', async () => {
     const clientId = await setupClientInDb('TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(clientId, testUser);
     const res = await http
       .post('/users/login')
@@ -44,7 +45,7 @@ describe('UserController Acceptence Test', () => {
 
   it('should return invalid login error on password with less than 8 characters', async () => {
     const clientId = await setupClientInDb('TestClient1');
-    const testUser = getTestUser('1');
+    const testUser = getTestUser(clientId, 1);
     await setupUserInDb(clientId, testUser);
     const res = await http
       .post('/users/login')
@@ -60,8 +61,8 @@ describe('UserController Acceptence Test', () => {
   it('should not find users from other clients', async () => {
     const clientId1 = await setupClientInDb('TestClient1');
     const clientId2 = await setupClientInDb('TestClient2');
-    const testUser1 = getTestUser('1');
-    const testUser2 = getTestUser('2');
+    const testUser1 = getTestUser(clientId1, 1);
+    const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(clientId1, testUser1);
     const dbUser2 = await setupUserInDb(clientId2, testUser2);
     const loginResponse = await http
@@ -83,8 +84,8 @@ describe('UserController Acceptence Test', () => {
 
   it('should find user from the same client', async () => {
     const clientId1 = await setupClientInDb('TestClient1');
-    const testUser1 = getTestUser('1');
-    const testUser2 = getTestUser('2');
+    const testUser1 = getTestUser(clientId1, 1);
+    const testUser2 = getTestUser(clientId1, 2);
     await setupUserInDb(clientId1, testUser1);
     const dbUser2 = await setupUserInDb(clientId1, testUser2);
     const loginResponse = await http
@@ -137,15 +138,5 @@ describe('UserController Acceptence Test', () => {
     });
     const newUserFromDb = await userRepository.create(newUser);
     return newUserFromDb;
-  }
-
-  function getTestUser(testId: string): User {
-    const testUser = Object.assign({}, new User(), {
-      email: 'test@loopback' + testId + '.io',
-      password: 'p4ssw0rd',
-      firstName: 'Example',
-      lastName: 'User ' + testId,
-    });
-    return testUser;
   }
 });
