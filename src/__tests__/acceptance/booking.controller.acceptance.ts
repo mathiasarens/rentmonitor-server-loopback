@@ -155,7 +155,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}/count`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(1);
@@ -185,7 +186,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}/count?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(0);
@@ -230,7 +232,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}?filter[where][clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(0);
@@ -274,7 +277,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -327,7 +331,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .patch(`${BookingsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(200)
@@ -387,7 +392,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .patch(`${BookingsUrl}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(200)
@@ -448,7 +454,8 @@ describe('BookingController', () => {
     // test
     await http
       .patch(`${BookingsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -511,7 +518,8 @@ describe('BookingController', () => {
 
     const res = await http
       .get(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.tenantId).to.eql(tenant1.id);
@@ -557,7 +565,8 @@ describe('BookingController', () => {
     // test
     await http
       .get(`${BookingsUrl}/${booking2.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
   });
 
@@ -598,7 +607,8 @@ describe('BookingController', () => {
 
     await http
       .get(`${BookingsUrl}/${booking2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
   });
 
@@ -642,7 +652,8 @@ describe('BookingController', () => {
 
     await http
       .patch(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(204);
@@ -705,7 +716,8 @@ describe('BookingController', () => {
 
     await http
       .patch(`${BookingsUrl}/${booking2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(204);
@@ -768,7 +780,8 @@ describe('BookingController', () => {
 
     await http
       .patch(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -834,7 +847,8 @@ describe('BookingController', () => {
 
     await http
       .put(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send(
         new Booking({
@@ -904,7 +918,8 @@ describe('BookingController', () => {
 
     await http
       .put(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: booking1.id,
@@ -980,7 +995,8 @@ describe('BookingController', () => {
 
     await http
       .put(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: tenant1.id,
@@ -1051,7 +1067,8 @@ describe('BookingController', () => {
     // test
     await http
       .delete(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     // asserts
@@ -1110,7 +1127,8 @@ describe('BookingController', () => {
     // test
     await http
       .delete(`${BookingsUrl}/${booking2.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     // asserts

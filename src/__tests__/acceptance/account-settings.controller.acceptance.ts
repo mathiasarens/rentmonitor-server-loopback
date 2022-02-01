@@ -79,7 +79,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // then
     const res = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -111,7 +112,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -168,7 +170,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res = await http
       .get(`/account-settings/count?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -184,7 +187,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -197,7 +201,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -209,7 +214,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -224,7 +230,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res = await http
       .get('/account-settings?filter[where][clientId]=' + clientId2)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -239,7 +246,8 @@ describe('AccountSettingsController Acceptence Test', () => {
       .get(
         '/account-settings?filter[where][id]=' + accountSettingsResult2.body.id,
       )
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -253,7 +261,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .patch('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({fintsUser: 'newUser', fintsPassword: 'newPassword'})
       .expect(200)
@@ -261,7 +270,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -272,7 +282,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -297,7 +308,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .patch('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
       .expect(422)
@@ -305,7 +317,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -316,7 +329,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -340,7 +354,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res = await http
       .patch('/account-settings?where[clientId]=' + clientId1)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({fintsUrl: 'http://fints-url.com'})
       .expect(200)
@@ -349,7 +364,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -360,7 +376,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -376,7 +393,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .get('/account-settings/' + accountSettingsResult1.body.id)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(204);
   });
 
@@ -387,7 +405,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     const res1 = await http
       .get('/account-settings/' + accountSettingsResult2.body.id)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -411,7 +430,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .patch(`/account-settings/${accountSettingsResult2.body.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId1, fintsUrl: 'http://fints-url.com'})
       .expect(422)
@@ -419,7 +439,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -430,7 +451,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -447,7 +469,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .put(`/account-settings/${accountSettingsResult2.body.id}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: accountSettingsResult2.body.id,
@@ -461,7 +484,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -472,7 +496,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -497,7 +522,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .put(`/account-settings/${accountSettingsResult2.body.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: accountSettingsResult2.body.id,
@@ -511,7 +537,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -522,7 +549,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -538,19 +566,22 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .del(`/account-settings/${accountSettingsResult1.body.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200);
 
     expect(res1.body.length).to.eql(0);
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -574,12 +605,14 @@ describe('AccountSettingsController Acceptence Test', () => {
     // when
     await http
       .del(`/account-settings/${accountSettingsResult2.body.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     const res1 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -590,7 +623,8 @@ describe('AccountSettingsController Acceptence Test', () => {
 
     const res2 = await http
       .get('/account-settings')
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -612,7 +646,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     const token = await login(http, testUser);
     const res = await http
       .post('/account-settings/fints-accounts')
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         name: name,
@@ -641,7 +676,8 @@ describe('AccountSettingsController Acceptence Test', () => {
     const token = await login(http, testUser);
     const res = await http
       .post('/account-settings/fints-accounts')
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         name: name,

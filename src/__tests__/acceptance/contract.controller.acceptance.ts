@@ -106,7 +106,8 @@ describe('ContractController', () => {
     // test
     const res = await http
       .get(`${ContractsUrl}/count?where[clientId]=${clientId1 + 1}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     // expected result is the count from client 1 == 1 and not from client2 that does not exist
@@ -136,7 +137,8 @@ describe('ContractController', () => {
     // test
     const res = await http
       .get(`${ContractsUrl}?filter[where][clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(0);
@@ -173,7 +175,8 @@ describe('ContractController', () => {
     // test
     const res = await http
       .get(`${ContractsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -217,7 +220,8 @@ describe('ContractController', () => {
     // test
     const res = await http
       .patch(`${ContractsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: 10})
       .expect(200)
@@ -272,7 +276,8 @@ describe('ContractController', () => {
     // test
     const res = await http
       .patch(`${ContractsUrl}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: 15})
       .expect(200)
@@ -328,7 +333,8 @@ describe('ContractController', () => {
     // test
     await http
       .patch(`${ContractsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -384,7 +390,8 @@ describe('ContractController', () => {
 
     const res = await http
       .get(`${ContractsUrl}/${contract1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.tenantId).to.eql(tenant1.id);
@@ -420,7 +427,8 @@ describe('ContractController', () => {
 
     await http
       .get(`${ContractsUrl}/${contract2.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
   });
 
@@ -454,7 +462,8 @@ describe('ContractController', () => {
 
     await http
       .get(`${ContractsUrl}/${contract2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
   });
 
@@ -490,7 +499,8 @@ describe('ContractController', () => {
 
     await http
       .patch(`${ContractsUrl}/${contract1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: 10})
       .expect(204);
@@ -542,7 +552,8 @@ describe('ContractController', () => {
 
     await http
       .patch(`${ContractsUrl}/${contract2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: 10})
       .expect(204);
@@ -594,7 +605,8 @@ describe('ContractController', () => {
 
     await http
       .patch(`${ContractsUrl}/${contract1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -651,7 +663,8 @@ describe('ContractController', () => {
 
     await http
       .put(`${ContractsUrl}/${contract1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send(
         new Contract({
@@ -712,7 +725,8 @@ describe('ContractController', () => {
 
     await http
       .put(`${ContractsUrl}/${contract1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: tenant1.id,
@@ -774,7 +788,8 @@ describe('ContractController', () => {
     // test
     await http
       .delete(`${ContractsUrl}/${contract1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     const contractRepository: ContractRepository = await app.getRepository(
@@ -826,7 +841,8 @@ describe('ContractController', () => {
     // test
     await http
       .delete(`${ContractsUrl}/${contract2.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     const contractRepository: ContractRepository = await app.getRepository(

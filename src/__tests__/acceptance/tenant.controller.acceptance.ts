@@ -98,7 +98,8 @@ describe('TenantController', () => {
 
     const res = await http
       .get(`${TenantsUrl}/count?where[clientId]=${clientId + 1}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(0);
@@ -121,7 +122,8 @@ describe('TenantController', () => {
 
     const res = await http
       .get(`${TenantsUrl}?filter[where][clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(1);
@@ -140,7 +142,8 @@ describe('TenantController', () => {
 
     const res = await http
       .get(`${TenantsUrl}?filter[where][name]=Tenant1`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(1);
@@ -158,7 +161,8 @@ describe('TenantController', () => {
 
     const res = await http
       .get(`${TenantsUrl}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(1);
@@ -178,7 +182,8 @@ describe('TenantController', () => {
 
     const res = await http
       .patch(`${TenantsUrl}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({email: 'tenant1@tenants.de'})
       .expect(200)
@@ -213,7 +218,8 @@ describe('TenantController', () => {
 
     const res = await http
       .patch(`${TenantsUrl}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({email: 'tenant1@tenants.de'})
       .expect(200)
@@ -248,7 +254,8 @@ describe('TenantController', () => {
 
     await http
       .patch(`${TenantsUrl}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -286,7 +293,8 @@ describe('TenantController', () => {
 
     const res = await http
       .get(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.name).to.eql('Tenant1');
@@ -305,7 +313,8 @@ describe('TenantController', () => {
 
     await http
       .get(`${TenantsUrl}/${tenant2.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(204);
   });
 
@@ -322,7 +331,8 @@ describe('TenantController', () => {
 
     await http
       .get(`${TenantsUrl}/${tenant2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(204);
   });
 
@@ -341,7 +351,8 @@ describe('TenantController', () => {
 
     await http
       .patch(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({email: 'tenant1@tenants.de'})
       .expect(204);
@@ -376,7 +387,8 @@ describe('TenantController', () => {
 
     await http
       .patch(`${TenantsUrl}/${tenant2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({email: 'tenant1@tenants.de'})
       .expect(204);
@@ -411,7 +423,8 @@ describe('TenantController', () => {
 
     await http
       .patch(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -449,7 +462,8 @@ describe('TenantController', () => {
 
     await http
       .put(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: tenant1.id,
@@ -502,7 +516,8 @@ describe('TenantController', () => {
 
     await http
       .put(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: tenant1.id,
@@ -549,7 +564,8 @@ describe('TenantController', () => {
 
     await http
       .put(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: tenant1.id,
@@ -593,7 +609,8 @@ describe('TenantController', () => {
 
     await http
       .put(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: tenant1.id,
@@ -640,7 +657,8 @@ describe('TenantController', () => {
 
     await http
       .delete(`${TenantsUrl}/${tenant1.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(204);
 
     const tenantRepository: TenantRepository = await app.getRepository(
@@ -676,7 +694,8 @@ describe('TenantController', () => {
 
     await http
       .delete(`${TenantsUrl}/${tenant2.id}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(204);
 
     const tenantRepository: TenantRepository = await app.getRepository(

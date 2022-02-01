@@ -100,7 +100,8 @@
         "${workspaceFolder}/dist/src/__tests__/**/booking.controller.acceptance*.js"
       ],
       "env": {
-        "NODE_ENV": "test"
+        "NODE_ENV": "test",
+        "TZ": "UTC"
       },
       "preLaunchTask": "npm: build",
       "console": "integratedTerminal",
@@ -151,7 +152,8 @@
         "${workspaceFolder}/dist/src/__tests__/**/transaction-to-booking.controller.acceptance*.js"
       ],
       "env": {
-        "NODE_ENV": "test"
+        "NODE_ENV": "test",
+        "TZ": "UTC"
       },
       "preLaunchTask": "npm: build",
       "console": "integratedTerminal",
@@ -168,7 +170,8 @@
         "${workspaceFolder}/dist/src/__tests__/**/contract-to-booking.controller.acceptance*.js"
       ],
       "env": {
-        "NODE_ENV": "test"
+        "NODE_ENV": "test",
+        "TZ": "UTC"
       },
       "preLaunchTask": "npm: build",
       "console": "integratedTerminal",
@@ -186,6 +189,41 @@
       ],
       "env": {
         "NODE_ENV": "test"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Account Settings Controller Acceptance Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/src/__tests__/**/account-settings.controller.acceptance*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "preLaunchTask": "npm: build",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Account Transaction Controller Acceptance Tests",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "args": [
+        "--colors",
+        "${workspaceFolder}/dist/src/__tests__/**/account-transaction.controller.acceptance*.js"
+      ],
+      "env": {
+        "NODE_ENV": "test",
+        "TZ": "UTC"
       },
       "preLaunchTask": "npm: build",
       "console": "integratedTerminal",
