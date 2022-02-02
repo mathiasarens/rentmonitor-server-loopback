@@ -59,26 +59,6 @@ describe('UserController Acceptence Test', () => {
 
   // findById
 
-  it('should not find users from other clients', async () => {
-    const clientId1 = await setupClientInDb('TestClient1');
-    const clientId2 = await setupClientInDb('TestClient2');
-    const testUser1 = getTestUser(clientId1, 1);
-    const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(clientId1, testUser1);
-    const dbUser2 = await setupUserInDb(clientId2, testUser2);
-    const token = await login(http, testUser2);
-
-    const response = await http
-      .get('/users/' + dbUser2.id)
-      .set('Authorization', 'Bearer ' + token.accessToken)
-      .set('Authentication', 'Bearer ' + token.idToken)
-      .set('Accept', 'application/json');
-
-    expect(response.status).to.eql(200);
-    expect(response.body).to.be.null();
-    expect(response.headers['access-control-allow-origin']).to.eql('*');
-  });
-
   it('should find user from the same client', async () => {
     const clientId1 = await setupClientInDb('TestClient1');
     const testUser1 = getTestUser(clientId1, 1);
