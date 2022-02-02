@@ -10,6 +10,7 @@ import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 import {
   getTestUser,
   givenEmptyDatabase,
+  login,
   setupApplication,
 } from '../helpers/acceptance-test.helpers';
 
@@ -65,16 +66,12 @@ describe('UserController Acceptence Test', () => {
     const testUser2 = getTestUser(clientId2, 2);
     await setupUserInDb(clientId1, testUser1);
     const dbUser2 = await setupUserInDb(clientId2, testUser2);
-    const loginResponse = await http
-      .post('/users/login')
-      .set('Content-Type', 'application/json')
-      .send({email: testUser1.email, password: testUser1.password});
-
-    expect(loginResponse.status).to.eql(200);
+    const token = await login(http, testUser2);
 
     const response = await http
       .get('/users/' + dbUser2.id)
-      .set('Authorization', 'Bearer ' + loginResponse.body.token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Accept', 'application/json');
 
     expect(response.status).to.eql(200);
@@ -88,16 +85,12 @@ describe('UserController Acceptence Test', () => {
     const testUser2 = getTestUser(clientId1, 2);
     await setupUserInDb(clientId1, testUser1);
     const dbUser2 = await setupUserInDb(clientId1, testUser2);
-    const loginResponse = await http
-      .post('/users/login')
-      .set('Content-Type', 'application/json')
-      .send({email: testUser1.email, password: testUser1.password});
-
-    expect(loginResponse.status).to.eql(200);
+    const token = await login(http, testUser1);
 
     const response = await http
       .get('/users/' + dbUser2.id)
-      .set('Authorization', 'Bearer ' + loginResponse.body.token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Accept', 'application/json');
 
     expect(response.status).to.eql(200);

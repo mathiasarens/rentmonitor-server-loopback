@@ -29,11 +29,12 @@ import {PasswordHasher} from '../../services/authentication/hash.password.bcrypt
 import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 
 const JWT_TOKEN_SECRET = 'test';
-const PRIVATE_KEY = fs.readFileSync(
-  './src/__tests__/fixtures/keys/jwtRS256.key',
-  'utf8',
-);
+const PRIVATE_KEY = readFile('./src/__tests__/fixtures/keys/jwtRS256.key');
 
+export function readFile(file: string) {
+  const result = fs.readFileSync(file, 'utf8');
+  return result;
+}
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
   config.host = '127.0.0.1';

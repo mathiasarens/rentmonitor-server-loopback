@@ -60,7 +60,8 @@ describe('ClientController', () => {
     // test
     const result = await http
       .get(`/clients`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200);
 
     // asserts
@@ -81,7 +82,8 @@ describe('ClientController', () => {
     // test
     const result = await http
       .get(`/clients/${clientId2}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200);
 
     // asserts
@@ -99,7 +101,8 @@ describe('ClientController', () => {
     // test
     await http
       .get(`/clients/${clientId1}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(500);
   });
 
@@ -114,7 +117,8 @@ describe('ClientController', () => {
     // test
     await http
       .patch(`/clients/${clientId1}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         name: 'TestClient1Update',
@@ -144,7 +148,8 @@ describe('ClientController', () => {
     // test
     await http
       .patch(`/clients/${clientId1}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: clientId2,
@@ -182,7 +187,8 @@ describe('ClientController', () => {
     // test
     await http
       .patch(`/clients/${clientId2}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: clientId1,
@@ -223,7 +229,8 @@ describe('ClientController', () => {
     // test
     await http
       .put(`/clients/${clientId1}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: clientId1,
@@ -254,7 +261,8 @@ describe('ClientController', () => {
     // test
     await http
       .put(`/clients/${clientId1}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: clientId2,
@@ -292,7 +300,8 @@ describe('ClientController', () => {
     // test
     await http
       .put(`/clients/${clientId2}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: clientId1,
@@ -347,7 +356,8 @@ describe('ClientController', () => {
     // test
     await http
       .delete(`/clients/${clientId1}`)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(204);
 
     // asserts
@@ -394,7 +404,8 @@ describe('ClientController', () => {
     // test
     await http
       .delete(`/clients/${clientId1}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(500);
 
     // asserts

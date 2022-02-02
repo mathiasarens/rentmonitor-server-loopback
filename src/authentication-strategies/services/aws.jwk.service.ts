@@ -1,7 +1,7 @@
 import {inject} from '@loopback/context';
-import fs from 'fs';
 import jwkToPem from 'jwk-to-pem';
 import {TokenServiceBindings} from '../../keys';
+import {readFile} from '../../__tests__/helpers/acceptance-test.helpers';
 
 export class AwsJwkService {
   pems: string[];
@@ -35,7 +35,7 @@ export class AwsJwkService {
         );
       }
     } else {
-      const jwkBuffer = fs.readFileSync(url, 'utf8');
+      const jwkBuffer = readFile(url);
       const jwkJson = JSON.parse(jwkBuffer);
       return jwkJson;
     }

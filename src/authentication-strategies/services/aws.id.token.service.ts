@@ -28,9 +28,8 @@ export class AwsIdTokenService implements TokenService {
     }
     const pems = await this.awsJwkService.getPems();
     let userProfile: UserProfile;
-
+    let decodedToken: jwt.JwtPayload;
     try {
-      let decodedToken: jwt.JwtPayload;
       try {
         // first pem
         decodedToken = jwt.verify(token, pems[0], {
@@ -42,35 +41,35 @@ export class AwsIdTokenService implements TokenService {
           algorithms: ['RS256'],
         }) as JwtPayload;
       }
-      // verify decoded token
-      if (decodedToken.aud !== this.expectedAudience) {
-        throw new HttpErrors.Unauthorized(`Invalid audience ${decodedToken}`);
-      }
-      if (decodedToken.iss !== this.expectedIssuer) {
-        throw new HttpErrors.Unauthorized(`Invalid issuer ${decodedToken}`);
-      }
-      if (decodedToken['token_use'] !== 'id') {
-        throw new HttpErrors.Unauthorized(`Invalid token_use ${decodedToken}`);
-      }
-
-      // convert token into userprofile
-      if (typeof decodedToken === 'object') {
-        userProfile = Object.assign(
-          {[securityId]: '', name: '', clientId: 0},
-          {
-            [securityId]: decodedToken['cognito:username'],
-            name: decodedToken['email'],
-            clientId: decodedToken['custom:clientId2'],
-          },
-        );
-      } else {
-        throw new HttpErrors.Unauthorized(
-          `Token verification failed with ${decodedToken}`,
-        );
-      }
     } catch (error) {
       throw new HttpErrors.Unauthorized(
         `Error verifying token : ${error.message}`,
+      );
+    }
+    // verify decoded token
+    if (decodedToken.aud !== this.expectedAudience) {
+      throw new HttpErrors.Unauthorized(`Invalid audience ${decodedToken}`);
+    }
+    if (decodedToken.iss !== this.expectedIssuer) {
+      throw new HttpErrors.Unauthorized(`Invalid issuer ${decodedToken}`);
+    }
+    if (decodedToken['token_use'] !== 'id') {
+      throw new HttpErrors.Unauthorized(`Invalid token_use ${decodedToken}`);
+    }
+
+    // convert token into userprofile
+    if (typeof decodedToken === 'object') {
+      userProfile = Object.assign(
+        {[securityId]: '', name: '', clientId: 0},
+        {
+          [securityId]: decodedToken['cognito:username'],
+          name: decodedToken['email'],
+          clientId: decodedToken['custom:clientId2'],
+        },
+      );
+    } else {
+      throw new HttpErrors.Unauthorized(
+        `Token verification failed with ${decodedToken}`,
       );
     }
     return userProfile;
