@@ -67,6 +67,7 @@
     "@loopback/rest-explorer": "^4.0.1",
     "@loopback/security": "^0.6.1",
     "@loopback/service-proxy": "^4.0.1",
+    "@vendia/serverless-express": "^4.5.3",
     "bcryptjs": "^2.4.3",
     "debug": "^4.3.3",
     "isemail": "^3.2.0",
@@ -80,6 +81,7 @@
   },
   "devDependencies": {
     "@loopback/build": "^8.0.1",
+    "@loopback/eslint-config": "^12.0.1",
     "@loopback/repository-json-schema": "^5.0.1",
     "@loopback/testlab": "^4.0.1",
     "@types/bcryptjs": "2.4.2",
@@ -91,7 +93,6 @@
     "@types/node": "^10.17.60",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
-    "@loopback/eslint-config": "^12.0.1",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-cypress": "2.12.1",
