@@ -30,6 +30,8 @@ import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 
 const JWT_TOKEN_SECRET = 'test';
 const PRIVATE_KEY = readFile('./src/__tests__/fixtures/keys/jwtRS256.key');
+const TEST_JWT_AUDIENCE = 'test_audience';
+const TEST_JWT_ISSUER = 'test_issuer';
 
 export function readFile(file: string) {
   const result = fs.readFileSync(file, 'utf8');
@@ -61,6 +63,9 @@ export async function setupApplication(): Promise<AppWithClient> {
   app
     .bind(TokenServiceBindings.AWS_COGNITO_JWK_URL)
     .to('./src/__tests__/fixtures/keys/jwtRS256.key.jwk');
+  app.bind(TokenServiceBindings.AWS_COGNITO_JWT_AUDIENCE).to(TEST_JWT_AUDIENCE);
+  app.bind(TokenServiceBindings.AWS_COGNITO_JWT_ISSUER).to(TEST_JWT_ISSUER);
+
   app.bind(FintsServiceBindings.SERVICE).toClass(FintsServiceDummy);
   await app.boot();
   await app.start();
@@ -156,12 +161,12 @@ export async function login(
     {
       username: user.id,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      client_id: '5cm8aoerf4544lccbr7oe2fn81',
+      client_id: TEST_JWT_AUDIENCE,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       token_use: 'access',
     },
     {
-      issuer: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_AcayKISdN',
+      issuer: TEST_JWT_ISSUER,
       expiresIn: Number(3600),
       algorithm: 'RS256',
     },
@@ -176,8 +181,8 @@ export async function login(
     },
     {
       expiresIn: Number(3600),
-      issuer: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_AcayKISdN',
-      audience: '5cm8aoerf4544lccbr7oe2fn81',
+      issuer: TEST_JWT_ISSUER,
+      audience: TEST_JWT_AUDIENCE,
       algorithm: 'RS256',
     },
   );
