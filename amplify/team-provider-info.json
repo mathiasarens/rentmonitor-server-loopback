@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-rentmonitorserver-dev-32310-authRole",
+      "UnauthRoleArn": "arn:aws:iam::613728556879:role/amplify-rentmonitorserver-dev-32310-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::613728556879:role/amplify-rentmonitorserver-dev-32310-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-rentmonitorserver-dev-32310-deployment",
+      "UnauthRoleName": "amplify-rentmonitorserver-dev-32310-unauthRole",
+      "StackName": "amplify-rentmonitorserver-dev-32310",
+      "StackId": "arn:aws:cloudformation:us-east-1:613728556879:stack/amplify-rentmonitorserver-dev-32310/e829aed0-87bc-11ec-b9c3-0ae89eacb98f",
+      "AmplifyAppId": "d39p2zgj3fk7hl"
+    }
+  }
+}
