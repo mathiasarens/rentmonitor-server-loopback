@@ -9,8 +9,8 @@
     "payments",
     "fints-support"
   ],
-  "main": "dist/src/index.js",
-  "types": "dist/src/index.d.ts",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
   "engines": {
     "node": ">=10.16"
   },
@@ -31,13 +31,14 @@
     "test:dev": "lb-mocha --allow-console-logs dist/src/__tests__/**/*.js && npm run posttest",
     "docker:build": "docker build -t rentmonitor-server-loopback .",
     "docker:run": "docker run -p 3000:3000 -d rentmonitor-server-loopback",
+    "start-serverless": "npm run build && serverless offline",
     "migrate": "node ./dist/src/migrate",
     "migrate:testdb": "NODE_ENV=test node ./dist/src/migrate -- --rebuild",
     "preopenapi-spec": "npm run build",
     "openapi-spec": "node ./dist/src/openapi-spec",
     "rebuild": "npm run clean && npm run build",
     "prestart": "npm run rebuild",
-    "start": "TZ=UTC PORT=3001 node -r source-map-support/register .",
+    "start": "TZ=UTC PORT=3001 node -r source-map-support/register dist",
     "prepublishOnly": "npm run test"
   },
   "repository": {
@@ -67,7 +68,7 @@
     "@loopback/rest-explorer": "^4.0.1",
     "@loopback/security": "^0.6.1",
     "@loopback/service-proxy": "^4.0.1",
-    "@vendia/serverless-express": "^4.5.3",
+    "aws-serverless-express": "^3.4.0",
     "bcryptjs": "^2.4.3",
     "debug": "^4.3.3",
     "isemail": "^3.2.0",
@@ -77,6 +78,7 @@
     "lodash": "^4.17.21",
     "loopback-connector-postgresql": "^5.5.0",
     "node-fints": "^0.5.1",
+    "serverless": "^3.2.1",
     "tslib": "^2.0.0"
   },
   "devDependencies": {
@@ -99,6 +101,7 @@
     "eslint-plugin-eslint-plugin": "^4.1.0",
     "eslint-plugin-mocha": "^10.0.3",
     "mocha": "^9.2.0",
+    "serverless-offline": "^8.4.0",
     "source-map-support": "^0.5.21",
     "typescript": "~4.5.4"
   }
