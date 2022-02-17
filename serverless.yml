@@ -1,4 +1,4 @@
-service: test-api
+service: rentmonitor
 provider:
   name: aws
   runtime: nodejs14.x
@@ -21,3 +21,6 @@ functions:
           cors: true
 plugins:
   - serverless-offline
+package:
+  exclude:
+    - node_modules/**
