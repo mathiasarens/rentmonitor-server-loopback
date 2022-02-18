@@ -9,7 +9,7 @@
     "payments",
     "fints-support"
   ],
-  "main": "dist/lambda.js",
+  "main": "src/index.js",
   "types": "src/index.d.ts",
   "engines": {
     "node": ">=10.16"
