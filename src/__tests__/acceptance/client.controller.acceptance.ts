@@ -10,7 +10,6 @@ import {
   setupBookingInDb,
   setupClientInDb,
   setupTenantInDb,
-  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('ClientController', () => {
@@ -54,7 +53,6 @@ describe('ClientController', () => {
     await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     // test
@@ -76,7 +74,6 @@ describe('ClientController', () => {
     await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     // test
@@ -95,7 +92,6 @@ describe('ClientController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     // test
@@ -111,7 +107,6 @@ describe('ClientController', () => {
   it('should allow to patch own client by id', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser);
     const token = await login(http, testUser);
 
     // test
@@ -142,7 +137,6 @@ describe('ClientController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     // test
@@ -181,7 +175,6 @@ describe('ClientController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     // test
@@ -223,7 +216,6 @@ describe('ClientController', () => {
   it('should allow to update own client', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser);
     const token = await login(http, testUser);
 
     // test
@@ -255,7 +247,6 @@ describe('ClientController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     // test
@@ -294,7 +285,6 @@ describe('ClientController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     // test
@@ -334,7 +324,6 @@ describe('ClientController', () => {
   it('should allow to delete own client', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser);
     const token = await login(http, testUser);
 
     const expectedDate = new Date();
@@ -382,7 +371,6 @@ describe('ClientController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser2 = getTestUser(clientId2, 1);
-    await setupUserInDb(app, clientId2, testUser2);
     const token2 = await login(http, testUser2);
 
     const expectedDate = new Date();

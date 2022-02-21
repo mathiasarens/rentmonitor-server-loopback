@@ -12,7 +12,6 @@ import {
   setupClientInDb,
   setupContractInDb,
   setupTenantInDb,
-  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
@@ -36,7 +35,6 @@ describe('Tenant-Booking-Overview Controller Acceptance Tests', () => {
   it('should load bookings sum by tenant ordered by sum descending', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({

@@ -13,7 +13,6 @@ import {
   setupClientInDb,
   setupContractInDb,
   setupTenantInDb,
-  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('BookingController', () => {
@@ -37,7 +36,6 @@ describe('BookingController', () => {
   it('should add minimal new booking on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId, 1);
-    await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -63,7 +61,6 @@ describe('BookingController', () => {
   it('should add booking and override clientId from logged in user / wrong clientId passed', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId, 1);
-    await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -90,7 +87,6 @@ describe('BookingController', () => {
   it('should add full new booking on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId, 1);
-    await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -135,7 +131,6 @@ describe('BookingController', () => {
   it("should count bookings for users' clientId only / client with bookings", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -166,7 +161,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const tenant2 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId2, name: 'Tenant1'}),
@@ -199,7 +193,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
     const tenant1 = await setupTenantInDb(
@@ -243,7 +236,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -295,9 +287,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId1, testUser1);
-    await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -358,7 +347,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -420,7 +408,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -485,7 +472,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -531,7 +517,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -574,7 +559,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -618,7 +602,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -682,7 +665,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -746,7 +728,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -813,7 +794,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -884,7 +864,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -961,7 +940,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -1032,7 +1010,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -1092,7 +1069,6 @@ describe('BookingController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,

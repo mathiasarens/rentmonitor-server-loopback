@@ -17,12 +17,7 @@ import {JWTAuthorizationAuthenticationHeaderStrategy} from './authentication-str
 import {AwsAccessTokenService} from './authentication-strategies/services/aws.access.token.service';
 import {AwsIdTokenService} from './authentication-strategies/services/aws.id.token.service';
 import {AwsJwkService} from './authentication-strategies/services/aws.jwk.service';
-import {
-  PasswordHasherBindings,
-  TokenServiceBindings,
-  TokenServiceConstants,
-  UserServiceBindings,
-} from './keys';
+import {TokenServiceBindings} from './keys';
 import {ClientRepository} from './repositories';
 import {MyAuthenticationSequence} from './sequence';
 import {
@@ -53,9 +48,6 @@ import {
   TransactionToBookingService,
   TransactionToBookingServiceBindings,
 } from './services/accountsynchronisation/transaction-to-booking.service';
-import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
-import {JWTLocalService} from './services/authentication/jwt.local.service';
-import {MyUserService} from './services/authentication/user.service';
 import {
   TenantBookingOverviewService,
   TenantBookingOverviewServiceBindings,
@@ -102,13 +94,6 @@ export class RentmonitorServerApplication extends BootMixin(
   }
 
   setUpBindings(): void {
-    this.bind(TokenServiceBindings.LOCAL_TOKEN_EXPIRES_IN).to(
-      TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
-    );
-    this.bind(TokenServiceBindings.LOCAL_TOKEN_SERVICE).toClass(
-      JWTLocalService,
-    );
-
     this.bind(TokenServiceBindings.AWS_COGNITO_ACCESS_TOKEN_SERVICE).toClass(
       AwsAccessTokenService,
     );
@@ -132,12 +117,6 @@ export class RentmonitorServerApplication extends BootMixin(
     this.bind(TokenServiceBindings.AWS_COGNITO_JWT_ISSUER).toDynamicValue(
       () => process.env.RENTMONITOR_AWS_COGNITO_JWT_ISSUER,
     );
-
-    // // Bind bcrypt hash services
-    this.bind(PasswordHasherBindings.ROUNDS).to(10);
-    this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
-
-    this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
 
     this.bind(AccountSynchronisationServiceBindings.SERVICE).toClass(
       AccountSynchronisationService,

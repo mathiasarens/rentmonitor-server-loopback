@@ -1,4 +1,3 @@
-import {DataObject} from '@loopback/repository';
 import {
   Client,
   createRestAppClient,
@@ -8,7 +7,7 @@ import fs from 'fs';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {Connection, Dialog, DialogConfig, TanRequiredError} from 'node-fints';
 import {RentmonitorServerApplication} from '../..';
-import {PasswordHasherBindings, TokenServiceBindings} from '../../keys';
+import {TokenServiceBindings} from '../../keys';
 import {AccountSettings, Booking, Contract, Tenant, User} from '../../models';
 import {
   AccountSettingsRepository,
@@ -17,7 +16,6 @@ import {
   ClientRepository,
   ContractRepository,
   TenantRepository,
-  UserRepository,
 } from '../../repositories';
 import {
   FinTsAccountDTO,
@@ -25,10 +23,7 @@ import {
   FintsService,
 } from '../../services/accountsynchronisation/fints.service';
 import {FintsServiceBindings} from '../../services/accountsynchronisation/fints.service.impl';
-import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
-import {JWTLocalService} from '../../services/authentication/jwt.local.service';
 
-const JWT_TOKEN_SECRET = 'test';
 const PRIVATE_KEY = readFile('./src/__tests__/fixtures/keys/jwtRS256.key');
 const TEST_JWT_AUDIENCE = 'test_audience';
 const TEST_JWT_ISSUER = 'test_issuer';
@@ -59,7 +54,6 @@ export async function setupApplication(): Promise<AppWithClient> {
     password: process.env.RENTMONITOR_TEST_DB_PASSWORD,
     database: process.env.RENTMONITOR_TEST_DB_USER,
   });
-  app.bind(TokenServiceBindings.LOCAL_TOKEN_SECRET).to(JWT_TOKEN_SECRET);
   app
     .bind(TokenServiceBindings.AWS_COGNITO_JWK_URL)
     .to('./src/__tests__/fixtures/keys/jwtRS256.key.jwk');
@@ -79,12 +73,7 @@ export async function setupApplication(): Promise<AppWithClient> {
   // rest client
   const client = createRestAppClient(app);
 
-  const jwtService = new JWTLocalService(
-    JWT_TOKEN_SECRET,
-    TokenServiceBindings.LOCAL_TOKEN_EXPIRES_IN.key,
-  );
-
-  return {app, client, jwtService};
+  return {app, client};
 }
 
 class FintsServiceDummy implements FintsService {
@@ -117,7 +106,6 @@ class FintsServiceDummy implements FintsService {
 export interface AppWithClient {
   app: RentmonitorServerApplication;
   client: Client;
-  jwtService: JWTLocalService;
 }
 
 export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
@@ -134,7 +122,6 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
   const accountTransactionLogRepository = await app.getRepository(
     AccountTransactionRepository,
   );
-  const userRepository = await app.getRepository(UserRepository);
 
   await bookingRepository.deleteAll();
   await contractRepository.deleteAll();
@@ -144,7 +131,6 @@ export async function givenEmptyDatabase(app: RentmonitorServerApplication) {
   await accountTransactionRepository.deleteAll();
   await accountTransactionLogRepository.deleteAll();
 
-  await userRepository.deleteAll();
   await clientRepository.deleteAll();
 }
 
@@ -218,26 +204,6 @@ export async function setupClientInDb(
   const clientRepository = await app.getRepository(ClientRepository);
   const clientFromDb = await clientRepository.create({name: name});
   return clientFromDb.id;
-}
-
-export async function setupUserInDb(
-  app: RentmonitorServerApplication,
-  clientId: number,
-  user: User,
-) {
-  const passwordHasher: PasswordHasher = await app.get(
-    PasswordHasherBindings.PASSWORD_HASHER,
-  );
-  const encryptedPassword = await passwordHasher.hashPassword(user.password);
-  const userRepository: UserRepository = await app.getRepository(
-    UserRepository,
-  );
-  const newUser: DataObject<User> = Object.assign({}, user, {
-    password: encryptedPassword,
-    clientId: clientId,
-  });
-  const newUserFromDb = await userRepository.create(newUser);
-  return newUserFromDb;
 }
 
 export async function setupTenantInDb(

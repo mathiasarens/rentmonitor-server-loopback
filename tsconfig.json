@@ -6,5 +6,6 @@
     "outDir": "dist",
     "rootDir": "."
   },
-  "include": ["src", "package.json"]
+  "include": ["src", "package.json"],
+  "exclude": ["dist"]
 }

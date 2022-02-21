@@ -8,16 +8,12 @@ import {
   ClientRepository,
   ContractRepository,
   TenantRepository,
-  UserRepository,
 } from '../../repositories';
 import {testdb} from '../fixtures/datasources/rentmontior.datasource';
 
 export async function givenEmptyDatabase() {
   const clientRepository = new ClientRepository(testdb);
   const clientRepositoryGetter = Getter.fromValue(clientRepository);
-
-  const userRepository = new UserRepository(testdb, clientRepositoryGetter);
-
   const tenantRepository = new TenantRepository(testdb, clientRepositoryGetter);
   const tenantRepositoryGetter = Getter.fromValue(tenantRepository);
   const contractRepository = new ContractRepository(
@@ -53,7 +49,6 @@ export async function givenEmptyDatabase() {
   await accountSettingsRepository.deleteAll();
   await accountTransactionLogRepository.deleteAll();
 
-  await userRepository.deleteAll();
   await clientRepository.deleteAll();
 }
 

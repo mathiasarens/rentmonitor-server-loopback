@@ -22,5 +22,9 @@ functions:
 plugins:
   - serverless-offline
 package:
-  exclude:
-    - node_modules/**
+  patterns:
+    - '!amplify/**'
+    - '!deploy/**'
+    - '!Dockerfile*'
+    - '!*.sh'
+    - '!src/**'

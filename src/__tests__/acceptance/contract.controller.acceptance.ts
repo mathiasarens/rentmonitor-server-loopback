@@ -10,7 +10,6 @@ import {
   login,
   setupApplication,
   setupClientInDb,
-  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('ContractController', () => {
@@ -34,7 +33,6 @@ describe('ContractController', () => {
   it('should add new contract on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId, 1);
-    await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId, name: 'Tenant1'}),
     );
@@ -64,7 +62,6 @@ describe('ContractController', () => {
   it('should add contract with clientId from logged in user', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId, 1);
-    await setupUserInDb(app, clientId, testUser);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId, name: 'Tenant1'}),
     );
@@ -89,7 +86,6 @@ describe('ContractController', () => {
   it('should return 0 count for count contracts if user passed false clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
     );
@@ -120,7 +116,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const startDate = new Date();
     const tenant1 = await setupTenantInDb(
@@ -148,7 +143,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -191,9 +185,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(app, clientId1, testUser1);
-    await setupUserInDb(app, clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -249,7 +240,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -306,7 +296,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -364,7 +353,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -401,7 +389,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -436,7 +423,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -473,7 +459,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -526,7 +511,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -579,7 +563,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -635,7 +618,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -697,7 +679,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -759,7 +740,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -812,7 +792,6 @@ describe('ContractController', () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       new Tenant({clientId: clientId1, name: 'Tenant1'}),

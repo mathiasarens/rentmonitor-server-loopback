@@ -2,15 +2,12 @@ import {DataObject} from '@loopback/repository';
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {AccountTransactionUrl} from '../../controllers/account-transaction.controller';
-import {PasswordHasherBindings} from '../../keys';
-import {AccountTransaction, User} from '../../models';
+import {AccountTransaction} from '../../models';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
   ClientRepository,
-  UserRepository,
 } from '../../repositories';
-import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
 import {
   getTestUser,
   givenEmptyDatabase,
@@ -36,10 +33,7 @@ describe('AccountTransactionController Acceptence Test', () => {
   it('should not count account transactions from other clients', async () => {
     const clientId1 = await setupClientInDb('TestClient1');
     const testUser1 = getTestUser(clientId1, 4);
-    await setupUserInDb(clientId1, testUser1);
     const clientId2 = await setupClientInDb('TestClient2');
-    const testUser2 = getTestUser(clientId2, 5);
-    await setupUserInDb(clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const accountSettingsId2 = await setupAccountSettingsInDb(clientId2);
     const now = new Date();
@@ -66,7 +60,6 @@ describe('AccountTransactionController Acceptence Test', () => {
   it('should return empty result on get', async () => {
     const clientId = await setupClientInDb('TestClient1');
     const testUser = getTestUser(clientId, 3);
-    await setupUserInDb(clientId, testUser);
     const token = await login(http, testUser);
 
     // when
@@ -329,29 +322,11 @@ describe('AccountTransactionController Acceptence Test', () => {
     return accountTransactionFromDb;
   }
 
-  async function setupUserInDb(clientId: number, user: User) {
-    const passwordHasher: PasswordHasher = await app.get(
-      PasswordHasherBindings.PASSWORD_HASHER,
-    );
-    const encryptedPassword = await passwordHasher.hashPassword(user.password);
-    const userRepository: UserRepository = await app.getRepository(
-      UserRepository,
-    );
-    const newUser: DataObject<User> = Object.assign({}, user, {
-      password: encryptedPassword,
-      clientId: clientId,
-    });
-    const newUserFromDb = await userRepository.create(newUser);
-    return newUserFromDb;
-  }
-
   async function setup2() {
     const clientId1 = await setupClientInDb('TestClient1');
     const testUser1 = getTestUser(clientId1, 1);
-    await setupUserInDb(clientId1, testUser1);
     const clientId2 = await setupClientInDb('TestClient2');
     const testUser2 = getTestUser(clientId2, 2);
-    await setupUserInDb(clientId2, testUser2);
     const token1 = await login(http, testUser1);
     const token2 = await login(http, testUser2);
 

@@ -14,7 +14,6 @@ import {
   login,
   setupApplication,
   setupClientInDb,
-  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('ContractToBookingController Acceptance Tests', () => {
@@ -38,7 +37,6 @@ describe('ContractToBookingController Acceptance Tests', () => {
   it('should create bookings for existing transactions', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const testUser = getTestUser(clientId1, 1);
-    await setupUserInDb(app, clientId1, testUser);
     const tenant1Name = 'Tenant1NameOnAccount';
     const tenant1 = await setupTenantInDb(
       new Tenant({

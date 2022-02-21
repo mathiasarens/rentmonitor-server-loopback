@@ -1,6 +1,5 @@
 import {ApplicationConfig} from '@loopback/core';
 import {RentmonitorServerApplication} from './application';
-import {TokenServiceBindings} from './keys';
 
 export * from './application';
 
@@ -12,9 +11,6 @@ export async function main(options: ApplicationConfig = {}) {
   app
     .bind('datasources.encryption.salt')
     .to(process.env.RENTMONITOR_DB_ENCRYPTION_SALT);
-  app
-    .bind(TokenServiceBindings.LOCAL_TOKEN_SECRET)
-    .to(process.env.RENTMONITOR_JWT_SECRET);
   app.bind('datasources.config.rentmonitor').to({
     name: 'rentmonitor',
     connector: 'postgresql',
