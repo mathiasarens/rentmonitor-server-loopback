@@ -1,9 +1,9 @@
+import {BindingScope} from '@loopback/context';
 import {
   Client,
   createRestAppClient,
   givenHttpServerConfig,
 } from '@loopback/testlab';
-import fs from 'fs';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {Connection, Dialog, DialogConfig, TanRequiredError} from 'node-fints';
 import {RentmonitorServerApplication} from '../..';
@@ -23,15 +23,13 @@ import {
   FintsService,
 } from '../../services/accountsynchronisation/fints.service';
 import {FintsServiceBindings} from '../../services/accountsynchronisation/fints.service.impl';
+import {AwsJwkServiceMock} from '../fixtures/authentication/aws.jwk.service.mock';
+import {readFile} from './file.helper';
 
 const PRIVATE_KEY = readFile('./src/__tests__/fixtures/keys/jwtRS256.key');
 const TEST_JWT_AUDIENCE = 'test_audience';
 const TEST_JWT_ISSUER = 'test_issuer';
 
-export function readFile(file: string) {
-  const result = fs.readFileSync(file, 'utf8');
-  return result;
-}
 export async function setupApplication(): Promise<AppWithClient> {
   const config = givenHttpServerConfig();
   config.host = '127.0.0.1';
@@ -59,6 +57,11 @@ export async function setupApplication(): Promise<AppWithClient> {
     .to('./src/__tests__/fixtures/keys/jwtRS256.key.jwk');
   app.bind(TokenServiceBindings.AWS_COGNITO_JWT_AUDIENCE).to(TEST_JWT_AUDIENCE);
   app.bind(TokenServiceBindings.AWS_COGNITO_JWT_ISSUER).to(TEST_JWT_ISSUER);
+
+  app
+    .bind(TokenServiceBindings.AWS_COGNITO_JWK_SERVICE)
+    .toClass(AwsJwkServiceMock)
+    .inScope(BindingScope.SINGLETON);
 
   app.bind(FintsServiceBindings.SERVICE).toClass(FintsServiceDummy);
   await app.boot();

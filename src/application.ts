@@ -16,7 +16,7 @@ import * as path from 'path';
 import {JWTAuthorizationAuthenticationHeaderStrategy} from './authentication-strategies/authorization-authentication-header-jwt-strategy';
 import {AwsAccessTokenService} from './authentication-strategies/services/aws.access.token.service';
 import {AwsIdTokenService} from './authentication-strategies/services/aws.id.token.service';
-import {AwsJwkService} from './authentication-strategies/services/aws.jwk.service';
+import {AwsJwkServiceImpl} from './authentication-strategies/services/aws.jwk.service.impl';
 import {TokenServiceBindings} from './keys';
 import {ClientRepository} from './repositories';
 import {MyAuthenticationSequence} from './sequence';
@@ -103,7 +103,7 @@ export class RentmonitorServerApplication extends BootMixin(
     );
 
     this.bind(TokenServiceBindings.AWS_COGNITO_JWK_SERVICE)
-      .toClass(AwsJwkService)
+      .toClass(AwsJwkServiceImpl)
       .inScope(BindingScope.SINGLETON);
 
     this.bind(TokenServiceBindings.AWS_COGNITO_JWK_URL).toDynamicValue(
