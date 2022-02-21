@@ -21,6 +21,17 @@ functions:
           cors: true
 plugins:
   - serverless-offline
+  - serverless-webpack
 package:
-  exclude:
-    - node_modules/**
+  patterns:
+    - '!amplify/**'
+    - '!deploy/**'
+    - '!Dockerfile*'
+    - '!*.sh'
+    - '!src/**'
+custom:
+  webpack:
+    includeModules:
+      forceExclude:
+        - aws-sdk
+        - '@loopback/testlab'

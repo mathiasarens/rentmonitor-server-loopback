@@ -4,7 +4,8 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": "src",
+    "allowJs": true
   },
   "include": ["src", "package.json"]
 }
