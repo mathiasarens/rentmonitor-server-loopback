@@ -5,22 +5,7 @@ export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new RentmonitorServerApplication(options);
-  app
-    .bind('datasources.encryption.password')
-    .to(process.env.RENTMONITOR_DB_ENCRYPTION_SECRET);
-  app
-    .bind('datasources.encryption.salt')
-    .to(process.env.RENTMONITOR_DB_ENCRYPTION_SALT);
-  app.bind('datasources.config.rentmonitor').to({
-    name: 'rentmonitor',
-    connector: 'postgresql',
-    url: '',
-    host: process.env.RDS_HOSTNAME,
-    port: process.env.RDS_PORT,
-    user: process.env.RDS_USERNAME,
-    password: process.env.RDS_PASSWORD,
-    database: process.env.RDS_DB_NAME,
-  });
+
   await app.boot();
   await app.start();
 

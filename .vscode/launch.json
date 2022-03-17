@@ -10,7 +10,7 @@
       "request": "launch",
       "name": "Server",
       "runtimeExecutable": "node",
-      "program": "${workspaceFolder}/dist/index.js",
+      "program": "${workspaceFolder}/dist/src/index.js",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ],

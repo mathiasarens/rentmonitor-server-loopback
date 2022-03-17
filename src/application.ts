@@ -94,6 +94,23 @@ export class RentmonitorServerApplication extends BootMixin(
   }
 
   setUpBindings(): void {
+    this.bind('datasources.encryption.password').to(
+      process.env.RENTMONITOR_DB_ENCRYPTION_SECRET,
+    );
+    this.bind('datasources.encryption.salt').to(
+      process.env.RENTMONITOR_DB_ENCRYPTION_SALT,
+    );
+    this.bind('datasources.config.rentmonitor').to({
+      name: 'rentmonitor',
+      connector: 'postgresql',
+      url: '',
+      host: process.env.RDS_HOSTNAME,
+      port: process.env.RDS_PORT,
+      user: process.env.RDS_USERNAME,
+      password: process.env.RDS_PASSWORD,
+      database: process.env.RDS_DB_NAME,
+    });
+
     this.bind(TokenServiceBindings.AWS_COGNITO_ACCESS_TOKEN_SERVICE).toClass(
       AwsAccessTokenService,
     );

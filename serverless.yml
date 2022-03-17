@@ -4,7 +4,6 @@ provider:
   runtime: nodejs14.x
   stage: dev
   region: us-east-1
-  timeout: 900
   environment:
     NODE_ENV: dev
 functions:
@@ -19,6 +18,12 @@ functions:
           path: /{proxy+}
           method: ANY
           cors: true
+    environment:
+      RDS_HOSTNAME: ${env:RDS_BACKUP_HOSTNAME}
+      RDS_PORT: ${env:RDS_BACKUP_PORT}
+      RDS_USERNAME: ${env:RDS_BACKUP_USERNAME}
+      RDS_PASSWORD: ${env:RDS_BACKUP_PASSWORD}
+      RDS_DB_NAME: ${env:RDS_BACKUP_DB_NAME}
 plugins:
   - serverless-offline
 package:
