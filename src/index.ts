@@ -39,6 +39,7 @@ if (require.main === module) {
         optionsSuccessStatus: 204,
         maxAge: 86400,
         credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization', 'Authentication'],
       },
     },
   };
