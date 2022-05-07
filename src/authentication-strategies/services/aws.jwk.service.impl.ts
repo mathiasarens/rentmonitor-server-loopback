@@ -1,5 +1,6 @@
 import {inject} from '@loopback/context';
 import jwkToPem from 'jwk-to-pem';
+import fetch from 'node-fetch';
 import {TokenServiceBindings} from '../../keys';
 import {AwsJwkService} from './aws.jwk.service';
 
