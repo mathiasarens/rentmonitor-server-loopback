@@ -83,3 +83,17 @@ TZ='UTC' PORT=3001 DEBUG=loopback:connector\* node --inspect .
 ## Connect with Visual Studio Code
 
 cmd + shift + p -> attach to process
+
+# Serverless
+
+## Deploy app / lambda
+
+npx serverless deploy
+
+## Status
+
+npx serverless info
+
+## Remove app / lambda
+
+npx serverless remove

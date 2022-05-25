@@ -6,6 +6,21 @@ provider:
   region: us-east-1
   environment:
     NODE_ENV: dev
+  iam:
+    role:
+      managedPolicies:
+        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
+        - 'arn:aws:iam::aws:policy/AmazonRDSDataFullAccess'
+  vpc:
+    securityGroupIds:
+      - sg-01bbe9ececcb33c8c
+    subnetIds:
+      - subnet-5d421f7c
+      - subnet-09aaa307
+      - subnet-94f4a4cb
+      - subnet-5bcf983d
+      - subnet-7ff66c4e
+      - subnet-50a1471c
 functions:
   app:
     handler: lambda.handler # reference the file and exported method
