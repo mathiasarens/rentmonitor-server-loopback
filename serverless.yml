@@ -9,8 +9,7 @@ provider:
   iam:
     role:
       managedPolicies:
-        - 'arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole'
-        - 'arn:aws:iam::aws:policy/AmazonRDSDataFullAccess'
+        - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
   vpc:
     securityGroupIds:
       - sg-01bbe9ececcb33c8c
