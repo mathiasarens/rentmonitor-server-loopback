@@ -25,7 +25,7 @@ import {
   RestBindings,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
-import {TanRequiredError} from 'node-fints';
+import {TanRequiredError} from '@philippdormann/fints';
 import {AccountSettings} from '../models';
 import {AccountSettingsRepository} from '../repositories';
 import {

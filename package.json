@@ -1,6 +1,6 @@
 {
   "name": "rentmonitor-server",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Monitor the payments of your tenants. Did every renter pay on time?",
   "keywords": [
     "rent",
@@ -74,7 +74,7 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "loopback-connector-postgresql": "^5.4.0",
-    "node-fints": "^0.5.1",
+    "@philippdormann/fints": "^0.5.0",
     "tslib": "^2.0.0"
   },
   "devDependencies": {

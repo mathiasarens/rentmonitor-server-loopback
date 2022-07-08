@@ -4,7 +4,12 @@ import {
   createRestAppClient,
   givenHttpServerConfig,
 } from '@loopback/testlab';
-import {Connection, Dialog, DialogConfig, TanRequiredError} from 'node-fints';
+import {
+  Connection,
+  Dialog,
+  DialogConfig,
+  TanRequiredError,
+} from '@philippdormann/fints';
 import {RentmonitorServerApplication} from '../..';
 import {PasswordHasherBindings, TokenServiceBindings} from '../../keys';
 import {AccountSettings, Booking, Contract, Tenant, User} from '../../models';
