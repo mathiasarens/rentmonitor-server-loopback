@@ -1,4 +1,4 @@
-import {PinTanClient} from 'node-fints';
+import {PinTanClient} from '@philippdormann/fints';
 
 export interface FintsClientFactory {
   create(

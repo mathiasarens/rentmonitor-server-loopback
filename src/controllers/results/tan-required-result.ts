@@ -1,4 +1,4 @@
-import {TanRequiredError} from 'node-fints';
+import {TanRequiredError} from '@philippdormann/fints';
 
 export class TanRequiredResult {
   challengeText: string;
