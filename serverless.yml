@@ -12,7 +12,7 @@ provider:
         - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
   vpc:
     securityGroupIds:
-      - sg-01bbe9ececcb33c8c
+      - sg-0673e7e3f5d95099c
     subnetIds:
       - subnet-5d421f7c
       - subnet-09aaa307
