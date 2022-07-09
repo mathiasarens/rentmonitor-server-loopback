@@ -1,7 +1,7 @@
 service: rentmonitor
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   stage: dev
   region: us-east-1
   environment:
@@ -50,3 +50,7 @@ package:
     - '!Dockerfile*'
     - '!*.sh'
     - '!src/**'
+
+custom:
+  serverless-offline:
+    httpPort: 3003
