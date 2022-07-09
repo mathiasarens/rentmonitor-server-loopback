@@ -43,18 +43,30 @@ export class AwsAccessTokenService implements TokenService {
         }) as JwtPayload;
       }
     } catch (error) {
+      console.error(
+        `JWT access token verification: jwt.verify failed: ${error.message}`,
+      );
       throw new HttpErrors.Unauthorized(
         `Error verifying token : ${error.message}`,
       );
     }
     // verify decoded token
     if (decodedToken.client_id !== this.expectedAudience) {
+      console.error(
+        `JWT access token verification: client_id !== expectedAudience: ${decodedToken.client_id} !== ${this.expectedAudience}`,
+      );
       throw new HttpErrors.Unauthorized(`Invalid audience ${decodedToken}`);
     }
     if (decodedToken.iss !== this.expectedIssuer) {
+      console.error(
+        `JWT access token verification: iss !== expectedIssuer: ${decodedToken.iss} !== ${this.expectedIssuer}`,
+      );
       throw new HttpErrors.Unauthorized(`Invalid issuer ${decodedToken}`);
     }
     if (decodedToken['token_use'] !== 'access') {
+      console.error(
+        `JWT access token verification: token_use !== id: ${decodedToken['token_use']}`,
+      );
       throw new HttpErrors.Unauthorized(`Invalid token_use ${decodedToken}`);
     }
 

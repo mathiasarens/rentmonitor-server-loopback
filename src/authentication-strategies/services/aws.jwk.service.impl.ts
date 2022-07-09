@@ -27,6 +27,9 @@ export class AwsJwkServiceImpl implements AwsJwkService {
       const jwks = await jwkResponse.json();
       return jwks;
     } else {
+      console.error(
+        `Failed to load jwk from ${this.jwkUrl} response code: ${jwkResponse.status}`,
+      );
       throw new Error(
         'Failed to load jwk from ' +
           this.jwkUrl +
