@@ -12,14 +12,14 @@ provider:
         - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
   vpc:
     securityGroupIds:
-      - sg-0673e7e3f5d95099c
+      - ${env:RDS_BACKUP_SECURITYGROUPID1}
     subnetIds:
-      - subnet-7ff66c4e
-      - subnet-50a1471c
-      - subnet-5bcf983d
-      - subnet-94f4a4cb
-      - subnet-5d421f7c
-      - subnet-09aaa307
+      - ${env:RDS_BACKUP_SUBNETID1}
+      - ${env:RDS_BACKUP_SUBNETID2}
+      - ${env:RDS_BACKUP_SUBNETID3}
+      - ${env:RDS_BACKUP_SUBNETID4}
+      - ${env:RDS_BACKUP_SUBNETID5}
+      - ${env:RDS_BACKUP_SUBNETID6}
 functions:
   app:
     handler: lambda.handler # reference the file and exported method
