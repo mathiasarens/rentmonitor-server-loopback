@@ -65,7 +65,13 @@ export class ClientController {
     @param.query.object('where', getWhereSchemaFor(Client))
     where?: Where<Client>,
   ): Promise<Count> {
-    return this.clientRepository.count(where);
+    return this.clientRepository.count(where).catch(error => {
+      console.error(
+        `Could not connect to datadase - host: ${this.clientRepository.dataSource.settings.host} database: ${this.clientRepository.dataSource.settings.database} port: ${this.clientRepository.dataSource.settings.port} user: ${this.clientRepository.dataSource.settings.user} password: ${this.clientRepository.dataSource.settings.password}`,
+      );
+      console.error(error);
+      return Promise.reject(error);
+    });
   }
 
   @get('/clients', {

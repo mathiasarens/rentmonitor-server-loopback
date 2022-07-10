@@ -1,0 +1,56 @@
+service: rentmonitor
+provider:
+  name: aws
+  runtime: nodejs16.x
+  stage: dev
+  region: us-east-1
+  environment:
+    NODE_ENV: dev
+  vpc:
+    securityGroupIds:
+      - ${env:RDS_BACKUP_SECURITYGROUPID1}
+    subnetIds:
+      - ${env:RDS_BACKUP_SUBNETID1}
+      - ${env:RDS_BACKUP_SUBNETID2}
+      - ${env:RDS_BACKUP_SUBNETID3}
+      - ${env:RDS_BACKUP_SUBNETID4}
+      - ${env:RDS_BACKUP_SUBNETID5}
+      - ${env:RDS_BACKUP_SUBNETID6}
+functions:
+  app:
+    handler: lambda.handler # reference the file and exported method
+    events: # events trigger lambda functions
+      - http: # this is an API Gateway HTTP event trigger
+          path: /
+          method: ANY
+          cors: true
+      - http: # all routes get proxied to the Express router
+          path: /{proxy+}
+          method: ANY
+          cors: true
+    environment:
+      RDS_HOSTNAME: ${env:RDS_BACKUP_HOSTNAME}
+      RDS_PORT: ${env:RDS_BACKUP_PORT}
+      RDS_USERNAME: ${env:RDS_BACKUP_USERNAME}
+      RDS_PASSWORD: ${env:RDS_BACKUP_PASSWORD}
+      RDS_DB_NAME: ${env:RDS_BACKUP_DB_NAME}
+      RENTMONITOR_AWS_COGNITO_JWK_URL: ${env:RENTMONITOR_AWS_COGNITO_JWK_URL}
+      RENTMONITOR_AWS_COGNITO_JWT_AUDIENCE: ${env:RENTMONITOR_AWS_COGNITO_JWT_AUDIENCE}
+      RENTMONITOR_AWS_COGNITO_JWT_ISSUER: ${env:RENTMONITOR_AWS_COGNITO_JWT_ISSUER}
+      RENTMONITOR_DB_ENCRYPTION_SALT: ${env:RENTMONITOR_DB_ENCRYPTION_SALT}
+      RENTMONITOR_DB_ENCRYPTION_SECRET: ${env:RENTMONITOR_DB_ENCRYPTION_SECRET}
+      RENTMONITOR_JWT_SECRET: ${env:RENTMONITOR_JWT_SECRET}
+      TZ: UTC
+plugins:
+  - serverless-offline
+package:
+  patterns:
+    - '!amplify/**'
+    - '!deploy/**'
+    - '!Dockerfile*'
+    - '!*.sh'
+    - '!src/**'
+
+custom:
+  serverless-offline:
+    httpPort: 3003

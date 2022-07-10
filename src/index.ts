@@ -1,30 +1,11 @@
 import {ApplicationConfig} from '@loopback/core';
 import {RentmonitorServerApplication} from './application';
-import {TokenServiceBindings} from './keys';
 
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
   const app = new RentmonitorServerApplication(options);
-  app
-    .bind('datasources.encryption.password')
-    .to(process.env.RENTMONITOR_DB_ENCRYPTION_SECRET);
-  app
-    .bind('datasources.encryption.salt')
-    .to(process.env.RENTMONITOR_DB_ENCRYPTION_SALT);
-  app
-    .bind(TokenServiceBindings.TOKEN_SECRET)
-    .to(process.env.RENTMONITOR_JWT_SECRET);
-  app.bind('datasources.config.rentmonitor').to({
-    name: 'rentmonitor',
-    connector: 'postgresql',
-    url: '',
-    host: process.env.RDS_HOSTNAME,
-    port: process.env.RDS_PORT,
-    user: process.env.RDS_USERNAME,
-    password: process.env.RDS_PASSWORD,
-    database: process.env.RDS_DB_NAME,
-  });
+
   await app.boot();
   await app.start();
 
@@ -50,6 +31,15 @@ if (require.main === module) {
       openApiSpec: {
         // useful when used with OpenAPI-to-GraphQL to locate your application
         setServersFromRequest: true,
+      },
+      cors: {
+        origin: '*',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
+        maxAge: 86400,
+        credentials: true,
+        allowedHeaders: ['Content-Type', 'Authorization', 'Authentication'],
       },
     },
   };

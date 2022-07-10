@@ -11,3 +11,4 @@ DEVELOPING.md
 .elasticbeanstalk/*
 .git
 .gitignore
+.serverless

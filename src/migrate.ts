@@ -44,7 +44,6 @@ export async function migrate(args: string[]) {
     // right order.  Therefore, this change is needed.
     models: [
       'Client',
-      'User',
       'AccountSettings',
       'AccountTransactionLog',
       'AccountTransaction',

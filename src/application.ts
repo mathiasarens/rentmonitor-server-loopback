@@ -3,6 +3,7 @@ import {
   registerAuthenticationStrategy,
 } from '@loopback/authentication';
 import {BootMixin} from '@loopback/boot';
+import {BindingScope} from '@loopback/context';
 import {ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin, SchemaMigrationOptions} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
@@ -12,13 +13,11 @@ import {
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as path from 'path';
-import {JWTAuthenticationStrategy} from './authentication-strategies/jwt-strategy';
-import {
-  PasswordHasherBindings,
-  TokenServiceBindings,
-  TokenServiceConstants,
-  UserServiceBindings,
-} from './keys';
+import {JWTAuthorizationAuthenticationHeaderStrategy} from './authentication-strategies/authorization-authentication-header-jwt-strategy';
+import {AwsAccessTokenService} from './authentication-strategies/services/aws.access.token.service';
+import {AwsIdTokenService} from './authentication-strategies/services/aws.id.token.service';
+import {AwsJwkServiceImpl} from './authentication-strategies/services/aws.jwk.service.impl';
+import {TokenServiceBindings} from './keys';
 import {ClientRepository} from './repositories';
 import {MyAuthenticationSequence} from './sequence';
 import {
@@ -49,9 +48,6 @@ import {
   TransactionToBookingService,
   TransactionToBookingServiceBindings,
 } from './services/accountsynchronisation/transaction-to-booking.service';
-import {BcryptHasher} from './services/authentication/hash.password.bcryptjs';
-import {JWTService} from './services/authentication/jwt.service';
-import {MyUserService} from './services/authentication/user.service';
 import {
   TenantBookingOverviewService,
   TenantBookingOverviewServiceBindings,
@@ -68,7 +64,10 @@ export class RentmonitorServerApplication extends BootMixin(
     // Bind authentication component related elements
     this.component(AuthenticationComponent);
 
-    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
+    registerAuthenticationStrategy(
+      this,
+      JWTAuthorizationAuthenticationHeaderStrategy,
+    );
 
     // Set up the custom sequence
     this.sequence(MyAuthenticationSequence);
@@ -95,17 +94,47 @@ export class RentmonitorServerApplication extends BootMixin(
   }
 
   setUpBindings(): void {
-    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
-      TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
+    this.bind('datasources.encryption.password').to(
+      process.env.RENTMONITOR_DB_ENCRYPTION_SECRET,
+    );
+    this.bind('datasources.encryption.salt').to(
+      process.env.RENTMONITOR_DB_ENCRYPTION_SALT,
+    );
+    this.bind('datasources.config.rentmonitor').to({
+      name: 'rentmonitor',
+      connector: 'postgresql',
+      url: '',
+      host: process.env.RDS_HOSTNAME,
+      port: process.env.RDS_PORT,
+      user: process.env.RDS_USERNAME,
+      password: process.env.RDS_PASSWORD,
+      database: process.env.RDS_DB_NAME,
+      connectionTimeout: 2000,
+    });
+
+    this.bind(TokenServiceBindings.AWS_COGNITO_ACCESS_TOKEN_SERVICE).toClass(
+      AwsAccessTokenService,
     );
 
-    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+    this.bind(TokenServiceBindings.AWS_COGNITO_ID_TOKEN_SERVICE).toClass(
+      AwsIdTokenService,
+    );
 
-    // // Bind bcrypt hash services
-    this.bind(PasswordHasherBindings.ROUNDS).to(10);
-    this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWK_SERVICE)
+      .toClass(AwsJwkServiceImpl)
+      .inScope(BindingScope.SINGLETON);
 
-    this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWK_URL).toDynamicValue(
+      () => process.env.RENTMONITOR_AWS_COGNITO_JWK_URL,
+    );
+
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWT_AUDIENCE).toDynamicValue(
+      () => process.env.RENTMONITOR_AWS_COGNITO_JWT_AUDIENCE,
+    );
+
+    this.bind(TokenServiceBindings.AWS_COGNITO_JWT_ISSUER).toDynamicValue(
+      () => process.env.RENTMONITOR_AWS_COGNITO_JWT_ISSUER,
+    );
 
     this.bind(AccountSynchronisationServiceBindings.SERVICE).toClass(
       AccountSynchronisationService,

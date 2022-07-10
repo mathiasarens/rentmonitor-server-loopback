@@ -2,17 +2,16 @@ import {DataObject} from '@loopback/repository';
 import {Client, expect} from '@loopback/testlab';
 import {RentmonitorServerApplication} from '../..';
 import {AccountTransactionUrl} from '../../controllers/account-transaction.controller';
-import {PasswordHasherBindings} from '../../keys';
-import {AccountTransaction, User} from '../../models';
+import {AccountTransaction} from '../../models';
 import {
   AccountSettingsRepository,
   AccountTransactionRepository,
   ClientRepository,
-  UserRepository,
 } from '../../repositories';
-import {PasswordHasher} from '../../services/authentication/hash.password.bcryptjs';
 import {
+  getTestUser,
   givenEmptyDatabase,
+  login,
   setupApplication,
 } from '../helpers/acceptance-test.helpers';
 
@@ -33,12 +32,9 @@ describe('AccountTransactionController Acceptence Test', () => {
 
   it('should not count account transactions from other clients', async () => {
     const clientId1 = await setupClientInDb('TestClient1');
-    const testUser1 = getTestUser('4');
-    await setupUserInDb(clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 4);
     const clientId2 = await setupClientInDb('TestClient2');
-    const testUser2 = getTestUser('5');
-    await setupUserInDb(clientId2, testUser2);
-    const token1 = await login(testUser1);
+    const token1 = await login(http, testUser1);
     const accountSettingsId2 = await setupAccountSettingsInDb(clientId2);
     const now = new Date();
     await setupAccountTransactionInDb({
@@ -51,7 +47,8 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     const res = await http
       .get(`${AccountTransactionUrl}/count?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -62,14 +59,14 @@ describe('AccountTransactionController Acceptence Test', () => {
 
   it('should return empty result on get', async () => {
     const clientId = await setupClientInDb('TestClient1');
-    const testUser = getTestUser('3');
-    await setupUserInDb(clientId, testUser);
-    const token = await login(testUser);
+    const testUser = getTestUser(clientId, 3);
+    const token = await login(http, testUser);
 
     // when
     const res = await http
       .get(AccountTransactionUrl)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -101,7 +98,8 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     const res1 = await http
       .get(AccountTransactionUrl)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -118,7 +116,8 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     const res2 = await http
       .get(AccountTransactionUrl)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -138,7 +137,8 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     const res = await http
       .get(`${AccountTransactionUrl}?filter[where][clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -153,7 +153,8 @@ describe('AccountTransactionController Acceptence Test', () => {
       .get(
         `${AccountTransactionUrl}?filter[where][id]=${accountTransactionId2}`,
       )
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -168,7 +169,8 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     await http
       .get(`${AccountTransactionUrl}/${accountTransactionId1}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(204);
   });
 
@@ -188,7 +190,8 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     const res1 = await http
       .get(`${AccountTransactionUrl}/${accountTransactionId2}`)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -222,19 +225,22 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     await http
       .del(`${AccountTransactionUrl}/${accountTransactionId1}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     const res1 = await http
       .get(AccountTransactionUrl)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200);
 
     expect(res1.body.length).to.eql(0);
 
     const res2 = await http
       .get(AccountTransactionUrl)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -256,12 +262,14 @@ describe('AccountTransactionController Acceptence Test', () => {
     // when
     await http
       .del(`${AccountTransactionUrl}/${accountTransactionId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     const res1 = await http
       .get(AccountTransactionUrl)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -270,7 +278,8 @@ describe('AccountTransactionController Acceptence Test', () => {
 
     const res2 = await http
       .get(AccountTransactionUrl)
-      .set('Authorization', 'Bearer ' + token2)
+      .set('Authorization', 'Bearer ' + token2.accessToken)
+      .set('Authentication', 'Bearer ' + token2.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -313,51 +322,13 @@ describe('AccountTransactionController Acceptence Test', () => {
     return accountTransactionFromDb;
   }
 
-  async function setupUserInDb(clientId: number, user: User) {
-    const passwordHasher: PasswordHasher = await app.get(
-      PasswordHasherBindings.PASSWORD_HASHER,
-    );
-    const encryptedPassword = await passwordHasher.hashPassword(user.password);
-    const userRepository: UserRepository = await app.getRepository(
-      UserRepository,
-    );
-    const newUser: DataObject<User> = Object.assign({}, user, {
-      password: encryptedPassword,
-      clientId: clientId,
-    });
-    const newUserFromDb = await userRepository.create(newUser);
-    return newUserFromDb;
-  }
-
-  async function login(user: User): Promise<string> {
-    const res = await http
-      .post('/users/login')
-      .send({email: user.email, password: user.password})
-      .expect(200);
-
-    const token = res.body.token;
-    return token;
-  }
-
-  function getTestUser(testId: string): User {
-    const testUser = Object.assign({}, new User(), {
-      email: 'test@loopback' + testId + '.io',
-      password: 'p4ssw0rd',
-      firstName: 'Example',
-      lastName: 'User ' + testId,
-    });
-    return testUser;
-  }
-
   async function setup2() {
     const clientId1 = await setupClientInDb('TestClient1');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const clientId2 = await setupClientInDb('TestClient2');
-    const testUser2 = getTestUser('2');
-    await setupUserInDb(clientId2, testUser2);
-    const token1 = await login(testUser1);
-    const token2 = await login(testUser2);
+    const testUser2 = getTestUser(clientId2, 2);
+    const token1 = await login(http, testUser1);
+    const token2 = await login(http, testUser2);
 
     const accountSettingsId1 = await setupAccountSettingsInDb(clientId1);
     const accountSettingsId2 = await setupAccountSettingsInDb(clientId2);

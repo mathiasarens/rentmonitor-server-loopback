@@ -4,6 +4,7 @@ import {BookingsUrl} from '../../controllers';
 import {Booking, Contract, Tenant} from '../../models';
 import {BookingRepository} from '../../repositories';
 import {
+  AuthenticationTokens,
   clearDatabase,
   getTestUser,
   login,
@@ -12,7 +13,6 @@ import {
   setupClientInDb,
   setupContractInDb,
   setupTenantInDb,
-  setupUserInDb,
 } from '../helpers/acceptance-test.helpers';
 
 describe('BookingController', () => {
@@ -35,8 +35,7 @@ describe('BookingController', () => {
 
   it('should add minimal new booking on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
-    await setupUserInDb(app, clientId, testUser);
+    const testUser = getTestUser(clientId, 1);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -61,8 +60,7 @@ describe('BookingController', () => {
 
   it('should add booking and override clientId from logged in user / wrong clientId passed', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
-    await setupUserInDb(app, clientId, testUser);
+    const testUser = getTestUser(clientId, 1);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -88,8 +86,7 @@ describe('BookingController', () => {
 
   it('should add full new booking on post', async () => {
     const clientId = await setupClientInDb(app, 'TestClient1');
-    const testUser = getTestUser('1');
-    await setupUserInDb(app, clientId, testUser);
+    const testUser = getTestUser(clientId, 1);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId, name: 'Tenant1'}),
@@ -133,8 +130,7 @@ describe('BookingController', () => {
 
   it("should count bookings for users' clientId only / client with bookings", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const tenant1 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId1, name: 'Tenant1'}),
@@ -154,7 +150,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}/count`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(1);
@@ -163,8 +160,7 @@ describe('BookingController', () => {
   it('should return zero count if user passed false clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const tenant2 = await setupTenantInDb(
       app,
       new Tenant({clientId: clientId2, name: 'Tenant1'}),
@@ -184,7 +180,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}/count?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.count).to.eql(0);
@@ -195,8 +192,7 @@ describe('BookingController', () => {
   it('should find zero bookings if user passed false clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const expectedDate = new Date();
     const tenant1 = await setupTenantInDb(
@@ -229,7 +225,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}?filter[where][clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(0);
@@ -238,8 +235,7 @@ describe('BookingController', () => {
   it("should find bookings for users' clientId only if user uses a where filter without clientId", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -273,7 +269,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .get(`${BookingsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
 
@@ -289,10 +286,7 @@ describe('BookingController', () => {
   it('should update bookings if no clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    const testUser2 = getTestUser('2');
-    await setupUserInDb(app, clientId1, testUser1);
-    await setupUserInDb(app, clientId2, testUser2);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -326,7 +320,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .patch(`${BookingsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(200)
@@ -351,8 +346,7 @@ describe('BookingController', () => {
   it('should not update bookings if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -386,7 +380,8 @@ describe('BookingController', () => {
     // test
     const res = await http
       .patch(`${BookingsUrl}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(200)
@@ -412,8 +407,7 @@ describe('BookingController', () => {
   it('should not update the client of a booking to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -447,7 +441,8 @@ describe('BookingController', () => {
     // test
     await http
       .patch(`${BookingsUrl}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -476,8 +471,7 @@ describe('BookingController', () => {
   it("should find bookings by id for users' clientId only if api user uses no filter", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -510,7 +504,8 @@ describe('BookingController', () => {
 
     const res = await http
       .get(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(200)
       .expect('Content-Type', 'application/json');
     expect(res.body.tenantId).to.eql(tenant1.id);
@@ -521,8 +516,7 @@ describe('BookingController', () => {
   it("should not find bookings by id for users' clientId only if api user uses no filter", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -556,15 +550,15 @@ describe('BookingController', () => {
     // test
     await http
       .get(`${BookingsUrl}/${booking2.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
   });
 
   it('should not find bookings if user filters for different bookingId and different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -597,7 +591,8 @@ describe('BookingController', () => {
 
     await http
       .get(`${BookingsUrl}/${booking2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
   });
 
@@ -606,8 +601,7 @@ describe('BookingController', () => {
   it("should update booking by id for users' clientId only if no clientId is given", async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -641,7 +635,8 @@ describe('BookingController', () => {
 
     await http
       .patch(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(204);
@@ -669,8 +664,7 @@ describe('BookingController', () => {
   it('should not update booking by id if different clientId is given', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -704,7 +698,8 @@ describe('BookingController', () => {
 
     await http
       .patch(`${BookingsUrl}/${booking2.id}?where[clientId]=${clientId2}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({amount: expectedAmount})
       .expect(204);
@@ -732,8 +727,7 @@ describe('BookingController', () => {
   it('should not update booking by id if own clientId is set to a different clientId', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -767,7 +761,8 @@ describe('BookingController', () => {
 
     await http
       .patch(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({clientId: clientId2})
       .expect(422)
@@ -798,8 +793,7 @@ describe('BookingController', () => {
   it('should replace booking1 by new booking', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -833,7 +827,8 @@ describe('BookingController', () => {
 
     await http
       .put(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send(
         new Booking({
@@ -868,8 +863,7 @@ describe('BookingController', () => {
   it('should allow null values for optional fields', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -903,7 +897,8 @@ describe('BookingController', () => {
 
     await http
       .put(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: booking1.id,
@@ -944,8 +939,7 @@ describe('BookingController', () => {
   it('should not replace client id of booking1 to clientId2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -979,7 +973,8 @@ describe('BookingController', () => {
 
     await http
       .put(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .set('Content-Type', 'application/json')
       .send({
         id: tenant1.id,
@@ -1014,8 +1009,7 @@ describe('BookingController', () => {
   it('should delete booking1', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -1050,7 +1044,8 @@ describe('BookingController', () => {
     // test
     await http
       .delete(`${BookingsUrl}/${booking1.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     // asserts
@@ -1073,8 +1068,7 @@ describe('BookingController', () => {
   it('should not delete contract2 if filtered to client2', async () => {
     const clientId1 = await setupClientInDb(app, 'TestClient1');
     const clientId2 = await setupClientInDb(app, 'TestClient2');
-    const testUser1 = getTestUser('1');
-    await setupUserInDb(app, clientId1, testUser1);
+    const testUser1 = getTestUser(clientId1, 1);
     const token1 = await login(http, testUser1);
     const tenant1 = await setupTenantInDb(
       app,
@@ -1109,7 +1103,8 @@ describe('BookingController', () => {
     // test
     await http
       .delete(`${BookingsUrl}/${booking2.id}`)
-      .set('Authorization', 'Bearer ' + token1)
+      .set('Authorization', 'Bearer ' + token1.accessToken)
+      .set('Authentication', 'Bearer ' + token1.idToken)
       .expect(204);
 
     // asserts
@@ -1134,10 +1129,11 @@ describe('BookingController', () => {
 
   // non test methods --------------------------------------------------------------------
 
-  function createBookingViaHttp(token: string, data: {}) {
+  function createBookingViaHttp(token: AuthenticationTokens, data: {}) {
     return http
       .post(BookingsUrl)
-      .set('Authorization', 'Bearer ' + token)
+      .set('Authorization', 'Bearer ' + token.accessToken)
+      .set('Authentication', 'Bearer ' + token.idToken)
       .send(data)
       .set('Content-Type', 'application/json');
   }
