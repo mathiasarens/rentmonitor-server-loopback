@@ -8,7 +8,7 @@ provider:
     NODE_ENV: dev
   vpc:
     securityGroupIds:
-      - ${env:RDS_BACKUP_SECURITYGROUPID1}
+      - ${env:RENTMONITOR_LAMBDA_SECURITYGROUPID}
     subnetIds:
       - ${env:RDS_BACKUP_SUBNETID1}
       - ${env:RDS_BACKUP_SUBNETID2}
