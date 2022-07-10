@@ -214,7 +214,9 @@ export class TenantController {
     currentUserProfile: UserProfile,
   ): Promise<void> {
     if (currentUserProfile.clientId === tenant.clientId) {
+      console.log(`Saving tenant: ${JSON.stringify(tenant)}`);
       await this.tenantRepository.replaceById(id, tenant);
+      console.log(`Saved tenant.`);
     }
   }
 
