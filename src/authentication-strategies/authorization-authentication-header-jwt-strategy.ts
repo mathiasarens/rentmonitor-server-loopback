@@ -37,9 +37,9 @@ export class JWTAuthorizationAuthenticationHeaderStrategy
         clientId: userIdProfile.clientId,
       },
     );
-    console.log(
-      `Logged in user: name: ${userProfile.name} clientId: ${userProfile.clientId}`,
-    );
+    // console.log(
+    //   `Logged in user: name: ${userProfile.name} clientId: ${userProfile.clientId}`,
+    // );
     return userProfile;
   }
 
