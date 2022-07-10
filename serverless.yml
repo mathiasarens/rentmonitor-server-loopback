@@ -20,7 +20,7 @@ functions:
           path: /
           method: ANY
           cors:
-            origin: "*"
+            origin: '*'
             headers:
               - Content-Type
               - X-Amz-Date
@@ -32,8 +32,8 @@ functions:
       - http: # all routes get proxied to the Express router
           path: /{proxy+}
           method: ANY
-         cors:
-            origin: "*"
+          cors:
+            origin: '*'
             headers:
               - Content-Type
               - X-Amz-Date
