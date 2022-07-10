@@ -124,7 +124,7 @@ export class FintsServiceImpl implements FintsService {
         this.parseValueFromFinTsTransactionRecord(transaction),
       );
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return new FinTsAccountTransactionDTO(JSON.stringify(transaction));
     }
   }

@@ -6,10 +6,6 @@ provider:
   region: us-east-1
   environment:
     NODE_ENV: dev
-  iam:
-    role:
-      managedPolicies:
-        - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
   vpc:
     securityGroupIds:
       - ${env:RDS_BACKUP_SECURITYGROUPID1}

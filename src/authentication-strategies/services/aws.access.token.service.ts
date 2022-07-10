@@ -83,7 +83,6 @@ export class AwsAccessTokenService implements TokenService {
         `Token verification failed with ${decodedToken}`,
       );
     }
-
     return userProfile;
   }
 

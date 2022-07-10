@@ -41,7 +41,7 @@ export class Crypto {
         decrypted += decipher.final('utf8');
       } catch (e) {
         decrypted = 'decrypt error';
-        console.log(e);
+        console.error(e);
       }
       return decrypted;
     } else {
