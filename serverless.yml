@@ -10,12 +10,8 @@ provider:
     securityGroupIds:
       - ${env:RENTMONITOR_LAMBDA_SECURITYGROUPID}
     subnetIds:
-      - ${env:RDS_BACKUP_SUBNETID1}
-      - ${env:RDS_BACKUP_SUBNETID2}
-      - ${env:RDS_BACKUP_SUBNETID3}
-      - ${env:RDS_BACKUP_SUBNETID4}
-      - ${env:RDS_BACKUP_SUBNETID5}
-      - ${env:RDS_BACKUP_SUBNETID6}
+      - ${env:RENTMONITOR_LAMBDA_SUBNETID1}
+      - ${env:RENTMONITOR_LAMBDA_SUBNETID2}
 functions:
   app:
     handler: lambda.handler # reference the file and exported method
