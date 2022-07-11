@@ -76,7 +76,7 @@ export class AwsIdTokenService implements TokenService {
         {
           [securityId]: decodedToken['cognito:username'],
           name: decodedToken['email'],
-          clientId: decodedToken['custom:clientId2'],
+          clientId: Number(decodedToken['custom:clientId2']),
         },
       );
     } else {
