@@ -4,6 +4,7 @@ import {
   AccountSettings,
   AccountTransaction,
   AccountTransactionLog,
+  Booking,
 } from '../../models';
 import {AccountSettingsRepository} from '../../repositories';
 import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
@@ -22,8 +23,8 @@ export class AccountSynchronisationResult {
   constructor(
     public accountSettingsId: number,
     public accountName: string,
-    public newBookings: number,
-    public unmatchedTransactions: number,
+    public newBookings: Booking[],
+    public unmatchedTransactions: AccountTransaction[],
     public error?: string,
   ) {}
 }
@@ -67,8 +68,8 @@ export class AccountSynchronisationService {
           new AccountSynchronisationResult(
             accountSettings.id,
             accountSettings.name,
-            0,
-            0,
+            [],
+            [],
           ),
         );
       }
@@ -105,8 +106,8 @@ export class AccountSynchronisationService {
       return new AccountSynchronisationResult(
         accountSettings!.id,
         accountSettings!.name,
-        newBookings.length,
-        unmatchedAccountTransactions.length,
+        newBookings,
+        unmatchedAccountTransactions,
       );
     } else {
       throw new Error('Account Id not found: ' + accountSettingsId);

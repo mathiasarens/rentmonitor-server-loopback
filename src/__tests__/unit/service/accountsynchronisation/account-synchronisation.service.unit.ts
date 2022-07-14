@@ -154,7 +154,7 @@ describe('AccountSynchronisationService Unit Tests', () => {
     );
 
     expect(result.length).to.eql(1);
-    expect(result[0].newBookings).to.eql(0);
-    expect(result[0].unmatchedTransactions).to.eql(0);
+    expect(result[0].newBookings).to.eql([]);
+    expect(result[0].unmatchedTransactions).to.eql([]);
   });
 });
