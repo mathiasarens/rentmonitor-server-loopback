@@ -1,13 +1,7 @@
 import {BindingKey, inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
-import {
-  AccountSettings,
-  AccountTransaction,
-  AccountTransactionLog,
-  Booking,
-} from '../../models';
+import {AccountSettings, AccountTransaction, Booking} from '../../models';
 import {AccountSettingsRepository} from '../../repositories';
-import {AccountTransactionLogRepository} from '../../repositories/account-transaction-log.repository';
 import {
   AccountSynchronisationBookingService,
   AccountSynchronisationBookingServiceBindings,
@@ -32,8 +26,6 @@ export class AccountSynchronisationService {
   constructor(
     @repository(AccountSettingsRepository)
     private accountSettingsRepository: AccountSettingsRepository,
-    @repository(AccountTransactionLogRepository)
-    private accountTransactionLogRepository: AccountTransactionLogRepository,
     @inject(FintsServiceBindings.SERVICE)
     private fintsAccountTransactionSynchronization: FintsService,
     @inject(AccountSynchronisationTransactionServiceBindings.SERVICE)
@@ -137,11 +129,6 @@ export class AccountSynchronisationService {
         to,
         tan,
       );
-    await this.logAccountTransactions(
-      now,
-      accountSettings,
-      rawAccountTransactions,
-    );
     const accountTransactions: AccountTransaction[] =
       rawAccountTransactions.map(at =>
         this.convertToAccountTransaction(accountSettings, at),
@@ -169,26 +156,6 @@ export class AccountSynchronisationService {
       text: rawAccountTransaction.text,
       amount: rawAccountTransaction.value,
     });
-  }
-
-  private async logAccountTransactions(
-    now: Date,
-    accountSettings: AccountSettings,
-    rawAccountTransactions: FinTsAccountTransactionDTO[],
-  ) {
-    const accountTransactionsToSave: AccountTransactionLog[] =
-      rawAccountTransactions.map(
-        at =>
-          new AccountTransactionLog({
-            clientId: accountSettings.clientId,
-            accountSettingsId: accountSettings.id,
-            time: now,
-            rawstring: at.rawstring,
-          }),
-      );
-    await this.accountTransactionLogRepository.createAll(
-      accountTransactionsToSave,
-    );
   }
 }
 

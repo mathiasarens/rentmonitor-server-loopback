@@ -3,7 +3,6 @@ import {expect} from '@loopback/testlab';
 import {
   AccountSettings,
   AccountTransaction,
-  AccountTransactionLog,
   Booking,
   Client,
   Contract,
@@ -11,7 +10,6 @@ import {
 } from '../../../../models';
 import {
   AccountSettingsRepository,
-  AccountTransactionLogRepository,
   AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
@@ -29,7 +27,6 @@ describe('Deletion Service Integration', () => {
   let bookingRepository: BookingRepository;
   let accountSettingsRepository: AccountSettingsRepository;
   let accountTransactionRepository: AccountTransactionRepository;
-  let accountTransactionLogRepository: AccountTransactionLogRepository;
   let deletionService: DeletionService;
   let client1: Client;
   let client2: Client;
@@ -43,8 +40,6 @@ describe('Deletion Service Integration', () => {
   let accountSettings21: AccountSettings;
   let accountTransaction11: AccountTransaction;
   let accountTransaction21: AccountTransaction;
-  let accountTransactionLog11: AccountTransactionLog;
-  let accountTransactionLog21: AccountTransactionLog;
 
   beforeEach('setupApplication', async () => {
     await givenEmptyDatabase();
@@ -57,10 +52,6 @@ describe('Deletion Service Integration', () => {
       clientRepositoryGetter,
       'test_password',
       'test_salt',
-    );
-    accountTransactionLogRepository = new AccountTransactionLogRepository(
-      testdb,
-      clientRepositoryGetter,
     );
     const tenantRepositoryGetter = Getter.fromValue(tenantRepository);
     contractRepository = new ContractRepository(
@@ -86,7 +77,6 @@ describe('Deletion Service Integration', () => {
       bookingRepository,
       accountSettingsRepository,
       accountTransactionRepository,
-      accountTransactionLogRepository,
     );
 
     client1 = await clientRepository.create({name: 'Client 1'});
@@ -142,17 +132,6 @@ describe('Deletion Service Integration', () => {
       accountSettingsId: accountSettings21.id,
       date: new Date(),
     });
-
-    accountTransactionLog11 = await accountTransactionLogRepository.create({
-      clientId: client1.id,
-      time: new Date(),
-      rawstring: 'Test',
-    });
-    accountTransactionLog21 = await accountTransactionLogRepository.create({
-      clientId: client2.id,
-      time: new Date(),
-      rawstring: 'Test',
-    });
   });
 
   after(async () => {});
@@ -178,12 +157,6 @@ describe('Deletion Service Integration', () => {
     expect(
       await accountTransactionRepository.exists(accountTransaction21.id),
     ).to.be.true();
-    expect(
-      await accountTransactionLogRepository.exists(accountTransactionLog11.id),
-    ).to.be.true();
-    expect(
-      await accountTransactionLogRepository.exists(accountTransactionLog21.id),
-    ).to.be.true();
 
     await deletionService.deleteClient(client1.id);
 
@@ -207,12 +180,6 @@ describe('Deletion Service Integration', () => {
     expect(
       await accountTransactionRepository.exists(accountTransaction21.id),
     ).to.be.true();
-    expect(
-      await accountTransactionLogRepository.exists(accountTransactionLog11.id),
-    ).to.be.false();
-    expect(
-      await accountTransactionLogRepository.exists(accountTransactionLog21.id),
-    ).to.be.true();
   });
 
   it('should delete all tables', async function () {
@@ -222,7 +189,6 @@ describe('Deletion Service Integration', () => {
     expect(await bookingRepository.find()).length(2);
     expect(await accountSettingsRepository.find()).length(2);
     expect(await accountTransactionRepository.find()).length(2);
-    expect(await accountTransactionLogRepository.find()).length(2);
 
     await deletionService.deleteAll();
 
@@ -232,6 +198,5 @@ describe('Deletion Service Integration', () => {
     expect(await bookingRepository.find()).length(0);
     expect(await accountSettingsRepository.find()).length(0);
     expect(await accountTransactionRepository.find()).length(0);
-    expect(await accountTransactionLogRepository.find()).length(0);
   });
 });

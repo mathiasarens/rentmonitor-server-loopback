@@ -2,7 +2,6 @@ import {Getter} from '@loopback/context';
 import {Client, Tenant} from '../../../src/models';
 import {
   AccountSettingsRepository,
-  AccountTransactionLogRepository,
   AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
@@ -27,10 +26,6 @@ export async function givenEmptyDatabase() {
     tenantRepositoryGetter,
     Getter.fromValue(contractRepository),
   );
-  const accountTransactionLogRepository = new AccountTransactionLogRepository(
-    testdb,
-    clientRepositoryGetter,
-  );
   const accountSettingsRepository = new AccountSettingsRepository(
     testdb,
     clientRepositoryGetter,
@@ -47,7 +42,6 @@ export async function givenEmptyDatabase() {
   await tenantRepository.deleteAll();
 
   await accountSettingsRepository.deleteAll();
-  await accountTransactionLogRepository.deleteAll();
 
   await clientRepository.deleteAll();
 }

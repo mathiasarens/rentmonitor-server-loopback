@@ -1,7 +1,6 @@
 import {repository} from '@loopback/repository';
 import {
   AccountSettingsRepository,
-  AccountTransactionLogRepository,
   AccountTransactionRepository,
   BookingRepository,
   ClientRepository,
@@ -20,8 +19,6 @@ export class DeletionService {
     private accountSettingsRepository: AccountSettingsRepository,
     @repository(AccountTransactionRepository)
     private accountTransactionRepository: AccountTransactionRepository,
-    @repository(AccountTransactionLogRepository)
-    private accountTransactionLogRepository: AccountTransactionLogRepository,
   ) {}
 
   async deleteAll() {
@@ -29,7 +26,6 @@ export class DeletionService {
     await this.contractRepository.deleteAll();
     await this.tenantRepository.deleteAll();
 
-    await this.accountTransactionLogRepository.deleteAll();
     await this.accountTransactionRepository.deleteAll();
     await this.accountSettingsRepository.deleteAll();
     await this.clientRepository.deleteAll();
@@ -41,7 +37,6 @@ export class DeletionService {
     await this.contractRepository.deleteAll(where);
     await this.tenantRepository.deleteAll(where);
 
-    await this.accountTransactionLogRepository.deleteAll(where);
     await this.accountTransactionRepository.deleteAll(where);
     await this.accountSettingsRepository.deleteAll(where);
     await this.clientRepository.deleteById(clientId);

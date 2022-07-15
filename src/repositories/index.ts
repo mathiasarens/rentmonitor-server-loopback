@@ -1,5 +1,4 @@
 export * from './account-settings.repository';
-export * from './account-transaction-log.repository';
 export * from './account-transaction.repository';
 export * from './booking.repository';
 export * from './client.repository';

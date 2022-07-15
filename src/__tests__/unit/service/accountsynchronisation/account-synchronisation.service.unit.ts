@@ -5,15 +5,8 @@ import {
   StubbedInstanceWithSinonAccessor,
 } from '@loopback/testlab';
 import {SinonStubbedInstance} from 'sinon';
-import {
-  AccountSettings,
-  AccountTransaction,
-  AccountTransactionLog,
-} from '../../../../models';
-import {
-  AccountSettingsRepository,
-  AccountTransactionLogRepository,
-} from '../../../../repositories';
+import {AccountSettings, AccountTransaction} from '../../../../models';
+import {AccountSettingsRepository} from '../../../../repositories';
 import {AccountSynchronisationBookingService} from '../../../../services/accountsynchronisation/account-synchronisation-booking.service';
 import {AccountSynchronisationTransactionService} from '../../../../services/accountsynchronisation/account-synchronisation-transaction.service';
 import {
@@ -30,16 +23,12 @@ describe('AccountSynchronisationService Unit Tests', () => {
   let accountTransactionService: AccountSynchronisationService;
   let accountSettingsRepositoryStub: StubbedInstanceWithSinonAccessor<AccountSettingsRepository>;
   let fintsAccountSynchronisationStub: SinonStubbedInstance<FintsService>;
-  let accountTransactionLogRepositoryStub: StubbedInstanceWithSinonAccessor<AccountTransactionLogRepository>;
   let accountSynchronisationSaveServiceStub: SinonStubbedInstance<AccountSynchronisationTransactionService>;
   let accountSynchronisationBookingServiceStub: SinonStubbedInstance<AccountSynchronisationBookingService>;
 
   beforeEach('setup service and database', async () => {
     accountSettingsRepositoryStub = createStubInstance(
       AccountSettingsRepository,
-    );
-    accountTransactionLogRepositoryStub = createStubInstance(
-      AccountTransactionLogRepository,
     );
     fintsAccountSynchronisationStub =
       sinon.createStubInstance(FintsServiceImpl);
@@ -52,7 +41,6 @@ describe('AccountSynchronisationService Unit Tests', () => {
 
     accountTransactionService = new AccountSynchronisationService(
       accountSettingsRepositoryStub,
-      accountTransactionLogRepositoryStub,
       fintsAccountSynchronisationStub as unknown as FintsService,
       accountSynchronisationSaveServiceStub as unknown as AccountSynchronisationTransactionService,
       accountSynchronisationBookingServiceStub as unknown as AccountSynchronisationBookingService,
@@ -126,18 +114,6 @@ describe('AccountSynchronisationService Unit Tests', () => {
       undefined,
       undefined,
       undefined,
-    );
-
-    sinon.assert.calledWithExactly(
-      accountTransactionLogRepositoryStub.stubs.createAll,
-      [
-        new AccountTransactionLog({
-          clientId: clientId,
-          accountSettingsId: accountSettingsId,
-          rawstring: 'rawstring1',
-          time: now,
-        }),
-      ],
     );
 
     sinon.assert.calledWithExactly(
