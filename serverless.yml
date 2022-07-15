@@ -6,12 +6,6 @@ provider:
   region: us-east-1
   environment:
     NODE_ENV: dev
-  vpc:
-    securityGroupIds:
-      - ${env:RENTMONITOR_LAMBDA_SECURITYGROUPID}
-    subnetIds:
-      - ${env:RENTMONITOR_LAMBDA_SUBNETID1}
-      - ${env:RENTMONITOR_LAMBDA_SUBNETID2}
 functions:
   app:
     handler: lambda.handler # reference the file and exported method
