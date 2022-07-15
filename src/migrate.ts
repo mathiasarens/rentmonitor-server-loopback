@@ -32,6 +32,7 @@ export async function migrate(args: string[]) {
       user: process.env.RDS_USERNAME,
       password: process.env.RDS_PASSWORD,
       database: process.env.RDS_DB_NAME,
+      ssl: true,
     });
   }
   await app.boot();
