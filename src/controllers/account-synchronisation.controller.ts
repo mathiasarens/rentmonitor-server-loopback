@@ -9,6 +9,8 @@ import {
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
 import {TanRequiredError} from '@philippdormann/fints';
+import sub from 'date-fns/sub';
+import {AccountTransaction, Booking} from '../models';
 import {
   AccountSynchronisationResult,
   AccountSynchronisationService,
@@ -53,7 +55,7 @@ export class AccountSynchronisationController {
     },
   })
   @authenticate('jwt')
-  async synchronsiseAccount(
+  async synchroniseAccount(
     @requestBody({
       description: 'data',
       content: {
@@ -96,7 +98,7 @@ export class AccountSynchronisationController {
     }
   }
 
-  @post('/account-synchronization/all', {
+  @post('/account-synchronization/test', {
     responses: {
       '200': {
         description: 'AccountSynchronsiationResult',
@@ -106,10 +108,18 @@ export class AccountSynchronisationController {
           },
         },
       },
+      '210': {
+        description: 'TanRequiredResult model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(TanRequiredResult),
+          },
+        },
+      },
     },
   })
   @authenticate('jwt')
-  async synchronsiseAccounts(
+  async synchroniseTest(
     @requestBody({
       description: 'data',
       content: {
@@ -119,6 +129,8 @@ export class AccountSynchronisationController {
             properties: {
               from: {type: 'string'},
               to: {type: 'string'},
+              accountSettingsId: {type: 'number'},
+              tan: {type: 'string'},
             },
           },
         },
@@ -127,19 +139,50 @@ export class AccountSynchronisationController {
     accountSynchronisationRequest: AccountSynchronisationRequestSingleAccount,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUserProfile: UserProfile,
-  ): Promise<AccountSynchronisationResult[]> {
+  ): Promise<AccountSynchronisationResult | TanRequiredResult> {
     try {
-      const accountSynchronisationResults =
-        await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForAllAccounts(
-          new Date(),
-          currentUserProfile.clientId,
-          new Date(accountSynchronisationRequest.from!),
-          new Date(accountSynchronisationRequest.to!),
-        );
-      return accountSynchronisationResults;
+      const accountSynchronisationResult = new AccountSynchronisationResult(
+        accountSynchronisationRequest.accountSettingsId,
+        'TestAccount',
+        [
+          new Booking({
+            id: 1,
+            clientId: currentUserProfile.clientdId,
+            tenantId: 1,
+            date: sub(new Date(), {months: 1}),
+            amount: 7000,
+            comment: 'Test Buchung 1',
+          }),
+          new Booking({
+            id: 1,
+            clientId: currentUserProfile.clientdId,
+            tenantId: 2,
+            date: sub(new Date(), {months: 2}),
+          }),
+        ],
+        [
+          new AccountTransaction({
+            id: 2,
+            clientId: currentUserProfile.clientdId,
+            accountSettingsId: accountSynchronisationRequest.accountSettingsId,
+            date: sub(new Date(), {days: 2}),
+            name: 'Test Name 1',
+            text: 'Miete April 2020',
+            iban: 'DE02200411330178722500',
+            bic: 'COBADEHD001',
+            amount: 10000,
+          }),
+        ],
+      );
+      return accountSynchronisationResult;
     } catch (error) {
-      console.error(error);
-      throw error;
+      if (error instanceof TanRequiredError) {
+        this.response.status(210);
+        return new TanRequiredResult(error);
+      } else {
+        console.error(error);
+        throw error;
+      }
     }
   }
 }

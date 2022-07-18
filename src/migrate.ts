@@ -46,7 +46,6 @@ export async function migrate(args: string[]) {
     models: [
       'Client',
       'AccountSettings',
-      'AccountTransactionLog',
       'AccountTransaction',
       'Tenant',
       'Contract',
