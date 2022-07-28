@@ -154,7 +154,7 @@ export class AccountSynchronisationController {
             comment: 'Test Buchung 1',
           }),
           new Booking({
-            id: 1,
+            id: 2,
             clientId: currentUserProfile.clientdId,
             tenantId: 2,
             date: sub(new Date(), {months: 2}),
@@ -162,7 +162,7 @@ export class AccountSynchronisationController {
         ],
         [
           new AccountTransaction({
-            id: 2,
+            id: 1,
             clientId: currentUserProfile.clientdId,
             accountSettingsId: accountSynchronisationRequest.accountSettingsId,
             date: sub(new Date(), {days: 2}),
