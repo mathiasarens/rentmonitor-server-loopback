@@ -143,7 +143,7 @@ export class AccountSynchronisationController {
     try {
       const accountSynchronisationResult = new AccountSynchronisationResult(
         accountSynchronisationRequest.accountSettingsId,
-        'TestAccount',
+        `TestAccount ${accountSynchronisationRequest.accountSettingsId}`,
         [
           new Booking({
             id: 1,
