@@ -103,7 +103,6 @@ export class RentmonitorServerApplication extends BootMixin(
     this.bind('datasources.config.rentmonitor').to({
       name: 'rentmonitor',
       connector: 'postgresql',
-      url: '',
       host: process.env.RDS_HOSTNAME,
       port: process.env.RDS_PORT,
       user: process.env.RDS_USERNAME,

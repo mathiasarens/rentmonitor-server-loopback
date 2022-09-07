@@ -50,7 +50,6 @@ export async function setupApplication(): Promise<AppWithClient> {
   app.bind('datasources.config.rentmonitor').to({
     name: 'rentmonitor_test',
     connector: 'postgresql',
-    url: '',
     host: process.env.RENTMONITOR_TEST_DB_HOST,
     port: process.env.RENTMONITOR_TEST_DB_PORT,
     user: process.env.RENTMONITOR_TEST_DB_USER,
