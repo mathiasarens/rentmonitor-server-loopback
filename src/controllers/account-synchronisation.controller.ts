@@ -8,7 +8,7 @@ import {
   RestBindings,
 } from '@loopback/rest';
 import {UserProfile} from '@loopback/security';
-import {TanRequiredError} from '@philippdormann/fints';
+import {TanRequiredError} from '@mathiasarens/fints';
 import sub from 'date-fns/sub';
 import {AccountTransaction, Booking} from '../models';
 import {

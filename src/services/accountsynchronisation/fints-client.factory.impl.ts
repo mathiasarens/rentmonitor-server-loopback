@@ -1,5 +1,5 @@
 import {BindingKey} from '@loopback/core';
-import {PinTanClient} from '@philippdormann/fints';
+import {PinTanClient} from '@mathiasarens/fints';
 import {FintsClientFactory} from './fints-client.factory';
 
 export class FintsClientFactoryImpl implements FintsClientFactory {

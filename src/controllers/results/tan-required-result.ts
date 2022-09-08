@@ -1,4 +1,4 @@
-import {TanRequiredError} from '@philippdormann/fints';
+import {TanRequiredError} from '@mathiasarens/fints';
 
 export class TanRequiredResult {
   challengeText: string;

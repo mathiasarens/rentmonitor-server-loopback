@@ -9,7 +9,7 @@ import {
   Dialog,
   DialogConfig,
   TanRequiredError,
-} from '@philippdormann/fints';
+} from '@mathiasarens/fints';
 import jwt, {JwtPayload} from 'jsonwebtoken';
 import {RentmonitorServerApplication} from '../..';
 import {TokenServiceBindings} from '../../keys';
