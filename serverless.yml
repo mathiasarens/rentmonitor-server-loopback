@@ -3,7 +3,7 @@ provider:
   name: aws
   runtime: nodejs16.x
   stage: dev
-  region: us-east-1
+  region: eu-central-1
   environment:
     NODE_ENV: dev
 functions:
