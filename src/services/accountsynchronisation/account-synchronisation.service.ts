@@ -11,7 +11,6 @@ import {
   AccountSynchronisationTransactionService,
   AccountSynchronisationTransactionServiceBindings,
 } from './account-synchronisation-transaction.service';
-import {FinTsTransactionException} from './errors/FinTsTransactionError';
 import {FinTsAccountTransactionDTO, FintsService} from './fints.service';
 import {FintsServiceBindings} from './fints.service.impl';
 
@@ -83,26 +82,37 @@ export class AccountSynchronisationService {
       where: {clientId: clientId, id: accountSettingsId},
     });
     if (accountSettings) {
-      const newTransactions = await this.retrieveAndSaveNewAccountTransactions(
-        now,
-        accountSettings!,
-        from,
-        to,
-        tan,
-      );
-      const [newBookings, unmatchedAccountTransactions] =
-        await this.accountSynchronisationBookingService.createAndSaveNewBookings(
-          clientId,
-          newTransactions,
-          now,
+      try {
+        const newTransactions =
+          await this.retrieveAndSaveNewAccountTransactions(
+            now,
+            accountSettings!,
+            from,
+            to,
+            tan,
+          );
+        const [newBookings, unmatchedAccountTransactions] =
+          await this.accountSynchronisationBookingService.createAndSaveNewBookings(
+            clientId,
+            newTransactions,
+            now,
+          );
+        await this.clearTanRequiredErrorOnAccountSettings(accountSettings);
+        return new AccountSynchronisationResult(
+          accountSettings!.id,
+          accountSettings!.name,
+          newBookings,
+          unmatchedAccountTransactions,
         );
-      await this.clearTanRequiredErrorOnAccountSettings(accountSettings);
-      return new AccountSynchronisationResult(
-        accountSettings!.id,
-        accountSettings!.name,
-        newBookings,
-        unmatchedAccountTransactions,
-      );
+      } catch (error) {
+        return new AccountSynchronisationResult(
+          accountSettings!.id,
+          accountSettings!.name,
+          [],
+          [],
+          getErrorMessage(error),
+        );
+      }
     } else {
       throw new Error('Account Id not found: ' + accountSettingsId);
     }
@@ -124,28 +134,24 @@ export class AccountSynchronisationService {
     to?: Date,
     tan?: string,
   ): Promise<AccountTransaction[]> {
-    try {
-      const rawAccountTransactions: FinTsAccountTransactionDTO[] =
-        await this.fintsAccountTransactionSynchronization.fetchStatements(
-          accountSettings,
-          from,
-          to,
-          tan,
-        );
-      const accountTransactions: AccountTransaction[] =
-        rawAccountTransactions.map(at =>
-          this.convertToAccountTransaction(accountSettings, at),
-        );
-      const newAccountTransactions =
-        await this.accountSynchronisationSaveService.saveNewAccountTransactions(
-          accountSettings,
-          accountTransactions,
-        );
+    const rawAccountTransactions: FinTsAccountTransactionDTO[] =
+      await this.fintsAccountTransactionSynchronization.fetchStatements(
+        accountSettings,
+        from,
+        to,
+        tan,
+      );
+    const accountTransactions: AccountTransaction[] =
+      rawAccountTransactions.map(at =>
+        this.convertToAccountTransaction(accountSettings, at),
+      );
+    const newAccountTransactions =
+      await this.accountSynchronisationSaveService.saveNewAccountTransactions(
+        accountSettings,
+        accountTransactions,
+      );
 
-      return newAccountTransactions;
-    } catch (error) {
-      throw new FinTsTransactionException(getErrorMessage(error));
-    }
+    return newAccountTransactions;
   }
 
   private convertToAccountTransaction(
