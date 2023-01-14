@@ -1,5 +1,6 @@
 import {BindingKey, inject} from '@loopback/core';
 import {repository} from '@loopback/repository';
+import {getErrorMessage} from '../../error-handling';
 import {AccountSettings, AccountTransaction, Booking} from '../../models';
 import {AccountSettingsRepository} from '../../repositories';
 import {
@@ -10,6 +11,7 @@ import {
   AccountSynchronisationTransactionService,
   AccountSynchronisationTransactionServiceBindings,
 } from './account-synchronisation-transaction.service';
+import {FinTsTransactionException} from './errors/FinTsTransactionError';
 import {FinTsAccountTransactionDTO, FintsService} from './fints.service';
 import {FintsServiceBindings} from './fints.service.impl';
 
@@ -122,24 +124,28 @@ export class AccountSynchronisationService {
     to?: Date,
     tan?: string,
   ): Promise<AccountTransaction[]> {
-    const rawAccountTransactions: FinTsAccountTransactionDTO[] =
-      await this.fintsAccountTransactionSynchronization.fetchStatements(
-        accountSettings,
-        from,
-        to,
-        tan,
-      );
-    const accountTransactions: AccountTransaction[] =
-      rawAccountTransactions.map(at =>
-        this.convertToAccountTransaction(accountSettings, at),
-      );
-    const newAccountTransactions =
-      await this.accountSynchronisationSaveService.saveNewAccountTransactions(
-        accountSettings,
-        accountTransactions,
-      );
+    try {
+      const rawAccountTransactions: FinTsAccountTransactionDTO[] =
+        await this.fintsAccountTransactionSynchronization.fetchStatements(
+          accountSettings,
+          from,
+          to,
+          tan,
+        );
+      const accountTransactions: AccountTransaction[] =
+        rawAccountTransactions.map(at =>
+          this.convertToAccountTransaction(accountSettings, at),
+        );
+      const newAccountTransactions =
+        await this.accountSynchronisationSaveService.saveNewAccountTransactions(
+          accountSettings,
+          accountTransactions,
+        );
 
-    return newAccountTransactions;
+      return newAccountTransactions;
+    } catch (error) {
+      throw new FinTsTransactionException(getErrorMessage(error));
+    }
   }
 
   private convertToAccountTransaction(
