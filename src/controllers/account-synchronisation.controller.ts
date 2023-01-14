@@ -16,8 +16,6 @@ import {
   AccountSynchronisationService,
   AccountSynchronisationServiceBindings,
 } from '../services/accountsynchronisation/account-synchronisation.service';
-import {FinTsTransactionException} from '../services/accountsynchronisation/errors/FinTsTransactionError';
-import {FinTsAuthenticationErrorResult} from './results/fints-authentication-error-result';
 import {TanRequiredResult} from './results/tan-required-result';
 
 class AccountSynchronisationRequestSingleAccount {
@@ -54,14 +52,6 @@ export class AccountSynchronisationController {
           },
         },
       },
-      '400': {
-        description: 'FinTs Authentication error',
-        content: {
-          'application/json': {
-            schema: getModelSchemaRef(FinTsAuthenticationErrorResult),
-          },
-        },
-      },
     },
   })
   @authenticate('jwt')
@@ -85,11 +75,7 @@ export class AccountSynchronisationController {
     accountSynchronisationRequest: AccountSynchronisationRequestSingleAccount,
     @inject(AuthenticationBindings.CURRENT_USER)
     currentUserProfile: UserProfile,
-  ): Promise<
-    | AccountSynchronisationResult
-    | TanRequiredResult
-    | FinTsAuthenticationErrorResult
-  > {
+  ): Promise<AccountSynchronisationResult | TanRequiredResult> {
     try {
       const accountSynchronisationResult =
         await this.accountSynchronisationService.retrieveAndSaveNewAccountTransactionsAndCreateNewBookingsForASingleAccount(
@@ -105,9 +91,6 @@ export class AccountSynchronisationController {
       if (error instanceof TanRequiredError) {
         this.response.status(210);
         return new TanRequiredResult(error);
-      } else if (error instanceof FinTsTransactionException) {
-        this.response.status(400);
-        return new FinTsAuthenticationErrorResult(error.message);
       } else {
         console.error(error);
         throw error;
