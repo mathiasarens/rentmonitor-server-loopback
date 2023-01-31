@@ -72,6 +72,12 @@ export class Contract extends Entity {
   })
   deposit: number;
 
+  @property({
+    type: 'string',
+    jsonSchema: {nullable: true},
+  })
+  accountSynchronisationName?: string;
+
   private isActive(now: Date) {
     return now > this.start && now < this.end!;
   }

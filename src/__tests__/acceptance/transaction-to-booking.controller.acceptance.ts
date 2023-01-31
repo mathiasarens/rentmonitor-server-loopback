@@ -44,7 +44,6 @@ describe('TransactionToBookingController Acceptance Tests', () => {
       new Tenant({
         clientId: clientId1,
         name: 'Tenant1',
-        accountSynchronisationName: tenant1Name,
       }),
     );
     const token = await login(http, testUser);
@@ -96,7 +95,6 @@ describe('TransactionToBookingController Acceptance Tests', () => {
       new Tenant({
         clientId: clientId1,
         name: 'Tenant1',
-        accountSynchronisationName: tenant1Name,
       }),
     );
     const token = await login(http, testUser);

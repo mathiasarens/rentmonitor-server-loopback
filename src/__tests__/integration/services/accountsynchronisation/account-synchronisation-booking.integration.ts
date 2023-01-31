@@ -60,7 +60,7 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     );
     accountSynchronisationBookingService =
       new AccountSynchronisationBookingService(
-        tenantRepository,
+        contractRepository,
         bookingRepository,
       );
 
@@ -68,7 +68,6 @@ describe('Account Synchronisation Booking Integration Tests', () => {
     tenant1 = await tenantRepository.create({
       clientId: client1.id,
       name: 'Tenant1',
-      accountSynchronisationName: 'Tenant1 Account Name',
     });
     accountSettings1 = await accountSettingsRepository.create(
       new AccountSettings({clientId: client1.id}),

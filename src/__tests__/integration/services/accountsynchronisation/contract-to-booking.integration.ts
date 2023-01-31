@@ -53,7 +53,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -96,7 +95,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -145,7 +143,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -194,7 +191,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -250,7 +246,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -310,7 +305,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -361,7 +355,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -413,7 +406,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -466,7 +458,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -510,7 +501,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
@@ -576,7 +566,6 @@ describe('Contract To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 

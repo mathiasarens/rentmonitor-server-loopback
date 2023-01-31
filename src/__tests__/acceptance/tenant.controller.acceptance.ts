@@ -109,7 +109,6 @@ describe('TenantController', () => {
       new Tenant({
         clientId: clientId1,
         name: 'Tenant1',
-        accountSynchronisationName: 'Tenant1-Account',
       }),
     );
     await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
@@ -122,7 +121,6 @@ describe('TenantController', () => {
       .expect('Content-Type', 'application/json');
     expect(res.body.length).to.eql(1);
     expect(res.body[0].name).to.eql('Tenant1');
-    expect(res.body[0].accountSynchronisationName).to.eql('Tenant1-Account');
   });
 
   it('should find tenants for users clientId only if user uses a where filter without clientId', async () => {
@@ -468,7 +466,6 @@ describe('TenantController', () => {
     expect(clientId1Tenants[0].name).to.eql(tenant1.name);
     expect(clientId1Tenants[0].email).to.eql('tenant1@tenants.de');
     expect(clientId1Tenants[0].phone).to.eql('0123/4567890');
-    expect(clientId1Tenants[0].accountSynchronisationName).to.eql('Tenant1');
 
     const clientId2Tenants = await tenantRepository.find({
       where: {clientId: clientId2},
@@ -490,7 +487,6 @@ describe('TenantController', () => {
         name: 'Tenant1',
         email: 'tenant1@tenants.de',
         phone: '0123/4567890',
-        accountSynchronisationName: 'Tenant1',
       }),
     );
     await setupTenantInDb(new Tenant({clientId: clientId2, name: 'Tenant2'}));
@@ -521,7 +517,6 @@ describe('TenantController', () => {
     expect(clientId1Tenants[0].name).to.eql(tenant1.name);
     expect(clientId1Tenants[0].email).to.be.null();
     expect(clientId1Tenants[0].phone).to.be.null();
-    expect(clientId1Tenants[0].accountSynchronisationName).to.be.null();
 
     const clientId2Tenants = await tenantRepository.find({
       where: {clientId: clientId2},
@@ -565,7 +560,6 @@ describe('TenantController', () => {
     expect(clientId1Tenants[0].name).to.eql(tenant1.name);
     expect(clientId1Tenants[0].email).to.eql(null);
     expect(clientId1Tenants[0].phone).to.eql(null);
-    expect(clientId1Tenants[0].accountSynchronisationName).to.eql(null);
 
     const clientId2Tenants = await tenantRepository.find({
       where: {clientId: clientId2},

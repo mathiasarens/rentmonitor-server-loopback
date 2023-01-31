@@ -62,7 +62,7 @@ describe('Transaction To Booking Service Integration Tests', () => {
 
     accountSynchronisationBookingService =
       new AccountSynchronisationBookingService(
-        tenantRepository,
+        contractRepository,
         bookingRepository,
       );
 
@@ -86,9 +86,10 @@ describe('Transaction To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
+
+    contractRepository
 
     const unsavedAccountTransaction1 = new AccountTransaction({
       clientId: client.id,

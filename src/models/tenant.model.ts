@@ -53,12 +53,6 @@ export class Tenant extends Entity {
   })
   phone?: string;
 
-  @property({
-    type: 'string',
-    jsonSchema: {nullable: true},
-  })
-  accountSynchronisationName?: string;
-
   constructor(data?: Partial<Tenant>) {
     super(data);
   }

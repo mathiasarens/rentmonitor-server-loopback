@@ -42,7 +42,6 @@ describe('ContractToBookingController Acceptance Tests', () => {
       new Tenant({
         clientId: clientId1,
         name: 'Tenant1',
-        accountSynchronisationName: tenant1Name,
       }),
     );
     const token = await login(http, testUser);
@@ -57,6 +56,7 @@ describe('ContractToBookingController Acceptance Tests', () => {
         rentDueEveryMonth: 1,
         rentDueDayOfMonth: 10,
         amount: expectedAmount,
+        accountSynchronisationName: tenant1Name,
       }),
     );
 

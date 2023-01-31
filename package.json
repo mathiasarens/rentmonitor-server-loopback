@@ -1,6 +1,6 @@
 {
   "name": "rentmonitor-server",
-  "version": "2.2.6",
+  "version": "2.3.0",
   "description": "Monitor the payments of your tenants. Did every renter pay on time?",
   "keywords": [
     "rent",
