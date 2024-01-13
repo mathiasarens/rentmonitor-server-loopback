@@ -5,6 +5,7 @@ import {
   AccountSettings,
   AccountTransaction,
   Booking,
+  Contract,
   Tenant,
 } from '../../../../models';
 import {
@@ -89,7 +90,14 @@ describe('Transaction To Booking Service Integration Tests', () => {
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
 
-    contractRepository
+    const unsavedContract1 = new Contract({
+      clientId: client.id,
+      tenantId: savedTenant1.id,
+      start: new Date(2024, 1, 13),
+      accountSynchronisationName: 'TestAccountSynchronisationName',
+    });
+
+    const savedContract1 = await contractRepository.save(unsavedContract1);
 
     const unsavedAccountTransaction1 = new AccountTransaction({
       clientId: client.id,
@@ -97,7 +105,7 @@ describe('Transaction To Booking Service Integration Tests', () => {
       date: new Date(2019, 3, 14),
       iban: 'IBAN1',
       bic: 'BIC1',
-      name: savedTenant1.accountSynchronisationName,
+      name: savedContract1.accountSynchronisationName,
       text: 'Rent March 2019',
       amount: 1000,
     });
@@ -142,9 +150,16 @@ describe('Transaction To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
+
+    const unsavedContract1 = new Contract({
+      clientId: client.id,
+      tenantId: savedTenant1.id,
+      start: new Date(2024, 1, 13),
+      accountSynchronisationName: 'TestAccountSynchronisationName',
+    });
+    const savedContract1 = await contractRepository.save(unsavedContract1);
 
     const unsavedAccountTransaction1 = new AccountTransaction({
       clientId: client.id,
@@ -152,7 +167,7 @@ describe('Transaction To Booking Service Integration Tests', () => {
       date: new Date(2019, 3, 14),
       iban: 'IBAN1',
       bic: 'BIC1',
-      name: savedTenant1.accountSynchronisationName,
+      name: savedContract1.accountSynchronisationName,
       text: 'Rent March 2019',
       amount: 1000,
     });
@@ -207,9 +222,17 @@ describe('Transaction To Booking Service Integration Tests', () => {
     const tenant1 = new Tenant({
       clientId: client.id,
       name: 'Tenant 1',
-      accountSynchronisationName: 'Tenant1',
     });
     const savedTenant1 = await tenantRepository.create(tenant1);
+
+    const unsavedContract1 = new Contract({
+      clientId: client.id,
+      tenantId: savedTenant1.id,
+      start: new Date(2024, 1, 13),
+      accountSynchronisationName: 'TestAccountSynchronisationName',
+    });
+    const savedContract1 = await contractRepository.save(unsavedContract1);
+
     const expectedDate = new Date(2019, 3, 14);
     const unsavedAccountTransaction1 = new AccountTransaction({
       clientId: client.id,
@@ -217,7 +240,7 @@ describe('Transaction To Booking Service Integration Tests', () => {
       date: expectedDate,
       iban: 'IBAN1',
       bic: 'BIC1',
-      name: savedTenant1.accountSynchronisationName,
+      name: savedContract1.accountSynchronisationName,
       text: 'Rent March 2019',
       amount: 1000,
     });
